@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+service Currency {
+  rpc Available(AvailableRequest) returns (AvailableResponse);
+  rpc GetRate(GetRateRequest) returns (GetRateResponse);
+  rpc Convert(ConvertRequest) returns (ConvertResponse);
+}
+
+// Available messages
+message AvailableRequest {}
+
+message AvailableResponse {
+  repeated string Currencies = 1;
+}
+
+// GetRate messages
+message GetRateRequest {
+  string From = 1;
+  string To = 2;
+}
+
+message GetRateResponse {
+  float Rate = 1;
+}
+
+// Convert messages
+message ConvertRequest {
+  float Amount = 1;
+  string From = 2;
+  string To = 3;
+}
+
+message ConvertResponse {
+  float Amount = 1;
+}
+
