@@ -13,6 +13,5 @@ type SupportedCurrenciesStoreRow struct {
 
 type SupportedCurrenciesStore interface {
 	Get(string) (*SupportedCurrenciesStoreRow, error)
-	IsSupported(string) (bool, error)
 	GetAll() (*[]SupportedCurrenciesStoreRow, error)
 }

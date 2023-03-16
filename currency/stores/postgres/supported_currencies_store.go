@@ -54,20 +54,6 @@ func (s *PostgresSupportedCurrenciesStore) Get(code string) (*interfaces.Support
 	return &ret, nil
 }
 
-func (s *PostgresSupportedCurrenciesStore) IsSupported(code string) (bool, error) {
-	sc, err := s.Get(code)
-
-	if err != nil {
-		return false, err
-	}
-
-	if sc == nil {
-		return false, nil
-	}
-
-	return sc.Enabled, nil
-}
-
 func (s *PostgresSupportedCurrenciesStore) GetAll() (*[]interfaces.SupportedCurrenciesStoreRow, error) {
 	ac, err := s.database.Queryx(`
 		SELECT id, code, name, enabled, created_at, updated_at

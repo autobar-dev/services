@@ -1,15 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
+	"github.com/autobar-dev/services/currency/routes"
 	"github.com/autobar-dev/services/currency/stores/postgres"
 	"github.com/autobar-dev/services/currency/types"
 	"github.com/autobar-dev/services/currency/types/interfaces"
 	"github.com/charmbracelet/log"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 )
 
@@ -50,29 +57,63 @@ func main() {
 	}
 
 	// Initialize stores
-	stores := &types.AppStores{
+	stores := types.AppStores{
 		RateStore:                rs,
 		SupportedCurrenciesStore: scs,
 	}
 
-	r, err := stores.RateStore.GetRate("EUR", "UAH")
-	fmt.Printf("rate=%#v\nerr=%#v\n\n", r, err)
+	// Initialize REST
+	e := echo.New()
 
-	av, err := stores.SupportedCurrenciesStore.IsSupported("UAH")
-	fmt.Printf("sc=%#v\nerr=%#v\n\n", av, err)
+	rp := os.Getenv("REST_PORT")
+	es := http.Server{
+		Addr:    ":" + rp,
+		Handler: e,
+	}
 
-	ec, err := stores.SupportedCurrenciesStore.GetAll()
-	fmt.Printf("ec=%#v\nerr=%#v\n\n", ec, err)
+	// Mount context
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			rc := types.RestContext{
+				Context:   c,
+				AppLogger: &l,
+				Stores:    &stores,
+			}
 
-	// r, err := prs.GetRate("EUR", "PLN")
+			return next(rc)
+		}
+	})
 
-	// if err != nil {
-	// 	l.Error("Error getting rate:", err)
-	// 	os.Exit(1)
-	// }
+	// Attach route handlers
+	e.GET("/supported", routes.Supported)
 
-	// l.Info(fmt.Sprintf("EUR->PLN = %f, updated at %v, with id %d", r.Rate, r.UpdatedAt, r.Id))
+	// REST: start listening
+	go func() {
+		l.Info(fmt.Sprintf("REST: Starting to listen on port %s...", rp))
 
-	// Initialize supported currencies store
-	// scs, err := postgres.New
+		if err := es.ListenAndServe(); err != http.ErrServerClosed {
+			l.Error("REST: Unable to listen.", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Handling shutdown
+	signal_channel := make(chan os.Signal, 1)
+	signal.Notify(signal_channel, syscall.SIGINT, syscall.SIGTERM)
+
+	<-signal_channel
+
+	l.Info("Received termination signal.")
+
+	// Shut down REST server
+	l.Info("Shutting down REST server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := e.Shutdown(ctx); err != nil {
+		l.Error("Could not shut down REST server gracefully.")
+		os.Exit(1)
+	}
+
+	l.Info("Gracefully shut down REST server.")
 }
