@@ -14,7 +14,7 @@ func Supported(c echo.Context) error {
 	sc, err := controllers.GetSupportedCurrencies(&rc.Stores.SupportedCurrenciesStore)
 
 	if err != nil {
-		return rc.JSON(http.StatusInternalServerError, &types.RestError{Reason: "Could not fetch available currencies."})
+		return rc.JSON(http.StatusInternalServerError, &types.RestError{Error: "Could not fetch available currencies."})
 	}
 
 	return rc.JSON(http.StatusOK, sc)

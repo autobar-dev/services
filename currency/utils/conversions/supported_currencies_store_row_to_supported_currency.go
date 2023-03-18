@@ -9,6 +9,7 @@ func SupportedCurrenciesStoreRowToSupportedCurrency(scsr *interfaces.SupportedCu
 	return &types.SupportedCurrency{
 		Code:      scsr.Code,
 		Name:      scsr.Name,
+		Enabled:   scsr.Enabled,
 		UpdatedAt: scsr.UpdatedAt,
 	}
 }

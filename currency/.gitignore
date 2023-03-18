@@ -1,3 +1,6 @@
 .env
-bin
+bin/
 .vscode
+
+handlers/currency_grpc.pb.go
+handlers/currency.pb.go

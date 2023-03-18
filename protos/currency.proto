@@ -1,36 +1,51 @@
 syntax = "proto3";
 
+package autobar.currency_service;
+
+import "google/protobuf/timestamp.proto";
+
 service Currency {
-  rpc Available(AvailableRequest) returns (AvailableResponse);
-  rpc GetRate(GetRateRequest) returns (GetRateResponse);
-  rpc Convert(ConvertRequest) returns (ConvertResponse);
+  rpc Create(CreateRequest) returns (CurrencyType);
+  rpc Get(GetRequest) returns (CurrencyType);
+  rpc GetSupported(GetSupportedRequest) returns (GetSupportedResponse);
+  rpc Delete(DeleteRequest) returns (CurrencyType);
+  rpc SetEnabled(SetEnabledRequest) returns (CurrencyType);
 }
 
-// Available messages
-message AvailableRequest {}
-
-message AvailableResponse {
-  repeated string Currencies = 1;
+// General
+message CurrencyType {
+  string Code = 1;
+  string Name = 2;
+  bool Enabled = 3;
+  google.protobuf.Timestamp UpdatedAt = 4;
 }
 
-// GetRate messages
-message GetRateRequest {
-  string From = 1;
-  string To = 2;
+// Create messages
+message CreateRequest {
+  string Code = 1;
+  string Name = 2;
 }
 
-message GetRateResponse {
-  float Rate = 1;
+// Get messages
+message GetRequest {
+  string Code = 1;
 }
 
-// Convert messages
-message ConvertRequest {
-  float Amount = 1;
-  string From = 2;
-  string To = 3;
+// GetSupported messages
+message GetSupportedRequest {
 }
 
-message ConvertResponse {
-  float Amount = 1;
+message GetSupportedResponse {
+  repeated CurrencyType Currencies = 1;
 }
 
+// Delete messages
+message DeleteRequest {
+  string Code = 1;
+}
+
+// SetEnabled messages
+message SetEnabledRequest {
+  string Code = 1;
+  bool Enabled = 2;
+}

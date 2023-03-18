@@ -1,6 +1,10 @@
 package interfaces
 
-import "time"
+import (
+	"time"
+
+	"github.com/autobar-dev/services/currency/types/inputs"
+)
 
 type SupportedCurrenciesStoreRow struct {
 	Id        uint32
@@ -14,4 +18,7 @@ type SupportedCurrenciesStoreRow struct {
 type SupportedCurrenciesStore interface {
 	Get(string) (*SupportedCurrenciesStoreRow, error)
 	GetAll() (*[]SupportedCurrenciesStoreRow, error)
+	SetEnabled(string, bool) error
+	Insert(*inputs.Currency) error
+	Delete(string) error
 }

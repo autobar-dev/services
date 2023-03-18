@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	appGrpc "github.com/autobar-dev/services/currency/grpc"
+	"github.com/autobar-dev/services/currency/grpc/generated_grpc"
 	"github.com/autobar-dev/services/currency/routes"
 	"github.com/autobar-dev/services/currency/stores/postgres"
 	"github.com/autobar-dev/services/currency/types"
@@ -18,6 +21,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -26,8 +31,8 @@ func main() {
 	// Load env file
 	err := godotenv.Load(".env")
 
-	if err != nil {
-		l.Error("Not able to load .env file")
+	if err == nil {
+		l.Info("Loaded .env file")
 	}
 
 	cs := os.Getenv("DB_CONNECTION_STRING")
@@ -62,6 +67,12 @@ func main() {
 		SupportedCurrenciesStore: scs,
 	}
 
+	// Create app context
+	app_context := types.AppContext{
+		AppLogger: &l,
+		Stores:    &stores,
+	}
+
 	// Initialize REST
 	e := echo.New()
 
@@ -75,9 +86,8 @@ func main() {
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			rc := types.RestContext{
-				Context:   c,
-				AppLogger: &l,
-				Stores:    &stores,
+				Context:    c,
+				AppContext: &app_context,
 			}
 
 			return next(rc)
@@ -85,7 +95,14 @@ func main() {
 	})
 
 	// Attach route handlers
+	e.GET("/", routes.Currency)
 	e.GET("/supported", routes.Supported)
+
+	e.POST("/create", routes.Create)
+
+	e.PUT("/set-enabled", routes.SetEnabled)
+
+	e.DELETE("/delete", routes.Delete)
 
 	// REST: start listening
 	go func() {
@@ -95,6 +112,28 @@ func main() {
 			l.Error("REST: Unable to listen.", "error", err)
 			os.Exit(1)
 		}
+	}()
+
+	// Set up GRPC
+	gs := grpc.NewServer()
+	ch := appGrpc.NewCurrencyHandler(&app_context)
+
+	generated_grpc.RegisterCurrencyServer(gs, ch)
+	reflection.Register(gs)
+
+	gp := os.Getenv("GRPC_PORT")
+	gl, err := net.Listen("tcp", ":"+gp)
+
+	if err != nil {
+		l.Error("GRPC: unable to listen", "error", err)
+		os.Exit(1)
+	}
+
+	// GRPC: start
+	go func() {
+		l.Info(fmt.Sprintf("GRPC: Starting to listen on port %s...", gp))
+
+		gs.Serve(gl)
 	}()
 
 	// Handling shutdown
@@ -116,4 +155,10 @@ func main() {
 	}
 
 	l.Info("Gracefully shut down REST server.")
+
+	// Shut down GRPC server
+	l.Info("Shutting down GRPC server...")
+	gs.GracefulStop()
+
+	l.Info("Gracefully shut down GRPC server.")
 }

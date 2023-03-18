@@ -1,5 +1,5 @@
 package types
 
 type RestError struct {
-	Reason string `json:"reason"`
+	Error string `json:"error"`
 }
