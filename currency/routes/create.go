@@ -10,8 +10,8 @@ import (
 )
 
 type restCreateInput struct {
-	Code string `json:"code" form:"code"`
-	Name string `json:"name" form:"name"`
+	Code string `json:"code" form:"code" validate:"required"`
+	Name string `json:"name" form:"name" validate:"required"`
 }
 
 func Create(c echo.Context) error {

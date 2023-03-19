@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/autobar-dev/services/currency/types/errors"
 	"github.com/autobar-dev/services/currency/types/interfaces"
 
 	"github.com/jmoiron/sqlx"
@@ -15,7 +14,7 @@ type PostgresRateStoreRow struct {
 	Id                  uint32    `db:"id"`
 	BaseCurrency        string    `db:"base_currency"`
 	DestinationCurrency string    `db:"destination_currency"`
-	Rate                float32   `db:"rate"`
+	Rate                float64   `db:"rate"`
 	UpdatedAt           time.Time `db:"updated_at"`
 }
 
@@ -44,11 +43,7 @@ func (s *PostgresRateStore) GetRate(base string, destination string) (*interface
 	`, base, destination).StructScan(&r)
 
 	if err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return nil, nil
-		}
-
-		return nil, errors.NewDatabaseQueryFailError("Failed to fetch rate.")
+		return nil, err
 	}
 
 	ret := interfaces.RateStoreRow(r)
@@ -56,31 +51,42 @@ func (s *PostgresRateStore) GetRate(base string, destination string) (*interface
 	return &ret, nil
 }
 
-func (s *PostgresRateStore) Upsert(base string, destination string, rate float32) error {
+func (s *PostgresRateStore) Upsert(base string, destination string, rate float64) error {
 	row, _ := s.GetRate(base, destination)
 	l := *s.logger
 
-	var query string
+	var err error
 
 	if row == nil {
 		l.Info(fmt.Sprintf("Creating new rate entry for %s->%s=%f", base, destination, rate))
 
-		query = fmt.Sprintf(`
-			INSERT INTO rates (base_currency, destination_currency, rate)
-			VALUES ('%s', '%s', %f);
+		_, err = s.database.Exec(`
+			INSERT INTO rates 
+			(base_currency_id, destination_currency_id, rate)
+			VALUES (
+				(
+					SELECT sc.id 
+					FROM supported_currencies sc
+					WHERE code = $1
+				),
+				(
+					SELECT sc.id
+					FROM supported_currencies sc
+					WHERE code = $2
+				),
+				$3
+			);
 		`, base, destination, rate)
 	} else {
 		l.Info(fmt.Sprintf("Updating rate entry for %s->%s=%f", base, destination, rate))
 
-		query = fmt.Sprintf(`
+		_, err = s.database.Exec(`
 			UPDATE rates
-			SET	rate=%f,
-					updated_at=CURRENT_TIMESTAMP
-			WHERE id=%d;
+			SET	rate = $1,
+					updated_at = CURRENT_TIMESTAMP
+			WHERE id = $2;
 		`, rate, row.Id)
 	}
-
-	_, err := s.database.Exec(query)
 
 	return err
 }

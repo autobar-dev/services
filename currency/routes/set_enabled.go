@@ -9,8 +9,8 @@ import (
 )
 
 type restSetEnabledInput struct {
-	Code    string `json:"code" form:"code"`
-	Enabled bool   `json:"enabled" form:"enabled"`
+	Code    string `json:"code" form:"code" validate:"required"`
+	Enabled bool   `json:"enabled" form:"enabled" validate:"required"`
 }
 
 func SetEnabled(c echo.Context) error {

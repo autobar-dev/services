@@ -9,7 +9,7 @@ import (
 )
 
 type restGetCurrencyArgs struct {
-	Code string `query:"code"`
+	Code string `query:"code" validate:"required"`
 }
 
 func Currency(c echo.Context) error {

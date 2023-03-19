@@ -27,6 +27,9 @@ type CurrencyClient interface {
 	GetSupported(ctx context.Context, in *GetSupportedRequest, opts ...grpc.CallOption) (*GetSupportedResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*CurrencyType, error)
 	SetEnabled(ctx context.Context, in *SetEnabledRequest, opts ...grpc.CallOption) (*CurrencyType, error)
+	GetRate(ctx context.Context, in *GetRateRequest, opts ...grpc.CallOption) (*RateType, error)
+	SetRate(ctx context.Context, in *SetRateRequest, opts ...grpc.CallOption) (*RateType, error)
+	ForceUpdateRate(ctx context.Context, in *ForceUpdateRateRequest, opts ...grpc.CallOption) (*RateType, error)
 }
 
 type currencyClient struct {
@@ -82,6 +85,33 @@ func (c *currencyClient) SetEnabled(ctx context.Context, in *SetEnabledRequest, 
 	return out, nil
 }
 
+func (c *currencyClient) GetRate(ctx context.Context, in *GetRateRequest, opts ...grpc.CallOption) (*RateType, error) {
+	out := new(RateType)
+	err := c.cc.Invoke(ctx, "/autobar.currency_service.Currency/GetRate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyClient) SetRate(ctx context.Context, in *SetRateRequest, opts ...grpc.CallOption) (*RateType, error) {
+	out := new(RateType)
+	err := c.cc.Invoke(ctx, "/autobar.currency_service.Currency/SetRate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyClient) ForceUpdateRate(ctx context.Context, in *ForceUpdateRateRequest, opts ...grpc.CallOption) (*RateType, error) {
+	out := new(RateType)
+	err := c.cc.Invoke(ctx, "/autobar.currency_service.Currency/ForceUpdateRate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CurrencyServer is the server API for Currency service.
 // All implementations must embed UnimplementedCurrencyServer
 // for forward compatibility
@@ -91,6 +121,9 @@ type CurrencyServer interface {
 	GetSupported(context.Context, *GetSupportedRequest) (*GetSupportedResponse, error)
 	Delete(context.Context, *DeleteRequest) (*CurrencyType, error)
 	SetEnabled(context.Context, *SetEnabledRequest) (*CurrencyType, error)
+	GetRate(context.Context, *GetRateRequest) (*RateType, error)
+	SetRate(context.Context, *SetRateRequest) (*RateType, error)
+	ForceUpdateRate(context.Context, *ForceUpdateRateRequest) (*RateType, error)
 	mustEmbedUnimplementedCurrencyServer()
 }
 
@@ -112,6 +145,15 @@ func (UnimplementedCurrencyServer) Delete(context.Context, *DeleteRequest) (*Cur
 }
 func (UnimplementedCurrencyServer) SetEnabled(context.Context, *SetEnabledRequest) (*CurrencyType, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetEnabled not implemented")
+}
+func (UnimplementedCurrencyServer) GetRate(context.Context, *GetRateRequest) (*RateType, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRate not implemented")
+}
+func (UnimplementedCurrencyServer) SetRate(context.Context, *SetRateRequest) (*RateType, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRate not implemented")
+}
+func (UnimplementedCurrencyServer) ForceUpdateRate(context.Context, *ForceUpdateRateRequest) (*RateType, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForceUpdateRate not implemented")
 }
 func (UnimplementedCurrencyServer) mustEmbedUnimplementedCurrencyServer() {}
 
@@ -216,6 +258,60 @@ func _Currency_SetEnabled_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Currency_GetRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServer).GetRate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/autobar.currency_service.Currency/GetRate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServer).GetRate(ctx, req.(*GetRateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Currency_SetRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServer).SetRate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/autobar.currency_service.Currency/SetRate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServer).SetRate(ctx, req.(*SetRateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Currency_ForceUpdateRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForceUpdateRateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServer).ForceUpdateRate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/autobar.currency_service.Currency/ForceUpdateRate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServer).ForceUpdateRate(ctx, req.(*ForceUpdateRateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Currency_ServiceDesc is the grpc.ServiceDesc for Currency service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +338,18 @@ var Currency_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetEnabled",
 			Handler:    _Currency_SetEnabled_Handler,
+		},
+		{
+			MethodName: "GetRate",
+			Handler:    _Currency_GetRate_Handler,
+		},
+		{
+			MethodName: "SetRate",
+			Handler:    _Currency_SetRate_Handler,
+		},
+		{
+			MethodName: "ForceUpdateRate",
+			Handler:    _Currency_ForceUpdateRate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

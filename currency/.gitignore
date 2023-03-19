@@ -1,6 +1,8 @@
-.env
 bin/
-.vscode
+.vscode/
+
+.env
+swagger.yaml
 
 handlers/currency_grpc.pb.go
 handlers/currency.pb.go

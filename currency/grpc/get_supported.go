@@ -5,10 +5,10 @@ import (
 
 	"github.com/autobar-dev/services/currency/controllers"
 	"github.com/autobar-dev/services/currency/grpc/generated_grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/autobar-dev/services/currency/utils/conversions"
 )
 
-func (ch *CurrencyHandler) GetSupported(ctx context.Context, ar *generated_grpc.GetSupportedRequest) (*generated_grpc.GetSupportedResponse, error) {
+func (ch *CurrencyHandler) GetSupported(ctx context.Context, _ *generated_grpc.GetSupportedRequest) (*generated_grpc.GetSupportedResponse, error) {
 	cl, err := controllers.GetSupportedCurrencies(&ch.Stores.SupportedCurrenciesStore)
 
 	if err != nil {
@@ -20,12 +20,7 @@ func (ch *CurrencyHandler) GetSupported(ctx context.Context, ar *generated_grpc.
 	}
 
 	for _, currency := range *cl {
-		gsr.Currencies = append(gsr.Currencies, &generated_grpc.CurrencyType{
-			Code:      currency.Code,
-			Name:      currency.Name,
-			Enabled:   currency.Enabled,
-			UpdatedAt: timestamppb.New(currency.UpdatedAt),
-		})
+		gsr.Currencies = append(gsr.Currencies, conversions.SupportedCurrencyToGrpcCurrencyType(&currency))
 	}
 
 	return &gsr, nil

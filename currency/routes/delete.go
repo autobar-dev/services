@@ -9,7 +9,7 @@ import (
 )
 
 type restDeleteArgs struct {
-	Code string `json:"code" form:"code"`
+	Code string `json:"code" form:"code" validate:"required"`
 }
 
 func Delete(c echo.Context) error {

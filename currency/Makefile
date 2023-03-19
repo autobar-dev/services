@@ -12,3 +12,12 @@ protos:
 		--go_out=./grpc \
 		--go-grpc_out=./grpc \
 		currency.proto
+
+swagger:
+	GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
+
+migrations:
+	migrate -database ${DB_CONNECTION_STRING} -path migrations up
+
+new_migration:
+	if [ -z "$(name)" ]; then echo "Provide name for migration as a parameter (make new_migration name=my_migration)"; else migrate create -ext sql -dir migrations -seq "$(name)"; fi

@@ -10,9 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	appGrpc "github.com/autobar-dev/services/currency/grpc"
+	app_grpc "github.com/autobar-dev/services/currency/grpc"
 	"github.com/autobar-dev/services/currency/grpc/generated_grpc"
 	"github.com/autobar-dev/services/currency/routes"
+	"github.com/autobar-dev/services/currency/stores"
 	"github.com/autobar-dev/services/currency/stores/postgres"
 	"github.com/autobar-dev/services/currency/types"
 	"github.com/autobar-dev/services/currency/types/interfaces"
@@ -61,10 +62,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Initialize remote exchange rate store
+	rers, err := stores.NewExchangeRateApiStore()
+
+	if err != nil {
+		l.Error(err)
+		os.Exit(1)
+	}
+
 	// Initialize stores
 	stores := types.AppStores{
 		RateStore:                rs,
 		SupportedCurrenciesStore: scs,
+
+		RemoteExchangeRateStore: rers,
 	}
 
 	// Create app context
@@ -97,16 +108,19 @@ func main() {
 	// Attach route handlers
 	e.GET("/", routes.Currency)
 	e.GET("/supported", routes.Supported)
+	e.GET("/rate", routes.Rate)
 
 	e.POST("/create", routes.Create)
 
 	e.PUT("/set-enabled", routes.SetEnabled)
+	e.PUT("/set-rate", routes.SetRate)
+	e.PUT("/force-update-rate", routes.ForceUpdateRate)
 
 	e.DELETE("/delete", routes.Delete)
 
 	// REST: start listening
 	go func() {
-		l.Info(fmt.Sprintf("REST: Starting to listen on port %s...", rp))
+		l.Info(fmt.Sprintf("REST listening on port %s...", rp))
 
 		if err := es.ListenAndServe(); err != http.ErrServerClosed {
 			l.Error("REST: Unable to listen.", "error", err)
@@ -116,7 +130,7 @@ func main() {
 
 	// Set up GRPC
 	gs := grpc.NewServer()
-	ch := appGrpc.NewCurrencyHandler(&app_context)
+	ch := app_grpc.NewCurrencyHandler(&app_context)
 
 	generated_grpc.RegisterCurrencyServer(gs, ch)
 	reflection.Register(gs)
@@ -131,7 +145,7 @@ func main() {
 
 	// GRPC: start
 	go func() {
-		l.Info(fmt.Sprintf("GRPC: Starting to listen on port %s...", gp))
+		l.Info(fmt.Sprintf("GRPC listening on port %s...", gp))
 
 		gs.Serve(gl)
 	}()

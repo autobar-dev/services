@@ -10,6 +10,10 @@ service Currency {
   rpc GetSupported(GetSupportedRequest) returns (GetSupportedResponse);
   rpc Delete(DeleteRequest) returns (CurrencyType);
   rpc SetEnabled(SetEnabledRequest) returns (CurrencyType);
+
+  rpc GetRate(GetRateRequest) returns (RateType);
+  rpc SetRate(SetRateRequest) returns (RateType);
+  rpc ForceUpdateRate(ForceUpdateRateRequest) returns (RateType);
 }
 
 // General
@@ -17,6 +21,13 @@ message CurrencyType {
   string Code = 1;
   string Name = 2;
   bool Enabled = 3;
+  google.protobuf.Timestamp UpdatedAt = 4;
+}
+
+message RateType {
+  string Base = 1;
+  string Destination = 2;
+  double Rate = 3;
   google.protobuf.Timestamp UpdatedAt = 4;
 }
 
@@ -48,4 +59,23 @@ message DeleteRequest {
 message SetEnabledRequest {
   string Code = 1;
   bool Enabled = 2;
+}
+
+// GetRate messages
+message GetRateRequest {
+  string Base = 1;
+  string Destination = 2;
+}
+
+// SetRate messages
+message SetRateRequest {
+  string Base = 1;
+  string Destination = 2;
+  double Rate = 3;
+}
+
+// ForceUpdateRate messages
+message ForceUpdateRateRequest {
+  string Base = 1;
+  string Destination = 2;
 }
