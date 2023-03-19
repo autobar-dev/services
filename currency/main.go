@@ -1,3 +1,19 @@
+// Package main Currency API
+//
+// # Documentation for Currency API
+//
+// Schemes: http
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+// - application/json
+// - application/x-www-form-urlencoded
+//
+// Produces:
+// - application/json
+//
+// swagger:meta
 package main
 
 import (
@@ -107,7 +123,7 @@ func main() {
 
 	// Attach route handlers
 	e.GET("/", routes.Currency)
-	e.GET("/supported", routes.Supported)
+	e.GET("/enabled", routes.Enabled)
 	e.GET("/rate", routes.Rate)
 
 	e.POST("/create", routes.Create)

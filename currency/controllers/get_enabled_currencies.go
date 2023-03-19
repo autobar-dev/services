@@ -9,11 +9,11 @@ import (
 	"github.com/autobar-dev/services/currency/utils/conversions"
 )
 
-func GetSupportedCurrencies(scs *interfaces.SupportedCurrenciesStore) (*[]types.SupportedCurrency, error) {
-	scr, err := services.GetSupportedCurrencies(scs)
+func GetEnabledCurrencies(scs *interfaces.SupportedCurrenciesStore) (*[]types.SupportedCurrency, error) {
+	scr, err := services.GetEnabledCurrencies(scs)
 
 	if err != nil {
-		return nil, errors.New("could not fetch supported currencies")
+		return nil, errors.New("could not fetch enabled currencies")
 	}
 
 	sc := []types.SupportedCurrency{}

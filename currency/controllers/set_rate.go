@@ -25,6 +25,10 @@ func SetRate(base string, destination string, rate float64, rs *interfaces.RateS
 		return nil, errors.New("one or both of the provided currencies is not enabled")
 	}
 
+	if rate == 0 {
+		return nil, errors.New("rate cannot be zero")
+	}
+
 	err := services.SetRate(base, destination, rate, rs)
 
 	if err != nil {

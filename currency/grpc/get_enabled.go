@@ -9,7 +9,7 @@ import (
 )
 
 func (ch *CurrencyHandler) GetSupported(ctx context.Context, _ *generated_grpc.GetSupportedRequest) (*generated_grpc.GetSupportedResponse, error) {
-	cl, err := controllers.GetSupportedCurrencies(&ch.Stores.SupportedCurrenciesStore)
+	cl, err := controllers.GetEnabledCurrencies(&ch.Stores.SupportedCurrenciesStore)
 
 	if err != nil {
 		return nil, err

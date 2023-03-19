@@ -14,10 +14,13 @@ protos:
 		currency.proto
 
 swagger:
-	GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
+	swagger generate spec -o ../docs/currency/swagger.json --scan-models
 
 migrations:
 	migrate -database ${DB_CONNECTION_STRING} -path migrations up
 
 new_migration:
 	if [ -z "$(name)" ]; then echo "Provide name for migration as a parameter (make new_migration name=my_migration)"; else migrate create -ext sql -dir migrations -seq "$(name)"; fi
+
+swagger-ui:
+	docker run -p 9092:8080 -e SWAGGER_JSON=/etc/swagger.json -v ${PWD}/../docs/currency/swagger.json:/etc/swagger.json swaggerapi/swagger-ui

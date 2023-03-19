@@ -12,6 +12,12 @@ type restGetCurrencyArgs struct {
 	Code string `query:"code" validate:"required"`
 }
 
+type currencyResponseWrapper struct {
+	// Currency details
+	// in: body
+	Body types.SupportedCurrency
+}
+
 func Currency(c echo.Context) error {
 	rc := c.(types.RestContext)
 
