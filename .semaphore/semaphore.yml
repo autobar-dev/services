@@ -33,4 +33,4 @@ blocks:
       secrets:
         - name: GitHub Credentials
     run:
-      when: branch = 'develop' and change_in('/currency')
+      when: 'branch = ''develop'' and change_in(''/currency'', {default_branch: ''develop''})'
