@@ -25,7 +25,7 @@ blocks:
             - docker tag "$IMAGE_SHA_TAG" "$IMAGE_LATEST_TAG"
             - 'docker rmi service-currency:build'
             - echo "Pushing image to GHCR..."
-            - docker push "$IMAGE_SHA_TAG"
+            - docker push "$IMAGE_SHA_TAG" --all-tags
       secrets:
         - name: GitHub Credentials
     run:
