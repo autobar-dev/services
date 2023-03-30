@@ -22,7 +22,7 @@ blocks:
             - 'export IMAGE_LATEST_TAG="$IMAGE_NAME:latest-dev"'
         - name: Build image
           commands:
-            - 'docker build -t service-currency:build .'
+            - 'docker build -t service-currency:build currency/'
         - name: Tag image
           commands:
             - 'docker tag service-currency:build "$IMAGE_SHA_TAG"'
