@@ -13,7 +13,7 @@ blocks:
             - echo "Checking out..."
             - checkout
             - echo "Logging in to GHCR..."
-            - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdincheckout
+            - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image..."
             - 'docker build -t service-currency:build currency/'
             - echo "Setting up tags..."
