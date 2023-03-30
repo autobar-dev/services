@@ -11,6 +11,7 @@ blocks:
         - name: Checkout repository
           commands:
             - checkout
+            - ls -la currency/
         - name: Log in to GHCR
           commands:
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
@@ -21,7 +22,6 @@ blocks:
             - 'export IMAGE_LATEST_TAG="$IMAGE_NAME:latest-dev"'
         - name: Build image
           commands:
-            - cd currency
             - 'docker build -t service-currency:build .'
         - name: Tag image
           commands:
@@ -34,4 +34,4 @@ blocks:
       secrets:
         - name: GitHub Credentials
     run:
-      when: 'branch = ''develop'' and change_in(''/currency'', {default_branch: ''develop''})'
+      when: 'branch = ''develop'' and change_in(''/currency/'', {default_branch: ''develop''})'
