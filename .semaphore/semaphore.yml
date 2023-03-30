@@ -15,17 +15,9 @@ blocks:
             - echo "Logging in to GHCR..."
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image..."
-            - 'docker build -t service-currency:build currency/'
-            - echo "Setting up tags..."
-            - export IMAGE_NAME="ghcr.io/autobar-dev/service-currency"
-            - 'export IMAGE_SHA_TAG="$IMAGE_NAME:$SEMAPHORE_GIT_SHA"'
-            - 'export IMAGE_LATEST_TAG="$IMAGE_NAME:latest-dev"'
-            - echo "Tagging image..."
-            - 'docker tag service-currency:build "$IMAGE_SHA_TAG"'
-            - docker tag "$IMAGE_SHA_TAG" "$IMAGE_LATEST_TAG"
-            - 'docker rmi service-currency:build'
+            - 'docker build -t ghcr.io/autobar-dev/service-currency:latest-dev currency/'
             - echo "Pushing image to GHCR..."
-            - docker push "$IMAGE_SHA_TAG" --all-tags
+            - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
       secrets:
         - name: GitHub Credentials
     run:
