@@ -1,0 +1,6 @@
+bin/
+.vscode/
+
+.env
+
+grpc/generated_grpc/*
