@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS rates (
+  id SERIAL PRIMARY KEY,
+  base_currency CHAR(3) NOT NULL,
+  destination_currency CHAR(3) NOT NULL,
+  rate DECIMAL(10, 2) NOT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 
+);

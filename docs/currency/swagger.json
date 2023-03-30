@@ -1,0 +1,102 @@
+{
+  "consumes": [
+    "application/json",
+    "application/x-www-form-urlencoded"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "# Documentation for Currency API",
+    "title": "Currency API",
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/enabled": {
+      "get": {
+        "tags": [
+          "Currency"
+        ],
+        "summary": "Returns a list of enabled currencies and their details.",
+        "operationId": "list-currencies",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/enabledResponse"
+          },
+          "400": {
+            "$ref": "#/responses/errorResponse"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RestError": {
+      "description": "Generic error",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Error message",
+          "type": "string",
+          "x-go-name": "Error",
+          "example": "could not fetch available currencies"
+        }
+      },
+      "x-go-package": "github.com/autobar-dev/services/currency/types"
+    },
+    "SupportedCurrency": {
+      "type": "object",
+      "title": "SupportedCurrency is a currency that is supported by the service.",
+      "properties": {
+        "code": {
+          "description": "3-letter ISO 4217 currency code",
+          "type": "string",
+          "x-go-name": "Code",
+          "example": "CAD"
+        },
+        "enabled": {
+          "description": "Whether the currency is enabled",
+          "type": "boolean",
+          "x-go-name": "Enabled",
+          "example": true
+        },
+        "name": {
+          "description": "Descriptive name",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "Canadian Dollar"
+        },
+        "updated_at": {
+          "description": "When the currency was last enabled/disabled",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "UpdatedAt",
+          "example": "2019-01-01T12:34:56Z"
+        }
+      },
+      "x-go-package": "github.com/autobar-dev/services/currency/types"
+    }
+  },
+  "responses": {
+    "enabledResponse": {
+      "description": "List of all enabled currencies",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/SupportedCurrency"
+        }
+      }
+    },
+    "errorResponse": {
+      "description": "Error response",
+      "schema": {
+        "$ref": "#/definitions/RestError"
+      }
+    }
+  }
+}
