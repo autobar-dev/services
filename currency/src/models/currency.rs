@@ -22,6 +22,37 @@ pub struct CurrencyModel {
 }
 
 impl CurrencyModel {
+  pub async fn get(context: Context, code: String) -> Result<CurrencyModel, sqlx::Error> {
+    let conn = context.database_pool.acquire().await;
+
+    if conn.is_err() {
+      let conn_err = conn.unwrap_err();
+
+      log::error!("Error acquiring connection: {:?}", conn_err);
+      return Err(conn_err);
+    }
+
+    let mut conn = conn.unwrap();
+
+    let result = sqlx::query_as::<_, CurrencyModel>("
+      SELECT id, code, name, enabled, created_at, updated_at
+      FROM enabled_currencies
+      WHERE code = $1;
+    ")
+      .bind(code)
+      .fetch_one(&mut conn)
+      .await;
+
+    if result.is_err() {
+      let result_err = result.unwrap_err();
+
+      log::error!("Error fetching currency: {:?}", result_err);
+      return Err(result_err);
+    }
+
+    Ok(result.unwrap())
+  }
+
   pub async fn get_all(context: Context) -> Result<Vec<CurrencyModel>, sqlx::Error> {
     let conn = context.database_pool.acquire().await;
 
@@ -101,7 +132,8 @@ impl CurrencyModel {
 
     let result = sqlx::query("
       UPDATE enabled_currencies
-      SET enabled = $1
+      SET enabled = $1,
+          updated_at = CURRENT_TIMESTAMP
       WHERE code = $2;
     ")
       .bind(enabled)

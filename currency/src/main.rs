@@ -7,7 +7,10 @@ mod views;
 mod controllers;
 mod types;
 
-use actix_web::{HttpServer, web::Data};
+use actix_web::{
+  HttpServer,
+  web,
+};
 use log;
 use std::process;
 use sqlx::postgres::PgPoolOptions;
@@ -53,11 +56,15 @@ async fn main() -> Result<(), ()> {
   let http_server = HttpServer::new(move || {
     actix_web::App::new()
       .app_data(
-        Data::new(app_context.clone())
+        web::Data::new(app_context.clone())
       )
-      .service(views::enabled_route)
-      .service(views::all_route)
-      .service(views::set_enabled_route)
+      .service(
+        web::scope("/currency")
+          .service(views::currency::currency_route)
+          .service(views::currency::enabled_route)
+          .service(views::currency::all_route)
+          .service(views::currency::set_enabled_route)
+      )
   })
     .bind(("0.0.0.0", config.port));
 
