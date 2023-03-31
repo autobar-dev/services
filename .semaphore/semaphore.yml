@@ -8,29 +8,17 @@ blocks:
   - name: Build
     task:
       jobs:
-        - name: Checkout repository
+        - name: Build and push
           commands:
+            - echo "Checking out..."
             - checkout
-        - name: Log in to GHCR
-          commands:
+            - echo "Logging in to GHCR..."
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
-        - name: Set up names and tags
-          commands:
-            - export IMAGE_NAME="ghcr.io/autobar-dev/service-currency"
-            - 'export IMAGE_SHA_TAG="$IMAGE_NAME:$SEMAPHORE_GIT_SHA"'
-            - 'export IMAGE_LATEST_TAG="$IMAGE_NAME:latest-dev"'
-        - name: Build image
-          commands:
-            - 'docker build -t service-currency:build currency/'
-        - name: Tag image
-          commands:
-            - 'docker tag service-currency:build "$IMAGE_SHA_TAG"'
-            - docker tag "$IMAGE_SHA_TAG" "$IMAGE_LATEST_TAG"
-            - 'docker rmi service-currency:build'
-        - name: Push to GHCR
-          commands:
-            - docker push "$IMAGE_SHA_TAG"
+            - echo "Building image..."
+            - 'docker build -t ghcr.io/autobar-dev/service-currency:latest-dev currency/'
+            - echo "Pushing image to GHCR..."
+            - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
       secrets:
         - name: GitHub Credentials
     run:
-      when: branch = 'develop' and change_in('/currency')
+      when: 'branch = ''develop'' and change_in(''/currency/'', {default_branch: ''develop''})'
