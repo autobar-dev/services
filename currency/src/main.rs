@@ -57,6 +57,7 @@ async fn main() -> Result<(), ()> {
       )
       .service(views::enabled_route)
       .service(views::all_route)
+      .service(views::set_enabled_route)
   })
     .bind(("0.0.0.0", config.port));
 

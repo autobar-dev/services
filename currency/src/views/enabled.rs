@@ -3,7 +3,6 @@ use crate::types;
 use crate::app_context::Context;
 
 use serde::Serialize;
-
 use actix_web::{
   get,
   web,
