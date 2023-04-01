@@ -15,7 +15,7 @@ blocks:
             - echo "Logging in to GHCR..."
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image..."
-            - 'docker build -t ghcr.io/autobar-dev/service-currency:latest-dev currency/'
+            - 'docker build -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" currency/'
             - echo "Pushing image to GHCR..."
             - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
       secrets:
