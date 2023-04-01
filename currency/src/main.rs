@@ -61,9 +61,11 @@ async fn main() -> Result<(), ()> {
       .service(
         web::scope("/currency")
           .service(views::currency::currency_route)
+          .service(views::currency::new_route)
           .service(views::currency::enabled_route)
           .service(views::currency::all_route)
           .service(views::currency::set_enabled_route)
+          .service(views::currency::delete_route)
       )
   })
     .bind(("0.0.0.0", config.port));

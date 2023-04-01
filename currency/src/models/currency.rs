@@ -128,8 +128,6 @@ impl CurrencyModel {
 
     let mut conn = conn.unwrap();
 
-    log::info!("code = {:?}, enabled = {:?}", code, enabled);
-
     let result = sqlx::query("
       UPDATE enabled_currencies
       SET enabled = $1,
@@ -145,6 +143,68 @@ impl CurrencyModel {
       let result_err = result.unwrap_err();
 
       log::error!("Error setting currency enabled: {:?}", result_err);
+      return Err(result_err);
+    }
+
+    Ok(result.unwrap().rows_affected())
+  }
+
+  pub async fn new(context: Context, code: String, name: String, enabled: bool) -> Result<u64, sqlx::Error> {
+    let conn = context.database_pool.acquire().await;
+    
+    if conn.is_err() {
+      let conn_err = conn.unwrap_err();
+
+      log::error!("Error acquiring connection: {:?}", conn_err);
+      return Err(conn_err);
+    }
+
+    let mut conn = conn.unwrap();
+
+    let result = sqlx::query("
+      INSERT INTO enabled_currencies
+      (code, name, enabled)
+      VALUES ($1, $2, $3);
+    ")
+      .bind(code)
+      .bind(name)
+      .bind(enabled)
+      .execute(&mut conn)
+      .await;
+
+    if result.is_err() {
+      let result_err = result.unwrap_err();
+
+      log::error!("Error inserting new currency: {:?}", result_err);
+      return Err(result_err);
+    }
+
+    Ok(result.unwrap().rows_affected())
+  }
+
+  pub async fn delete(context: Context, code: String) -> Result<u64, sqlx::Error> {
+    let conn = context.database_pool.acquire().await;
+
+    if conn.is_err() {
+      let conn_err = conn.unwrap_err();
+
+      log::error!("Error acquiring connection: {:?}", conn_err);
+      return Err(conn_err);
+    }
+
+    let mut conn = conn.unwrap();
+
+    let result = sqlx::query!("
+      DELETE FROM enabled_currencies
+      WHERE code = $1;
+    ", code)
+      .execute(&mut conn)
+      .await;
+
+    if result.is_err() {
+      let result_err = result.unwrap_err();
+
+      log::error!("Error deleting currency: {:?}", result_err);
       return Err(result_err);
     }
 

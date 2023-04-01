@@ -6,29 +6,28 @@ use serde::{
   Deserialize,
 };
 use actix_web::{
-  put,
+  delete,
   web,
   Responder,
   HttpResponse,
 };
 
 #[derive(Debug, Deserialize)]
-pub struct SetEnabledCurrencyBody {
+pub struct DeleteCurrencyBody {
   code: String,
-  enabled: bool,
 }
 
 #[derive(Debug, Serialize)]
-struct SetEnabledCurrencyResponse {
+struct DeleteCurrencyResponse {
   status: String,
   error: Option<String>,
 }
 
-#[put("/set-enabled")]
-pub async fn set_enabled_route(data: web::Data<Context>, body: web::Json<SetEnabledCurrencyBody>) -> impl Responder {
+#[delete("/delete")]
+pub async fn delete_route(data: web::Data<Context>, body: web::Json<DeleteCurrencyBody>) -> impl Responder {
   if body.code.len() != 3 {
     return HttpResponse::BadRequest().json(
-      SetEnabledCurrencyResponse {
+      DeleteCurrencyResponse {
         status: "error".to_string(),
         error: Some("currency should be a three-letter, ISO 4217-compliant code".to_string()),
       }
@@ -36,13 +35,12 @@ pub async fn set_enabled_route(data: web::Data<Context>, body: web::Json<SetEnab
   }
 
   let code = body.code.to_owned().to_uppercase();
-  let enabled: bool = body.enabled;
 
-  let result = controllers::set_currency_enabled_controller(data.get_ref().clone(), code, enabled).await;
+  let result = controllers::delete_currency_controller(data.get_ref().clone(), code).await;
 
   if result.is_err() {
     return HttpResponse::InternalServerError().json(
-      SetEnabledCurrencyResponse {
+      DeleteCurrencyResponse {
         status: "error".to_string(),
         error: Some(result.unwrap_err().message),
       }
@@ -50,7 +48,7 @@ pub async fn set_enabled_route(data: web::Data<Context>, body: web::Json<SetEnab
   }
 
   HttpResponse::Ok().json(
-    SetEnabledCurrencyResponse {
+    DeleteCurrencyResponse {
       status: "ok".to_string(),
       error: None,
     }

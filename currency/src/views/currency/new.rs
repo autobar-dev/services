@@ -6,43 +6,54 @@ use serde::{
   Deserialize,
 };
 use actix_web::{
-  put,
+  post,
   web,
   Responder,
   HttpResponse,
 };
 
 #[derive(Debug, Deserialize)]
-pub struct SetEnabledCurrencyBody {
+pub struct NewCurrencyBody {
   code: String,
-  enabled: bool,
+  name: String,
+  enabled: Option<bool>,
 }
 
 #[derive(Debug, Serialize)]
-struct SetEnabledCurrencyResponse {
+struct NewCurrencyResponse {
   status: String,
   error: Option<String>,
 }
 
-#[put("/set-enabled")]
-pub async fn set_enabled_route(data: web::Data<Context>, body: web::Json<SetEnabledCurrencyBody>) -> impl Responder {
+#[post("/new")]
+pub async fn new_route(data: web::Data<Context>, body: web::Json<NewCurrencyBody>) -> impl Responder {
   if body.code.len() != 3 {
     return HttpResponse::BadRequest().json(
-      SetEnabledCurrencyResponse {
+      NewCurrencyResponse {
         status: "error".to_string(),
         error: Some("currency should be a three-letter, ISO 4217-compliant code".to_string()),
       }
     );
   }
 
-  let code = body.code.to_owned().to_uppercase();
-  let enabled: bool = body.enabled;
+  if body.name.len() == 0 {
+    return HttpResponse::BadRequest().json(
+      NewCurrencyResponse {
+        status: "error".to_string(),
+        error: Some("name cannot be empty".to_string()),
+      }
+    );
+  }
 
-  let result = controllers::set_currency_enabled_controller(data.get_ref().clone(), code, enabled).await;
+  let code = body.code.to_owned().to_uppercase();
+  let name = body.name.to_owned();
+  let enabled = body.enabled.unwrap_or(true);
+
+  let result = controllers::new_currency_controller(data.get_ref().clone(), code, name, enabled).await;
 
   if result.is_err() {
     return HttpResponse::InternalServerError().json(
-      SetEnabledCurrencyResponse {
+      NewCurrencyResponse {
         status: "error".to_string(),
         error: Some(result.unwrap_err().message),
       }
@@ -50,7 +61,7 @@ pub async fn set_enabled_route(data: web::Data<Context>, body: web::Json<SetEnab
   }
 
   HttpResponse::Ok().json(
-    SetEnabledCurrencyResponse {
+    NewCurrencyResponse {
       status: "ok".to_string(),
       error: None,
     }
