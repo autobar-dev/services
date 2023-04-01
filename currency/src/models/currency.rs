@@ -194,10 +194,11 @@ impl CurrencyModel {
 
     let mut conn = conn.unwrap();
 
-    let result = sqlx::query!("
+    let result = sqlx::query("
       DELETE FROM enabled_currencies
       WHERE code = $1;
-    ", code)
+    ")
+      .bind(code)
       .execute(&mut conn)
       .await;
 

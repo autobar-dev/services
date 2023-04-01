@@ -14,6 +14,7 @@ use actix_web::{
 use log;
 use std::process;
 use sqlx::postgres::PgPoolOptions;
+use std::fs;
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
@@ -47,9 +48,21 @@ async fn main() -> Result<(), ()> {
   let pool = pool.unwrap();
 
   // Create context
+  let meta_hash = fs::read_to_string(".meta/HASH")
+    .unwrap_or("".to_string())
+    .trim_end()
+    .to_string();
+  let meta_version = fs::read_to_string(".meta/VERSION")
+    .unwrap_or("".to_string())
+    .trim_end()
+    .to_string();
+
   let app_context = app_context::Context {
     database_pool: pool.clone(),
-    message: "Hello, world!".to_string(),
+    meta: types::Meta {
+      hash: meta_hash,
+      version: meta_version,
+    },
   };
 
   // Server
@@ -58,6 +71,7 @@ async fn main() -> Result<(), ()> {
       .app_data(
         web::Data::new(app_context.clone())
       )
+      .service(views::meta_route)
       .service(
         web::scope("/currency")
           .service(views::currency::currency_route)
