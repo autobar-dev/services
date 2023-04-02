@@ -59,6 +59,7 @@ async fn main() -> Result<(), ()> {
 
   let app_context = app_context::Context {
     database_pool: pool.clone(),
+    config: config.clone(),
     meta: types::Meta {
       hash: meta_hash,
       version: meta_version,
@@ -80,6 +81,10 @@ async fn main() -> Result<(), ()> {
           .service(views::currency::all_route)
           .service(views::currency::set_enabled_route)
           .service(views::currency::delete_route)
+      )
+      .service(
+        web::scope("/rate")
+          .service(views::rate::remote_route)
       )
   })
     .bind(("0.0.0.0", config.port));
