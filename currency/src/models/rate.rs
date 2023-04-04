@@ -72,15 +72,14 @@ impl RateModel {
     let mut conn = conn.unwrap();
 
     let result = sqlx::query("
-      UPDATE rates
-      SET from_currency = $1,
-          to_currency = $2,
-          rate = $3,
-          updated_at = CURRENT_TIMESTAMP
-      WHERE from_currency = $1 AND to_currency = $2
-      ON CONFLICT (from_currency, to_currency) DO
-      INSERT (from_currency, to_currency, rate)
-      VALUES ($1, $2, $3);
+      INSERT INTO rates
+      (from_currency, to_currency, rate)
+      VALUES ($1, $2, $3)
+      ON CONFLICT
+      ON CONSTRAINT rates_from_currency_to_currency_key
+      DO UPDATE SET
+        rate = $3,
+        updated_at = CURRENT_TIMESTAMP;
     ")
       .bind(from)
       .bind(to)
