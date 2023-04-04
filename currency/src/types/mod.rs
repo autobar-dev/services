@@ -1,6 +1,6 @@
 mod currency;
 mod enabled_currency;
-mod error;
+pub mod error;
 mod meta;
 mod remote_rate;
 

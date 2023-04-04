@@ -44,11 +44,13 @@ pub async fn remote_route(data: web::Data<Context>, query: web::Query<RemoteRate
   let rate = controllers::get_remote_rate_controller(data.get_ref().clone(), from, to).await;
 
   if rate.is_err() {
-    return HttpResponse::InternalServerError().json(
+    let rate_error = rate.unwrap_err();
+
+    return HttpResponse::BadRequest().json(
       RemoteRateResponse {
         status: "error".to_string(),
         data: None,
-        error: Some(rate.unwrap_err().message),
+        error: Some(rate_error.message),
       }
     );
   }

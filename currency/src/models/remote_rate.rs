@@ -20,7 +20,7 @@ pub struct RemoteRateModel {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct RemoteRateErrorModel {
+pub struct RemoteRateApiError {
   pub result: String,
   pub documentation: String,
 
@@ -31,19 +31,26 @@ pub struct RemoteRateErrorModel {
   pub error_type: String,
 }
 
+#[derive(Debug, Serialize)]
+pub struct RemoteRateError {
+  pub message: String,
+}
+
 impl RemoteRateModel {
-  pub async fn get(context: Context, from: String, to: String) -> Result<RemoteRateModel, RemoteRateErrorModel> {
-    let url = format!("https://v6.exchangerate-api.com/v6/{}/pair/{}/{}", context.config.exchange_rate_api_key, from, to);
+  pub async fn get(context: Context, from: String, to: String) -> Result<RemoteRateModel, RemoteRateError> {
+    let url = format!(
+      "https://v6.exchangerate-api.com/v6/{}/pair/{}/{}",
+      context.config.exchange_rate_api_key,
+      from,
+      to
+    );
     let response = reqwest::get(&url).await;
 
     if response.is_err() {
-      log::error!("Error while fetching remote rate: {}", response.unwrap_err());
+      log::error!("Error making request to remote exchange API: {}", response.unwrap_err());
 
-      return Err(RemoteRateErrorModel {
-        result: "error".to_string(),
-        documentation: "https://www.exchangerate-api.com/docs".to_string(),
-        terms_of_use: "https://www.exchangerate-api.com/terms".to_string(),
-        error_type: "unknown".to_string(),
+      return Err(RemoteRateError {
+        message: "communication with remote exchange API failed".to_string(),
       });
     }
 
@@ -51,55 +58,48 @@ impl RemoteRateModel {
     let body = response.text().await;
 
     if body.is_err() {
-      log::error!("Error while fetching remote rate: {}", body.unwrap_err());
-
-      return Err(RemoteRateErrorModel {
-        result: "error".to_string(),
-        documentation: "https://www.exchangerate-api.com/docs".to_string(),
-        terms_of_use: "https://www.exchangerate-api.com/terms".to_string(),
-        error_type: "unknown".to_string(),
+      return Err(RemoteRateError {
+        message: "communication with remote exchange API failed".to_string(),
       });
     }
 
     let body = body.unwrap();
 
-    let rate: Result<RemoteRateModel, _> = serde_json::from_str(&body);
+    let rate_success: Result<RemoteRateModel, _> = serde_json::from_str(&body);
+    let rate_error: Result<RemoteRateApiError, _> = serde_json::from_str(&body);
 
-    if rate.is_err() {
-      log::error!("Error while fetching remote rate: {}", rate.unwrap_err());
-
-      let error: Result<RemoteRateErrorModel, _> = serde_json::from_str(&body);
-
-      if error.is_err() {
-        log::error!("Error while fetching remote rate: {}", error.unwrap_err());
-
-        return Err(RemoteRateErrorModel {
-          result: "error".to_string(),
-          documentation: "https://www.exchangerate-api.com/docs".to_string(),
-          terms_of_use: "https://www.exchangerate-api.com/terms".to_string(),
-          error_type: "unknown".to_string(),
-        });
-      }
-
-      return Err(error.unwrap());
+    if rate_success.is_ok() {
+      let rate = rate_success.unwrap();
+      return Ok(rate);
     }
 
-    let rate = rate.unwrap();
+    if rate_error.is_ok() {
+      let rate_error = rate_error.unwrap();
+      let rate_error_type = rate_error.error_type.as_str();
 
-    Ok(rate)
+      match rate_error_type {
+        "unsupported-code" => {
+          return Err(RemoteRateError {
+            message: "unsupported currency code".to_string(),
+          });
+        },
+        "invalid-key" => {
+          log::error!("Invalid API key for remote exchange API");
+
+          return Err(RemoteRateError {
+            message: "unable to fetch from remote API".to_string(),
+          });
+        },
+        _ => {
+          return Err(RemoteRateError {
+            message: "unknown error".to_string(),
+          });
+        }
+      }
+    }    
+
+    Err(RemoteRateError {
+      message: "unknown error".to_string(),
+    })
   }
 }
-
-// {
-//     "result": "error",
-//     "documentation": "https://www.exchangerate-api.com/docs",
-//     "terms-of-use": "https://www.exchangerate-api.com/terms",
-//     "error-type": "unsupported-code"
-// }
-
-// {
-//     "result": "error",
-//     "documentation": "https://www.exchangerate-api.com/docs",
-//     "terms-of-use": "https://www.exchangerate-api.com/terms",
-//     "error-type": "invalid-key"
-// }
