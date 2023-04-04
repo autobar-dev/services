@@ -3,7 +3,7 @@ use chrono::{
   Utc,
   serde::ts_seconds,
 };
-use serde::{Serialize};
+use serde::Serialize;
 
 use crate::app_context::Context;
 

@@ -11,6 +11,9 @@ pub struct Config {
 
   #[envconfig(from = "EXCHANGE_RATE_API_KEY")]
   pub exchange_rate_api_key: String,
+
+  #[envconfig(from = "PAST_RATE_RETENTION")]
+  pub past_rate_retention: u32,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {

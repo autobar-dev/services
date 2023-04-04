@@ -84,6 +84,8 @@ async fn main() -> Result<(), ()> {
       )
       .service(
         web::scope("/rate")
+          .service(views::rate::rate_route)
+          .service(views::rate::set_route)
           .service(views::rate::remote_route)
       )
   })
