@@ -160,16 +160,12 @@ impl CurrencyModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query(
-            "
-      INSERT INTO enabled_currencies
-      (code, name, enabled)
-      VALUES ($1, $2, $3);
-    ",
+        let result = sqlx::query!(
+            "INSERT INTO enabled_currencies (code, name, enabled) VALUES ($1, $2, $3);",
+            code,
+            name,
+            enabled,
         )
-        .bind(code)
-        .bind(name)
-        .bind(enabled)
         .execute(&mut conn)
         .await;
 
@@ -195,15 +191,9 @@ impl CurrencyModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query(
-            "
-      DELETE FROM enabled_currencies
-      WHERE code = $1;
-    ",
-        )
-        .bind(code)
-        .execute(&mut conn)
-        .await;
+        let result = sqlx::query!("DELETE FROM enabled_currencies WHERE code = $1;", code)
+            .execute(&mut conn)
+            .await;
 
         if result.is_err() {
             let result_err = result.unwrap_err();

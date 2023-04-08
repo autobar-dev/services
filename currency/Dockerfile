@@ -5,10 +5,12 @@ ARG VERSION=""
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y pkg-config libssl-dev
+
 # Install and build dependencies to prevent cache invalidation
-# COPY ./Cargo.toml ./Cargo.lock ./
-# RUN mkdir src && echo "fn main() {}" > src/main.rs 
-# RUN cargo build --release && rm src/*.rs
+COPY ./Cargo.toml ./Cargo.lock ./
+RUN mkdir src && echo "fn main() { println!(\"dummy\"); }" > src/main.rs 
+RUN cargo build --release && rm -rf src/ && rm -f target/release/service-currency*
 
 # Insert commit sha and version
 RUN mkdir .meta
@@ -17,10 +19,12 @@ RUN echo ${VERSION} > .meta/VERSION
 
 # Copy source code and build
 COPY . .
-RUN cargo build --release
+RUN cargo clean --release -p service-currency && cargo build --release
 
 # Runtime image
 FROM debian:buster-slim AS runtime
+
+RUN apt update && apt install -y libssl-dev ca-certificates
 
 WORKDIR /app
 
