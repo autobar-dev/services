@@ -1,0 +1,260 @@
+{
+  "db": "PostgreSQL",
+  "228717e6fe23f4eedc0d3c98e940f2f8a371036d81d152c708c2b377818e89b0": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "code",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "enabled",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT * \n            FROM enabled_currencies\n            WHERE code = $1"
+  },
+  "27887fc79335ac10d9954a7b41b012d106d5978cdf1ba6a321852c1eeabaff73": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "from_currency",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "to_currency",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "rate",
+          "ordinal": 3,
+          "type_info": "Float8"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT * FROM rates WHERE from_currency = $1 AND to_currency = $2;"
+  },
+  "475775f2717ac41bd36462ba807b1bda63f27d5e75d44d72dd0603741c448918": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Varchar",
+          "Float8"
+        ]
+      }
+    },
+    "query": "\n            INSERT INTO rates\n            (from_currency, to_currency, rate)\n            VALUES ($1, $2, $3)\n            ON CONFLICT\n            ON CONSTRAINT rates_from_currency_to_currency_key\n            DO UPDATE SET\n              rate = $3,\n              updated_at = CURRENT_TIMESTAMP;\n            "
+  },
+  "5c2f87cbae416b3c3e8a41737f72f5f696105e861bc40be63399dbee31b62397": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "code",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "enabled",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "SELECT * FROM enabled_currencies WHERE enabled = true;"
+  },
+  "8395fbd337d88b09fde49e52a9bd8552d37793b57b9c8df489530a12d10f84b8": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "DELETE FROM rates WHERE from_currency = $1 AND to_currency = $2;"
+  },
+  "90d8fd77d5470b129ef619f82eb6f3af7260566d3d3da9b962b904258d1cc593": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Bool",
+          "Text"
+        ]
+      }
+    },
+    "query": "UPDATE enabled_currencies SET enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE code = $2;"
+  },
+  "cd00388b64d74d0f0d3c0ae506f27eec4dc8450b88796791a98e6be2980a2692": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Varchar",
+          "Bool"
+        ]
+      }
+    },
+    "query": "INSERT INTO enabled_currencies (code, name, enabled) VALUES ($1, $2, $3);"
+  },
+  "ce74d866cb04786e3cafc187ebf5348a0640fdcefc8505583f652edaadd5ec98": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "DELETE FROM enabled_currencies WHERE code = $1;"
+  },
+  "fa09708ebf3164993234985c70ab40c201ede6bcba711d1bf362ed17584694c3": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "code",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "enabled",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "SELECT * FROM enabled_currencies;"
+  }
+}
