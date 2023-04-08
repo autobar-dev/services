@@ -91,4 +91,34 @@ impl RateModel {
 
         Ok(result.unwrap().rows_affected())
     }
+
+    pub async fn delete(context: Context, from: String, to: String) -> Result<u64, sqlx::Error> {
+        let conn = context.database_pool.acquire().await;
+
+        if conn.is_err() {
+            let conn_err = conn.unwrap_err();
+
+            log::error!("Error acquiring connection: {:?}", conn_err);
+            return Err(conn_err);
+        }
+
+        let mut conn = conn.unwrap();
+
+        let result = sqlx::query!(
+            "DELETE FROM rates WHERE from_currency = $1 AND to_currency = $2;",
+            from,
+            to
+        )
+        .execute(&mut conn)
+        .await;
+
+        if result.is_err() {
+            let result_err = result.unwrap_err();
+
+            log::error!("Error deleting currency: {:?}", result_err);
+            return Err(result_err);
+        }
+
+        Ok(result.unwrap().rows_affected())
+    }
 }
