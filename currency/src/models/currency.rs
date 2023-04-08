@@ -125,16 +125,11 @@ impl CurrencyModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query(
-            "
-      UPDATE enabled_currencies
-      SET enabled = $1,
-          updated_at = CURRENT_TIMESTAMP
-      WHERE code = $2;
-    ",
+        let result = sqlx::query!(
+            "UPDATE enabled_currencies SET enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE code = $2;",
+            enabled,
+            code
         )
-        .bind(enabled)
-        .bind(code)
         .execute(&mut conn)
         .await;
 
