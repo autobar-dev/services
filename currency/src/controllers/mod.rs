@@ -8,6 +8,7 @@ mod get_remote_rate;
 mod new_currency;
 mod set_currency_enabled;
 mod set_rate;
+mod update_rate;
 
 pub use delete_currency::delete_currency_controller;
 pub use delete_rate::delete_rate_controller;
@@ -19,4 +20,4 @@ pub use get_remote_rate::get_remote_rate_controller;
 pub use new_currency::new_currency_controller;
 pub use set_currency_enabled::set_currency_enabled_controller;
 pub use set_rate::set_rate_controller;
-
+pub use update_rate::update_rate_controller;

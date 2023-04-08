@@ -82,7 +82,8 @@ async fn main() -> Result<(), ()> {
                     .service(views::rate::rate_route)
                     .service(views::rate::set_route)
                     .service(views::rate::remote_route)
-                    .service(views::rate::delete_route),
+                    .service(views::rate::delete_route)
+                    .service(views::rate::update_route),
             )
     })
     .bind(("0.0.0.0", config.port));
