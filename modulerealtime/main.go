@@ -1,9 +1,18 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/autobar-dev/services/modulerealtime/types"
+	"github.com/autobar-dev/services/modulerealtime/utils"
+	"github.com/autobar-dev/services/modulerealtime/views/handlers"
+	"github.com/autobar-dev/services/modulerealtime/views/routes"
 
 	"github.com/charmbracelet/log"
 	socketio "github.com/googollee/go-socket.io"
@@ -12,6 +21,9 @@ import (
 )
 
 func main() {
+	hash := "no-commit"
+	version := "1.2.3"
+
 	log := log.Default()
 
 	err := godotenv.Load(".env")
@@ -20,9 +32,26 @@ func main() {
 		log.Debug("Loaded environment variables from file")
 	}
 
-	port := os.Getenv("PORT")
+	config, err := utils.LoadConfig()
+
+	if err != nil {
+		log.Fatal("Error loading config from env variables", "error", err)
+	}
+
+	app_ctx := types.AppContext{
+		Log: log,
+		Meta: &types.Meta{
+			Hash:    hash,
+			Version: version,
+		},
+	}
 
 	socket_server := socketio.NewServer(nil)
+
+	socket_server.OnConnect("/", func(s socketio.Conn) error {
+		return handlers.OnConnect(s, &app_ctx)
+	})
+	socket_server.OnDisconnect("/", handlers.OnDisconnect)
 
 	go socket_server.Serve()
 	defer socket_server.Close()
@@ -30,18 +59,31 @@ func main() {
 	e := echo.New()
 	e.HideBanner = true
 
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			rest_ctx := types.RestContext{
+				Context:    c,
+				AppContext: &app_ctx,
+			}
+
+			return next(&rest_ctx)
+		}
+	})
+
 	e.Any("/socket.io/", func(context echo.Context) error {
 		socket_server.ServeHTTP(context.Response(), context.Request())
 		return nil
 	})
 
+	e.GET("/meta", routes.Meta)
+
 	es := http.Server{
-		Addr:    ":" + port,
+		Addr:    fmt.Sprintf(":%d", config.Port),
 		Handler: e,
 	}
 
 	go func() {
-		log.Info("HTTP server listening...", "port", port)
+		log.Info("HTTP server listening...", "port", config.Port)
 
 		if err := es.ListenAndServe(); err != http.ErrServerClosed {
 			log.Error("Unable to listen", "error", err)
@@ -54,18 +96,18 @@ func main() {
 
 	<-signal_channel
 
-	log.Info("Received termination signal.")
+	log.Info("Received termination signal")
 
 	// Shut down REST server
-	log.Info("Shutting down REST server...")
+	log.Info("Shutting down HTTP server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := e.Shutdown(ctx); err != nil {
-		log.Error("Could not shut down HTTP server gracefully.")
+		log.Error("Could not shut down HTTP server gracefully")
 		os.Exit(1)
 	}
 
-	l.Info("Gracefully shut down REST server.")
+	log.Info("Gracefully shut down HTTP server")
 
 }
