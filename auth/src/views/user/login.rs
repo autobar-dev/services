@@ -1,15 +1,16 @@
 use crate::types;
 
 use actix_web::{
+    http::header,
     web,
     post,
     Responder,
-    HttpResponse,
+    HttpResponse, HttpRequest,
 };
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
-struct LoginUserBody {
+pub struct LoginUserBody {
     email: String,
     password: String,
     remember_me: Option<bool>,
@@ -28,7 +29,11 @@ struct LoginUserResponse {
 }
 
 #[post("/login")]
-pub async fn login_route(data: web::Data<types::AppContext>, body: web::Json<LoginUserBody>) -> impl Responder {
+pub async fn login_route(
+    req: HttpRequest,
+    data: web::Data<types::AppContext>,
+    body: web::Json<LoginUserBody>
+) -> impl Responder {
     if body.email.len() == 0 || body.password.len() == 0 {
         return HttpResponse::BadRequest().json(
             LoginUserResponse {
@@ -38,6 +43,18 @@ pub async fn login_route(data: web::Data<types::AppContext>, body: web::Json<Log
             }
         );
     }
+
+    let user_agent_header = req.headers().get(header::USER_AGENT);
+    let mut user_agent: &str = ""; 
+
+    if user_agent_header.is_some() {
+       user_agent = user_agent_header
+           .unwrap()
+           .to_str()
+           .unwrap_or("");
+    }
+
+    log::info!("user-agent={}", user_agent);
 
     let email = body.email.to_lowercase();
     let password = body.password.clone();
