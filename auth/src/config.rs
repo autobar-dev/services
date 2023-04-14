@@ -8,6 +8,9 @@ pub struct Config {
 
     #[envconfig(from = "PORT")]
     pub port: u16,
+
+    #[envconfig(from = "ALLOW_ONLY_SAME_USER_AGENT")]
+    pub allow_only_same_user_agent: bool,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {
