@@ -1,7 +1,10 @@
+extern crate bcrypt;
+
 mod models;
 mod types;
 mod config;
 mod views;
+mod controllers;
 
 use std::{process, fs};
 use actix_web::{web, HttpServer};
