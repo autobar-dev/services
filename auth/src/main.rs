@@ -64,6 +64,10 @@ async fn main() -> Result<(), ()> {
                 web::scope("/user")
                     .service(views::user::login_route)
             )
+            .service(
+                web::scope("/session")
+                    .service(views::session::verify_route)
+            )
     })
     .bind(("0.0.0.0", config.port));
 
