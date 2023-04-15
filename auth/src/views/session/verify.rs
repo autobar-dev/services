@@ -17,10 +17,15 @@ pub struct VerifyQuery {
 }
 
 #[derive(Serialize, Debug)]
+struct VerifyResponseData {
+    email: String,
+}
+
+#[derive(Serialize, Debug)]
 struct VerifyResponse {
     status: String,
     error: Option<String>,
-    data: Option<i32>,
+    data: Option<VerifyResponseData>,
 }
 
 #[get("/verify")]
@@ -57,21 +62,28 @@ pub async fn verify_route(
 
     let provided_uuid = provided_uuid.unwrap();
 
-    let user_id = verify_session_controller(
+    let user_email = verify_session_controller(
         data.get_ref().clone(),
         provided_uuid,
         user_agent
     ).await;
 
-    if user_id.is_err() {
-        let user_id_error = user_id.unwrap_err();
+    if user_email.is_err() {
+        let user_email_error = user_email.unwrap_err();
 
-        return match user_id_error.status {
+        return match user_email_error.status {
             http::StatusCode::NOT_FOUND => HttpResponse::NotFound().json(
                 VerifyResponse {
                     status: "error".to_string(),
                     data: None,
                     error: Some("session not found".to_string()),
+                }
+            ),
+            http::StatusCode::BAD_REQUEST => HttpResponse::BadRequest().json(
+                VerifyResponse {
+                    status: "error".to_string(),
+                    data: None,
+                    error: Some("request incorrect".to_string()),
                 }
             ),
             _ => HttpResponse::InternalServerError().json(
@@ -84,13 +96,15 @@ pub async fn verify_route(
         };
     }
 
-    let user_id = user_id.unwrap();
+    let user_email = user_email.unwrap();
 
     HttpResponse::Ok().json(
         VerifyResponse {
             status: "ok".to_string(),
             error: None,
-            data: Some(user_id),
+            data: Some(VerifyResponseData {
+                email: user_email,
+            }),
         }
     )
 }

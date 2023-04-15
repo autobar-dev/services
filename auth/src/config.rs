@@ -11,6 +11,9 @@ pub struct Config {
 
     #[envconfig(from = "ALLOW_ONLY_SAME_USER_AGENT")]
     pub allow_only_same_user_agent: bool,
+
+    #[envconfig(from = "REMEMBER_ME_DURATION_SECONDS")]
+    pub remember_me_duration_seconds: u32,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {
