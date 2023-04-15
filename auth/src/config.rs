@@ -13,7 +13,10 @@ pub struct Config {
     pub allow_only_same_user_agent: bool,
 
     #[envconfig(from = "REMEMBER_ME_DURATION_SECONDS")]
-    pub remember_me_duration_seconds: u32,
+    pub remember_me_duration_seconds: i64,
+
+    #[envconfig(from = "DEFAULT_SESSION_DURATION_SECONDS")]
+    pub default_session_duration_seconds: i64,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {

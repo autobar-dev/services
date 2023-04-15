@@ -67,6 +67,7 @@ async fn main() -> Result<(), ()> {
             .service(
                 web::scope("/session")
                     .service(views::session::verify_route)
+                    .service(views::session::remove_route)
             )
     })
     .bind(("0.0.0.0", config.port));
