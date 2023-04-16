@@ -1,4 +1,5 @@
-use crate::{types, controllers::login_user_controller};
+use crate::types;
+use crate::controllers::login_user_controller;
 
 use actix_web::{
     http::header,
@@ -6,9 +7,15 @@ use actix_web::{
     web,
     post,
     Responder,
-    HttpResponse, HttpRequest,
+    HttpResponse,
+    HttpRequest,
+    cookie::Cookie,
 };
-use serde::{Deserialize, Serialize};
+use time::Duration;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Deserialize, Debug)]
 pub struct LoginUserBody {
@@ -94,13 +101,42 @@ pub async fn login_route(
 
     let session_id = session_id.unwrap();
 
-    HttpResponse::Ok().json(
-        LoginUserResponse {
-            status: "ok".to_string(),
-            error: None,
-            data: Some(LoginUserResponseData {
-                session_id,
-            })
-        }
+    let session_id_cookie_clone = session_id.clone();
+    let mut session_cookie_builder = Cookie::build(
+        "session_id",
+        session_id_cookie_clone
     )
+        .path("/")
+        .http_only(true)
+        .secure(data.config.set_secure_cookies);
+
+    if remember_me {
+        session_cookie_builder = session_cookie_builder
+            .max_age(
+                Duration::seconds(data.config.remember_me_duration_seconds)
+            );
+    }
+
+    let main_domain = data.config.main_domain.clone();
+
+    if main_domain.len() > 0 {
+        session_cookie_builder = session_cookie_builder
+            .domain(main_domain);
+    }
+
+    let session_cookie = session_cookie_builder.finish();
+
+    let session_id_response_clone = session_id.clone();
+
+    HttpResponse::Ok()
+        .cookie(session_cookie)
+        .json(
+            LoginUserResponse {
+                status: "ok".to_string(),
+                error: None,
+                data: Some(LoginUserResponseData {
+                    session_id: session_id_response_clone,
+                })
+            }
+        )
 }

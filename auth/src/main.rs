@@ -26,6 +26,16 @@ async fn main() -> Result<(), ()> {
 
     let config = config.unwrap();
 
+    let config_main_domain_clone = config.clone();
+
+    if  config_main_domain_clone.main_domain.len() == 0 {
+        log::warn!("Running without a domain specified (insecure)");
+    }
+
+    if !config_main_domain_clone.set_secure_cookies {
+        log::warn!("Cookies set will not have *secure* set");
+    }
+
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&config.database_url)

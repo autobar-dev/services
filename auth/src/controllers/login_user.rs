@@ -43,12 +43,10 @@ pub async fn login_user_controller(
         return Err(user_not_found_response);
     }
     
-    let time_valid: Duration;
-
-    match remember_me {
-        true => time_valid = Duration::seconds(context.config.remember_me_duration_seconds),
-        false => time_valid = Duration::seconds(context.config.default_session_duration_seconds),
-    }
+    let time_valid: Duration = match remember_me {
+        true => Duration::seconds(context.config.remember_me_duration_seconds),
+        false => Duration::seconds(context.config.default_session_duration_seconds),
+    };
 
     let context_session_clone = context.clone();
 

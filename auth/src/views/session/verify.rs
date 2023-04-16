@@ -8,12 +8,16 @@ use actix_web::{
     get,
     Responder,
     HttpResponse, HttpRequest,
+    cookie::Cookie,
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize
+};
 
 #[derive(Deserialize, Debug)]
 pub struct VerifyQuery {
-    session_id: String,
+    session_id: Option<String>,
 }
 
 #[derive(Serialize, Debug)]
@@ -48,8 +52,33 @@ pub async fn verify_route(
         }
     }
 
-    let provided_uuid = uuid::Uuid::parse_str(query.session_id.as_str());
+    let provided_uuid: Result<uuid::Uuid, uuid::Error>;
 
+    let session_from_query = query.session_id.clone();
+    let session_from_cookie = req.cookie("session_id");
+
+    if session_from_query.is_some() {
+        provided_uuid = uuid::Uuid::parse_str(
+            session_from_query
+                .unwrap()
+                .as_str()
+        );
+    } else if session_from_cookie.is_some() {
+        provided_uuid = uuid::Uuid::parse_str(
+            session_from_cookie
+                .unwrap_or(Cookie::new("session_id", ""))
+                .value()
+        );
+    } else {
+        return HttpResponse::BadRequest().json(
+            VerifyResponse {
+                status: "error".to_string(),
+                error: Some("session_id is missing both from query and cookies".to_string()),
+                data: None,
+            }
+        );
+    }
+    
     if provided_uuid.is_err() {
         return HttpResponse::BadRequest().json(
             VerifyResponse {
