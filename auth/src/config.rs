@@ -17,6 +17,12 @@ pub struct Config {
 
     #[envconfig(from = "DEFAULT_SESSION_DURATION_SECONDS")]
     pub default_session_duration_seconds: i64,
+
+    #[envconfig(from = "MAIN_DOMAIN")]
+    pub main_domain: String,
+
+    #[envconfig(from = "SET_SECURE_COOKIES")]
+    pub set_secure_cookies: bool,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {

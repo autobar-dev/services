@@ -1,3 +1,5 @@
+use std::time::UNIX_EPOCH;
+
 use crate::types;
 use crate::controllers::remove_session_controller;
 
@@ -6,9 +8,10 @@ use actix_web::{
     delete,
     Responder,
     HttpResponse,
-    http,
+    http, cookie::Cookie, HttpRequest,
 };
 use serde::{Deserialize, Serialize};
+use time::Duration;
 
 #[derive(Deserialize, Debug)]
 pub struct RemoveBody {
@@ -23,10 +26,39 @@ struct RemoveResponse {
 
 #[delete("/remove")]
 pub async fn remove_route(
+    req: HttpRequest,
     data: web::Data<types::AppContext>,
-    body: web::Json<RemoveBody>
+    body: Option<web::Json<RemoveBody>>
 ) -> impl Responder {
-    let provided_uuid = uuid::Uuid::parse_str(body.session_id.as_str());
+    let provided_uuid: Result<uuid::Uuid, uuid::Error>;
+
+    let uuid_from_body: Option<String> = match body.is_some() {
+        true => Some(body.unwrap().session_id.clone()),
+        false => None,
+    };
+
+    let uuid_from_cookies = req.cookie("session_id");
+
+    if uuid_from_body.is_some() {
+        provided_uuid = uuid::Uuid::parse_str(
+            uuid_from_body
+                .unwrap()
+                .as_str()
+        );
+    } else if uuid_from_cookies.is_some() {
+        provided_uuid = uuid::Uuid::parse_str(
+            uuid_from_cookies
+                .unwrap_or(Cookie::new("session_id", ""))
+                .value()
+        );
+    } else {
+        return HttpResponse::BadRequest().json(
+            RemoveResponse {
+                status: "error".to_string(),
+                error: Some("session_id is missing both from body and cookies".to_string()),
+            }
+        );
+    }
 
     if provided_uuid.is_err() {
         return HttpResponse::BadRequest().json(
@@ -69,10 +101,18 @@ pub async fn remove_route(
         }
     }
 
-    HttpResponse::Ok().json(
-        RemoveResponse {
-            status: "ok".to_string(),
-            error: None,
-        }
-    )
+    let removal_cookie = Cookie::build("session_id", "inactive")
+        .max_age(Duration::ZERO)
+        .path("/")
+        .http_only(true)
+        .finish();
+
+    HttpResponse::Ok()
+        .cookie(removal_cookie)
+        .json(
+            RemoveResponse {
+                status: "ok".to_string(),
+                error: None,
+            }
+        )
 }
