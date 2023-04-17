@@ -1,12 +1,16 @@
 version: v1.0
-name: Currency Pipeline
+name: Pipeline
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: Build
+  - name: Currency - Build
+    run:
+      when: 'branch = ''develop'' and change_in(''/currency/'', {default_branch: ''develop''})'
     task:
+      secrets:
+        - name: GitHub Credentials
       jobs:
         - name: Build and push
           commands:
@@ -18,7 +22,22 @@ blocks:
             - 'docker build --progress=plain -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" currency/'
             - echo "Pushing image to GHCR..."
             - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
+    dependencies: []
+  - name: Auth - Build
+    run:
+      when: 'branch = ''develop'' and change_in(''/auth/'', {default_branch: ''develop''})'
+    task:
       secrets:
         - name: GitHub Credentials
-    run:
-      when: 'branch = ''develop'' and change_in(''/currency/'', {default_branch: ''develop''})'
+      jobs:
+        - name: Build and push
+          commands:
+            - echo "Checking out..."
+            - checkout
+            - echo "Logging in to GHCR..."
+            - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
+            - echo "Building image..."
+            - 'docker build --progress=plain -t ghcr.io/autobar-dev/service-auth:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" auth/'
+            - echo "Pushing image to GHCR..."
+            - 'docker push ghcr.io/autobar-dev/service-auth:latest-dev'
+    dependencies: []
