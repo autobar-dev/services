@@ -22,6 +22,7 @@ blocks:
             - 'docker build --progress=plain -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" currency/'
             - echo "Pushing image to GHCR..."
             - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
+    dependencies: []
   - name: Auth - Build
     task:
       run: null
@@ -39,3 +40,4 @@ blocks:
             - 'docker build --progress=plain -t ghcr.io/autobar-dev/service-auth:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" auth/'
             - echo "Pushing image to GHCR..."
             - 'docker push ghcr.io/autobar-dev/service-auth:latest-dev'
+    dependencies: []
