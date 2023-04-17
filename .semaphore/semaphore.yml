@@ -6,8 +6,8 @@ agent:
     os_image: ubuntu2004
 blocks:
   - name: Currency - Build
-  	run:
-      when: "branch = 'develop' and change_in('/currency/', {default_branch: 'develop'})"
+    run:
+      when: 'branch = ''develop'' and change_in(''/currency/'', {default_branch: ''develop''})'
     task:
       secrets:
         - name: GitHub Credentials
@@ -24,8 +24,8 @@ blocks:
             - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
     dependencies: []
   - name: Auth - Build
-  	run:
-      	when: "branch = 'develop' and change_in('/auth/', {default_branch: 'develop'})"
+    run:
+      when: 'branch = ''develop'' and change_in(''/auth/'', {default_branch: ''develop''})'
     task:
       secrets:
         - name: GitHub Credentials
