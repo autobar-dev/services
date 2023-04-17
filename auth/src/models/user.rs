@@ -14,7 +14,7 @@ pub struct UserModel {
 }
 
 impl UserModel {
-    pub async fn get_all(context: types::AppContext) -> Result<Vec<UserModel>, sqlx::Error> {
+    pub async fn _get_all(context: types::AppContext) -> Result<Vec<UserModel>, sqlx::Error> {
         let conn = context.database_pool.acquire().await;
 
         if conn.is_err() {

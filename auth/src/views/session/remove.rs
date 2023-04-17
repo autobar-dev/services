@@ -1,5 +1,3 @@
-use std::time::UNIX_EPOCH;
-
 use crate::types;
 use crate::controllers::remove_session_controller;
 

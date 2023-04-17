@@ -1,0 +1,179 @@
+{
+  "db": "PostgreSQL",
+  "087893980973bb1191dabe3a442ec54c1334512f6dd209d4497f3f2ad671ca91": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "email",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "password",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "SELECT *\n            FROM users;"
+  },
+  "34598fccb6239332ca718837f7e77df975368e4ecb18f04f23bfc304f59bb668": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "DELETE FROM sessions\n            WHERE id = $1;"
+  },
+  "75a558138ccd9e415f4f3960ad5742c784b7193257e556d2bf0a7a5cb4a59a10": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_agent",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "last_used",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_email",
+          "ordinal": 6,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "SELECT s.*, u.email as user_email\n            FROM sessions s\n            INNER JOIN users u\n            ON s.user_id = u.id\n            WHERE s.id = $1;"
+  },
+  "ce8c048dc0543705e1bee0dd8c2622da65d4d4364cc70402b5a4f6e7c68161a6": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "email",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "password",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT *\n            FROM users\n            WHERE email = $1;"
+  },
+  "ef979c5ccadf0048b38bf7220e5771605de2097e00f9c51dd0585ab8d50ad4e5": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "UPDATE sessions\n            SET last_used = CURRENT_TIMESTAMP\n            WHERE id = $1;"
+  },
+  "f7427197930d0d1af00c320a74e5e12dd9bb693a3ae29ce28fb516447605fec3": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Text",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "INSERT INTO sessions\n            (user_id, user_agent, valid_until)\n            VALUES ($1, $2, $3)\n            RETURNING id;"
+  }
+}
