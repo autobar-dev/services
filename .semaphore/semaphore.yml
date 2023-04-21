@@ -5,7 +5,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: Currency - Build
+  - name: (s) Currency - Build
     run:
       when: 'branch = ''develop'' and change_in(''/currency/'', {default_branch: ''develop''})'
     task:
@@ -19,11 +19,18 @@ blocks:
             - echo "Logging in to GHCR..."
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image..."
-            - 'docker build --progress=plain -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" currency/'
+            - 'docker build --progress=plain -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" --cache-from=type=local,src=docker-cache --cache-to=type=local,dest=docker-cache currency/'
             - echo "Pushing image to GHCR..."
             - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
+      prologue:
+        commands:
+          - cache restore service-currency-deps-cache
+      epilogue:
+        always:
+          commands:
+            - cache store service-currency-deps-cache docker-cache
     dependencies: []
-  - name: Auth - Build
+  - name: (s) Auth - Build
     run:
       when: 'branch = ''develop'' and change_in(''/auth/'', {default_branch: ''develop''})'
     task:
