@@ -8,6 +8,7 @@ diesel::table! {
         valid_until -> Timestamptz,
         last_used -> Timestamptz,
         created_at -> Timestamptz,
+        internal_id -> Int4,
     }
 }
 

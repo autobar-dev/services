@@ -1,13 +1,7 @@
-use crate::types;
 use crate::controllers::remove_session_controller;
+use crate::types;
 
-use actix_web::{
-    web,
-    delete,
-    Responder,
-    HttpResponse,
-    http, cookie::Cookie, HttpRequest,
-};
+use actix_web::{cookie::Cookie, delete, http, web, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use time::Duration;
 
@@ -26,7 +20,7 @@ struct RemoveResponse {
 pub async fn remove_route(
     req: HttpRequest,
     data: web::Data<types::AppContext>,
-    body: Option<web::Json<RemoveBody>>
+    body: Option<web::Json<RemoveBody>>,
 ) -> impl Responder {
     let provided_uuid: Result<uuid::Uuid, uuid::Error>;
 
@@ -38,65 +32,48 @@ pub async fn remove_route(
     let uuid_from_cookies = req.cookie("session_id");
 
     if uuid_from_body.is_some() {
-        provided_uuid = uuid::Uuid::parse_str(
-            uuid_from_body
-                .unwrap()
-                .as_str()
-        );
+        provided_uuid = uuid::Uuid::parse_str(uuid_from_body.unwrap().as_str());
     } else if uuid_from_cookies.is_some() {
         provided_uuid = uuid::Uuid::parse_str(
             uuid_from_cookies
                 .unwrap_or(Cookie::new("session_id", ""))
-                .value()
+                .value(),
         );
     } else {
-        return HttpResponse::BadRequest().json(
-            RemoveResponse {
-                status: "error".to_string(),
-                error: Some("session_id is missing both from body and cookies".to_string()),
-            }
-        );
+        return HttpResponse::BadRequest().json(RemoveResponse {
+            status: "error".to_string(),
+            error: Some("session_id is missing from both body and cookies".to_string()),
+        });
     }
 
     if provided_uuid.is_err() {
-        return HttpResponse::BadRequest().json(
-            RemoveResponse {
-                status: "error".to_string(),
-                error: Some("could not parse session id".to_string()),
-            }
-        );
+        return HttpResponse::BadRequest().json(RemoveResponse {
+            status: "error".to_string(),
+            error: Some("could not parse session id".to_string()),
+        });
     }
 
     let provided_uuid = provided_uuid.unwrap();
 
-    let removed_session = remove_session_controller(
-        data.get_ref().clone(),
-        provided_uuid,
-    ).await;
+    let removed_session = remove_session_controller(data.get_ref().clone(), provided_uuid).await;
 
     if removed_session.is_err() {
         let removed_session_err = removed_session.unwrap_err();
 
         return match removed_session_err.status {
-            http::StatusCode::NOT_FOUND => HttpResponse::NotFound().json(
-                RemoveResponse {
-                    status: "error".to_string(),
-                    error: Some(removed_session_err.message) 
-                }
-            ),
-            http::StatusCode::BAD_REQUEST => HttpResponse::BadRequest().json(
-                RemoveResponse {
-                    status: "error".to_string(),
-                    error: Some(removed_session_err.message) 
-                }
-            ),
-            _ => HttpResponse::InternalServerError().json(
-                RemoveResponse {
-                    status: "error".to_string(),
-                    error: Some("unknown error occured".to_string()),
-                }
-            ),
-        }
+            http::StatusCode::NOT_FOUND => HttpResponse::NotFound().json(RemoveResponse {
+                status: "error".to_string(),
+                error: Some(removed_session_err.message),
+            }),
+            http::StatusCode::BAD_REQUEST => HttpResponse::BadRequest().json(RemoveResponse {
+                status: "error".to_string(),
+                error: Some(removed_session_err.message),
+            }),
+            _ => HttpResponse::InternalServerError().json(RemoveResponse {
+                status: "error".to_string(),
+                error: Some("unknown error occured".to_string()),
+            }),
+        };
     }
 
     let removal_cookie = Cookie::build("session_id", "inactive")
@@ -107,10 +84,8 @@ pub async fn remove_route(
 
     HttpResponse::Ok()
         .cookie(removal_cookie)
-        .json(
-            RemoveResponse {
-                status: "ok".to_string(),
-                error: None,
-            }
-        )
+        .json(RemoveResponse {
+            status: "ok".to_string(),
+            error: None,
+        })
 }

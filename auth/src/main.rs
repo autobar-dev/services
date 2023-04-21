@@ -1,14 +1,14 @@
 extern crate bcrypt;
 
+mod config;
+mod controllers;
 mod models;
 mod types;
-mod config;
 mod views;
-mod controllers;
 
-use std::{process, fs};
 use actix_web::{web, HttpServer};
 use sqlx::postgres::PgPoolOptions;
+use std::{fs, process};
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
@@ -28,7 +28,7 @@ async fn main() -> Result<(), ()> {
 
     let config_main_domain_clone = config.clone();
 
-    if  config_main_domain_clone.main_domain.len() == 0 {
+    if config_main_domain_clone.main_domain.is_empty() {
         log::warn!("Running without a domain specified (insecure)");
     }
 
@@ -70,14 +70,13 @@ async fn main() -> Result<(), ()> {
         actix_web::App::new()
             .app_data(web::Data::new(app_context.clone()))
             .service(views::meta_route)
-            .service(
-                web::scope("/user")
-                    .service(views::user::login_route)
-            )
+            .service(web::scope("/user").service(views::user::login_route))
             .service(
                 web::scope("/session")
                     .service(views::session::verify_route)
                     .service(views::session::remove_route)
+                    .service(views::session::all_for_user_route)
+                    .service(views::session::remove_by_internal_id_route),
             )
     })
     .bind(("0.0.0.0", config.port));

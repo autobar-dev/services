@@ -1,11 +1,10 @@
+use crate::models;
+
 use chrono::{serde::ts_seconds, DateTime, Utc};
 use serde::Serialize;
 
-use crate::models;
-
 #[derive(Debug, Serialize)]
-pub struct Session {
-    pub id: uuid::Uuid,
+pub struct SessionInfo {
     pub internal_id: i32,
 
     pub user_id: i32,
@@ -23,10 +22,9 @@ pub struct Session {
     pub created_at: DateTime<Utc>,
 }
 
-impl Session {
-    pub fn from(session: models::SessionModel) -> Session {
-        Session {
-            id: session.id,
+impl SessionInfo {
+    pub fn from(session: models::SessionModel) -> SessionInfo {
+        SessionInfo {
             internal_id: session.internal_id,
 
             user_id: session.user_id,
