@@ -36,6 +36,18 @@
     },
     "query": "SELECT *\n            FROM users;"
   },
+  "28cfb72e3ec5940985f34126e46575dc7bbee117e5a4724ba27e3bae1a5d941c": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "DELETE FROM sessions\n            WHERE user_id = $1\n            AND valid_until < CURRENT_TIMESTAMP;"
+  },
   "34598fccb6239332ca718837f7e77df975368e4ecb18f04f23bfc304f59bb668": {
     "describe": {
       "columns": [],
@@ -82,8 +94,13 @@
           "type_info": "Timestamptz"
         },
         {
-          "name": "user_email",
+          "name": "internal_id",
           "ordinal": 6,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_email",
+          "ordinal": 7,
           "type_info": "Text"
         }
       ],
@@ -91,6 +108,7 @@
         false,
         false,
         true,
+        false,
         false,
         false,
         false,
@@ -141,6 +159,130 @@
       }
     },
     "query": "SELECT *\n            FROM users\n            WHERE email = $1;"
+  },
+  "dc0419b14b6d05fbe405d445696aaa571f56903e093362b2effb187b0f740c08": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_agent",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "last_used",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "internal_id",
+          "ordinal": 6,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_email",
+          "ordinal": 7,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT s.*, u.email as user_email\n            FROM sessions s\n            INNER JOIN users u\n            ON s.user_id = u.id\n            WHERE s.user_id = $1;"
+  },
+  "e586d93ef04cff10dffcb289fff1ec49c1b864497d6eb97f1712fca1a7600ec7": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_agent",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "valid_until",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "last_used",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "internal_id",
+          "ordinal": 6,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_email",
+          "ordinal": 7,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT s.*, u.email as user_email\n            FROM sessions s\n            INNER JOIN users u\n            ON s.user_id = u.id\n            WHERE s.internal_id = $1;"
   },
   "ef979c5ccadf0048b38bf7220e5771605de2097e00f9c51dd0585ab8d50ad4e5": {
     "describe": {
