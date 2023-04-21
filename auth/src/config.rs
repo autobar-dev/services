@@ -1,5 +1,5 @@
 use envconfig::Envconfig;
-use dotenv;
+
 
 #[derive(Envconfig, Debug, Clone)]
 pub struct Config {

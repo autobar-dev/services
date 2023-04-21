@@ -42,7 +42,7 @@ pub async fn login_route(
     data: web::Data<types::AppContext>,
     body: web::Json<LoginUserBody>
 ) -> impl Responder {
-    if body.email.len() == 0 || body.password.len() == 0 {
+    if body.email.is_empty() || body.password.is_empty() {
         return HttpResponse::BadRequest().json(
             LoginUserResponse {
                 status: "error".to_string(),
@@ -61,7 +61,7 @@ pub async fn login_route(
            .to_str()
            .unwrap_or("");
 
-        if user_agent_value != "" {
+        if !user_agent_value.is_empty() {
             user_agent = Some(user_agent_value.to_string());
         }
     }
@@ -119,14 +119,14 @@ pub async fn login_route(
 
     let main_domain = data.config.main_domain.clone();
 
-    if main_domain.len() > 0 {
+    if !main_domain.is_empty() {
         session_cookie_builder = session_cookie_builder
             .domain(main_domain);
     }
 
     let session_cookie = session_cookie_builder.finish();
 
-    let session_id_response_clone = session_id.clone();
+    let session_id_response_clone = session_id;
 
     HttpResponse::Ok()
         .cookie(session_cookie)

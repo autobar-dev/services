@@ -34,7 +34,7 @@ pub async fn remove_by_internal_id_route(
     if user_agent_header.is_some() {
         let user_agent_value = user_agent_header.unwrap().to_str().unwrap_or("");
 
-        if user_agent_value != "" {
+        if !user_agent_value.is_empty() {
             user_agent = Some(user_agent_value.to_string());
         }
     }

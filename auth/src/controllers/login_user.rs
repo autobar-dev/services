@@ -1,8 +1,8 @@
-use crate::types;
 use crate::models;
+use crate::types;
 
 use actix_web::http;
-use bcrypt;
+
 use chrono::DateTime;
 use chrono::Duration;
 use chrono::Utc;
@@ -12,11 +12,11 @@ pub async fn login_user_controller(
     email: String,
     password: String,
     remember_me: bool,
-    user_agent: Option<String>, 
+    user_agent: Option<String>,
 ) -> Result<String, types::RestError> {
     let user_not_found_response: types::RestError = types::RestError::new(
         http::StatusCode::NOT_FOUND,
-        "user with the specified credentials not found"
+        "user with the specified credentials not found",
     );
 
     let context_user_clone = context.clone();
@@ -33,7 +33,7 @@ pub async fn login_user_controller(
     if does_password_match.is_err() {
         return Err(types::RestError::new(
             http::StatusCode::INTERNAL_SERVER_ERROR,
-            "could not verify password"
+            "could not verify password",
         ));
     }
 
@@ -42,7 +42,7 @@ pub async fn login_user_controller(
     if !does_password_match {
         return Err(user_not_found_response);
     }
-    
+
     let time_valid: Duration = match remember_me {
         true => Duration::seconds(context.config.remember_me_duration_seconds),
         false => Duration::seconds(context.config.default_session_duration_seconds),
@@ -51,12 +51,13 @@ pub async fn login_user_controller(
     let context_session_clone = context.clone();
 
     let valid_until: DateTime<Utc> = Utc::now() + time_valid;
-    let session_id = models::SessionModel::new(context_session_clone, user.id, user_agent, valid_until).await;
+    let session_id =
+        models::SessionModel::create(context_session_clone, user.id, user_agent, valid_until).await;
 
     if session_id.is_err() {
         return Err(types::RestError::new(
             http::StatusCode::INTERNAL_SERVER_ERROR,
-            "could not create a session"
+            "could not create a session",
         ));
     }
 

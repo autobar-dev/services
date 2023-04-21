@@ -138,7 +138,7 @@ impl SessionModel {
         Ok(result)
     }
 
-    pub async fn new(
+    pub async fn create(
         context: types::AppContext,
         user_id: i32,
         user_agent: Option<String>,
