@@ -20,10 +20,8 @@ blocks:
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Setting Docker builder..."
             - docker buildx create --use --driver=docker-container --name=cache-enabled
-            - echo "Building image..."
-            - 'docker buildx build --progress=plain -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" --cache-from type=local,src=docker-cache --cache-to type=local,dest=docker-cache,mode=max currency/'
-            - echo "Pushing image to GHCR..."
-            - 'docker push ghcr.io/autobar-dev/service-currency:latest-dev'
+            - echo "Building image and pushing to GHCR..."
+            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-currency:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" --cache-from type=local,src=docker-cache --cache-to type=local,dest=docker-cache,mode=max currency/'
       prologue:
         commands:
           - cache restore service-currency-deps-cache
