@@ -12,7 +12,7 @@ impl EnabledCurrency {
   pub fn from(enabled_currency: models::CurrencyModel) -> EnabledCurrency {
     EnabledCurrency {
       code: enabled_currency.code.to_string(),
-      name: enabled_currency.name.to_string(),
+      name: enabled_currency.name,
     }
   }
 }

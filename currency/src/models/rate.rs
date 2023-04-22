@@ -2,7 +2,7 @@ use crate::app_context::Context;
 
 use chrono::{serde::ts_seconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx;
+
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct RateModel {

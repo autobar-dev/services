@@ -143,7 +143,7 @@ impl CurrencyModel {
         Ok(result.unwrap().rows_affected())
     }
 
-    pub async fn new(
+    pub async fn create(
         context: Context,
         code: String,
         name: String,

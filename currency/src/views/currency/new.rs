@@ -36,7 +36,7 @@ pub async fn new_route(data: web::Data<Context>, body: web::Json<NewCurrencyBody
     );
   }
 
-  if body.name.len() == 0 {
+  if body.name.is_empty() {
     return HttpResponse::BadRequest().json(
       NewCurrencyResponse {
         status: "error".to_string(),

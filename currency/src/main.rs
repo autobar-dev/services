@@ -8,7 +8,7 @@ mod types;
 mod views;
 
 use actix_web::{web, HttpServer};
-use log;
+
 use sqlx::postgres::PgPoolOptions;
 use std::fs;
 use std::process;
@@ -70,7 +70,7 @@ async fn main() -> Result<(), ()> {
             .service(views::meta_route)
             .service(
                 web::scope("/currency")
-                    .service(views::currency::currency_route)
+                    .service(views::currency::index_route)
                     .service(views::currency::new_route)
                     .service(views::currency::enabled_route)
                     .service(views::currency::all_route)
@@ -79,7 +79,7 @@ async fn main() -> Result<(), ()> {
             )
             .service(
                 web::scope("/rate")
-                    .service(views::rate::rate_route)
+                    .service(views::rate::index_route)
                     .service(views::rate::set_route)
                     .service(views::rate::remote_route)
                     .service(views::rate::delete_route)

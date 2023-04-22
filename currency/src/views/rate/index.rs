@@ -28,7 +28,7 @@ struct RateResponse {
 }
 
 #[get("/")]
-pub async fn rate_route(data: web::Data<Context>, query: web::Query<RateQuery>) -> impl Responder {
+pub async fn index_route(data: web::Data<Context>, query: web::Query<RateQuery>) -> impl Responder {
   if query.from.len() != 3 || query.to.len() != 3 {
     return HttpResponse::BadRequest().json(
       RateResponse {

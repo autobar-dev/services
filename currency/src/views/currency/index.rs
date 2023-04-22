@@ -1,3 +1,5 @@
+// Index returns one currency specified by Query.code
+
 use crate::controllers;
 use crate::types;
 use crate::app_context::Context;
@@ -26,7 +28,7 @@ struct CurrencyResponse {
 }
 
 #[get("/")]
-pub async fn currency_route(data: web::Data<Context>, query: web::Query<CurrencyQuery>) -> impl Responder {
+pub async fn index_route(data: web::Data<Context>, query: web::Query<CurrencyQuery>) -> impl Responder {
   if query.code.len() != 3 {
     return HttpResponse::BadRequest().json(
       CurrencyResponse {
