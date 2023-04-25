@@ -1,0 +1,17 @@
+[package]
+name = "service-modulerealtime"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = { version = "4.3.1", features = ["cookies"] }
+actix-web-lab = "0.19.1"
+async-stream = "0.3.5"
+dotenv = "0.15.0"
+envconfig = "0.10.0"
+log = "0.4.17"
+log4rs = { version = "1.2.0", features = ["console_appender"] }
+tokio = { version = "1.27.0", features = ["time"] }
+tokio-stream = "0.1.12"
