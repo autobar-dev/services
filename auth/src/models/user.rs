@@ -44,7 +44,10 @@ impl UserModel {
         Ok(result.unwrap())
     }
 
-    pub async fn get_by_email(context: types::AppContext, email: String) -> Result<UserModel, sqlx::Error> {
+    pub async fn get_by_email(
+        context: types::AppContext,
+        email: String,
+    ) -> Result<UserModel, sqlx::Error> {
         let conn = context.database_pool.acquire().await;
 
         if conn.is_err() {
@@ -74,5 +77,41 @@ impl UserModel {
         }
 
         Ok(result.unwrap())
+    }
+
+    pub async fn create(
+        context: types::AppContext,
+        email: String,
+        password_hash: String,
+    ) -> Result<(), sqlx::Error> {
+        let conn = context.database_pool.acquire().await;
+
+        if conn.is_err() {
+            let conn_err = conn.unwrap_err();
+
+            log::error!("Error acquiring connection: {:?}", conn_err);
+            return Err(conn_err);
+        }
+
+        let mut conn = conn.unwrap();
+
+        let result = sqlx::query!(
+            "INSERT INTO users
+            (email, password)
+            VALUES ($1, $2);",
+            email,
+            password_hash
+        )
+        .execute(&mut conn)
+        .await;
+
+        if result.is_err() {
+            let result_err = result.unwrap_err();
+
+            log::error!("Create user error: {:?}", result_err);
+            return Err(result_err);
+        }
+
+        Ok(())
     }
 }

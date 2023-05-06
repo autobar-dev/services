@@ -11,9 +11,11 @@ bcrypt = "0.14.0"
 chrono = { version = "0.4.24", features = ["serde", "clock"] }
 dotenv = "0.15.0"
 envconfig = "0.10.0"
+fancy-regex = "0.11.0"
 log = "0.4.17"
 log4rs = { version = "1.2.0", features = ["console_appender"] }
 redis_rs = "0.9.0"
+regex-macro = "0.2.0"
 serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.95"
 sqlx = { version = "0.6.3", features = ["postgres", "uuid", "chrono", "runtime-tokio-native-tls", "offline", "macros"] }
