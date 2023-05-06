@@ -130,7 +130,7 @@ pub async fn register_route(
             error: None,
             data: match auto_login {
                 true => Some(RegisterUserResponseData {
-                    session_id: session_id.clone(),
+                    session_id,
                 }),
                 false => None,
             },
