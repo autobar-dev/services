@@ -60,6 +60,19 @@
     },
     "query": "DELETE FROM sessions\n            WHERE id = $1;"
   },
+  "55c4fa0be1febcb58675cabab45fc47027bc27b23ed46d9746a245eb453b4146": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "INSERT INTO users\n            (email, password)\n            VALUES ($1, $2);"
+  },
   "75a558138ccd9e415f4f3960ad5742c784b7193257e556d2bf0a7a5cb4a59a10": {
     "describe": {
       "columns": [

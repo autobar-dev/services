@@ -4,6 +4,7 @@ mod config;
 mod controllers;
 mod models;
 mod types;
+mod utils;
 mod views;
 
 use actix_web::{web, HttpServer};
@@ -70,7 +71,11 @@ async fn main() -> Result<(), ()> {
         actix_web::App::new()
             .app_data(web::Data::new(app_context.clone()))
             .service(views::meta_route)
-            .service(web::scope("/user").service(views::user::login_route))
+            .service(
+                web::scope("/user")
+                    .service(views::user::login_route)
+                    .service(views::user::register_route),
+            )
             .service(
                 web::scope("/session")
                     .service(views::session::verify_route)
