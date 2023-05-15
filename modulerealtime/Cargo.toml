@@ -1,5 +1,5 @@
 [package]
-name = "service-modulerealtime"
+name = "service-modules"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,9 +8,15 @@ edition = "2021"
 [dependencies]
 actix-web = { version = "4.3.1", features = ["cookies"] }
 actix-web-lab = "0.19.1"
+anyhow = { version = "1.0.71", features = ["backtrace"] }
 async-stream = "0.3.5"
+chrono = "0.4.24"
+deadpool = "0.9.5"
+deadpool-lapin = "0.10.0"
+deadpool-redis = "0.12.0"
 dotenv = "0.15.0"
 envconfig = "0.10.0"
+lapin = { version = "2.1.1", features = ["native-tls"] }
 log = "0.4.17"
 log4rs = { version = "1.2.0", features = ["console_appender"] }
 tokio = { version = "1.27.0", features = ["time"] }
