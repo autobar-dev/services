@@ -2144,7 +2144,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "service-modules"
+name = "service-realtime"
 version = "0.1.0"
 dependencies = [
  "actix-web",
