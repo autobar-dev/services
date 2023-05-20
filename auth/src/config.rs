@@ -1,6 +1,5 @@
 use envconfig::Envconfig;
 
-
 #[derive(Envconfig, Debug, Clone)]
 pub struct Config {
     #[envconfig(from = "DATABASE_URL")]
