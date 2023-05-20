@@ -5,8 +5,7 @@ mod utils;
 
 use actix_web::{web::Data, App, HttpServer};
 use deadpool_redis::Runtime;
-
-
+use std::fs;
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
@@ -37,15 +36,29 @@ async fn main() -> Result<(), ()> {
         .await
         .unwrap_or_else(|err| panic!("could not create AMQP channel: {:?}", err));
 
+    let meta_hash = fs::read_to_string(".meta/HASH")
+        .unwrap_or("".to_string())
+        .trim_end()
+        .to_string();
+    let meta_version = fs::read_to_string(".meta/VERSION")
+        .unwrap_or("".to_string())
+        .trim_end()
+        .to_string();
+
     let app_context = types::AppContext {
         config: config.clone(),
         redis_pool,
         amqp_channel,
+        meta: types::Meta {
+            hash: meta_hash,
+            version: meta_version,
+        },
     };
 
     let http_server = HttpServer::new(move || {
         App::new()
             .app_data(Data::new(app_context.clone()))
+            .service(routes::meta_route)
             .service(routes::events_route)
             .service(routes::send_route)
     })

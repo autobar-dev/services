@@ -132,11 +132,7 @@ impl Client {
         let consumer_self_clone = self.clone();
 
         tokio::spawn(async move {
-            log::debug!("starting to listen on consumer");
-
             while let Some(delivery) = consumer.next().await {
-                log::debug!("delivery consumed: {:?}", delivery);
-
                 let loop_self_clone = consumer_self_clone.clone();
 
                 if let Ok(delivery) = delivery {
@@ -168,8 +164,6 @@ impl Client {
                     }
                 }
             }
-
-            log::debug!("stopped listening on consumer");
         });
 
         Ok(())
