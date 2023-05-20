@@ -1,8 +1,7 @@
 use actix_web::{post, web, HttpResponse, Responder};
-use deadpool_redis::redis::{self, AsyncCommands};
+use deadpool_redis::redis;
 use lapin::{options::BasicPublishOptions, BasicProperties};
 use serde::Deserialize;
-use std::sync::Arc;
 
 use crate::{
     types::{AppContext, ClientType},
@@ -67,7 +66,7 @@ pub async fn send_route(data: web::Data<AppContext>, body: web::Json<SendBody>) 
 
     let client_connected = client_connected.unwrap();
 
-    if client_connected == false {
+    if !client_connected {
         return HttpResponse::NotFound().body("client not found");
     }
 

@@ -1,13 +1,7 @@
 use deadpool::managed::Pool;
 use deadpool_redis::{Connection, Manager};
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
 
 use crate::config::Config;
-
-use super::Client;
 
 #[derive(Clone)]
 pub struct AppContext {

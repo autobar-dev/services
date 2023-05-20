@@ -5,11 +5,8 @@ mod utils;
 
 use actix_web::{web::Data, App, HttpServer};
 use deadpool_redis::Runtime;
-use lapin;
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+
+
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
