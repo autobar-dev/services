@@ -1,10 +1,15 @@
 mod config;
 mod routes;
 mod types;
+mod utils;
 
 use actix_web::{web::Data, App, HttpServer};
 use deadpool_redis::Runtime;
 use lapin;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
@@ -13,10 +18,15 @@ async fn main() -> Result<(), ()> {
 
     let config = config::load().unwrap_or_else(|err| panic!("error loading config: {:?}", err));
 
-    let redis_pool_config = deadpool_redis::Config::from_url(config.redis_url);
+    let redis_pool_config = deadpool_redis::Config::from_url(config.clone().redis_url);
     let redis_pool = redis_pool_config
         .create_pool(Some(Runtime::Tokio1))
         .unwrap_or_else(|err| panic!("could not create Redis pool: {:?}", err));
+
+    let _ = redis_pool
+        .get()
+        .await
+        .unwrap_or_else(|err| panic!("failed to connect to Redis: {:?}", err));
 
     let amqp_connection = lapin::Connection::connect(
         config.amqp_url.as_str(),
@@ -24,12 +34,16 @@ async fn main() -> Result<(), ()> {
     )
     .await
     .unwrap_or_else(|err| panic!("failed to connect to AMQP broker: {:?}", err));
+
     let amqp_channel = amqp_connection
         .create_channel()
         .await
         .unwrap_or_else(|err| panic!("could not create AMQP channel: {:?}", err));
 
+    let clients: HashMap<String, types::Client> = HashMap::new();
+
     let app_context = types::AppContext {
+        config: config.clone(),
         redis_pool,
         amqp_channel,
     };
@@ -38,6 +52,7 @@ async fn main() -> Result<(), ()> {
         App::new()
             .app_data(Data::new(app_context.clone()))
             .service(routes::events_route)
+            .service(routes::send_route)
     })
     .bind(("0.0.0.0", config.port))
     .unwrap_or_else(|err| panic!("error binding to port: {:?}", err));

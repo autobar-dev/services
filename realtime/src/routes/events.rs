@@ -1,32 +1,30 @@
-use std::time::Duration;
+use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
+use actix_web_lab::sse;
 
-use actix_web::{get, web, HttpRequest};
-use actix_web_lab::sse::{self, ChannelStream, Sse};
+use crate::types::{self, Client, ClientType};
 
-use crate::types::{self, ModuleConnection};
-
-#[get("/events")]
+#[get("/events/{id}")]
 pub async fn events_route(
     req: HttpRequest,
     data: web::Data<types::AppContext>,
-) -> Sse<ChannelStream> {
+    path: web::Path<String>,
+) -> impl Responder {
     let context = data.as_ref().to_owned();
+    let id = path.into_inner();
+
     log::info!("Connection info: {:?}", req.connection_info());
 
-    let (sender, sse_stream) = sse::channel(1);
+    let (sender, sse_stream) = sse::channel(2);
 
-    let serial_number = "1234567890ABCDEF".to_string();
+    let client = Client::new(ClientType::Module, id.clone(), sender);
 
-    let mc = ModuleConnection::new(serial_number, sender).await;
+    let listen_result = client.clone().listen(context.clone()).await;
 
-    for counter in 1..10 {
-        let _ = mc
-            .sse_sender
-            .send(sse::Event::Comment(format!("hello {}", counter).into()))
-            .await;
+    if listen_result.is_err() {
+        log::error!("Listen error: {:?}", listen_result.unwrap_err());
+
+        return HttpResponse::InternalServerError().body("failed to listen");
     }
 
-    let _ = mc.on_disconnect(context.clone()).await;
-
-    sse_stream
+    sse_stream.respond_to(&req)
 }

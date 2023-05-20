@@ -1,5 +1,7 @@
 mod app_context;
-mod module_connection;
+mod client;
+mod client_type;
 
 pub use app_context::AppContext;
-pub use module_connection::ModuleConnection;
+pub use client::Client;
+pub use client_type::ClientType;

@@ -10,6 +10,9 @@ pub struct Config {
 
     #[envconfig(from = "AMQP_URL")]
     pub amqp_url: String,
+
+    #[envconfig(from = "SSE_HEARTBEAT_INTERVAL")]
+    pub sse_heartbeat_interval: f32,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {
