@@ -40,8 +40,6 @@ async fn main() -> Result<(), ()> {
         .await
         .unwrap_or_else(|err| panic!("could not create AMQP channel: {:?}", err));
 
-    let clients: HashMap<String, types::Client> = HashMap::new();
-
     let app_context = types::AppContext {
         config: config.clone(),
         redis_pool,

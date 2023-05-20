@@ -17,7 +17,6 @@ use crate::utils::{client_identifier_to_queue_name, client_identifier_to_redis_k
 pub enum ClientState {
     Initializing,
     Listening,
-    Recovery,
     Cancelling,
 }
 
@@ -28,9 +27,6 @@ pub struct Client {
     pub client_type: types::ClientType,
     pub identifier: String,
     pub sse_sender: sse::Sender, // shouldnt be pub?
-
-    heartbeat_join_handle: Option<Arc<tokio::task::JoinHandle<()>>>,
-    consumer_tag: Option<String>,
 }
 
 impl Client {
@@ -44,8 +40,6 @@ impl Client {
             client_type,
             identifier,
             sse_sender,
-            heartbeat_join_handle: None,
-            consumer_tag: None,
         }
     }
 
@@ -208,17 +202,4 @@ impl Client {
 
         Ok(())
     }
-
-    // pub async fn on_disconnect(self, context: types::AppContext) -> anyhow::Result<()> {
-    //     // shouldnt
-    //     // be pub ?
-    //     let mut conn = context.redis_pool.get().await?;
-    //
-    //     redis::cmd("DEL")
-    //         .arg(format!("connected:{}", self.serial_number))
-    //         .query_async(&mut conn)
-    //         .await?;
-    //
-    //     Ok(())
-    // }
 }
