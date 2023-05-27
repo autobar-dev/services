@@ -7,40 +7,39 @@ use chrono::DateTime;
 use chrono::Duration;
 use chrono::Utc;
 
-pub async fn login_user_controller(
+pub async fn login_module_controller(
     context: types::AppContext,
-    email: String,
-    password: String,
+    serial_number: String,
+    private_key: String,
     remember_me: bool,
     user_agent: Option<String>,
 ) -> Result<String, types::RestError> {
-    let user_not_found_response: types::RestError = types::RestError::new(
+    let module_not_found_response: types::RestError = types::RestError::new(
         http::StatusCode::NOT_FOUND,
-        "user with the specified credentials not found",
+        "module with the specified credentials not found",
     );
 
-    let context_user_clone = context.clone();
-    let user = models::UserModel::get_by_email(context_user_clone, email).await;
+    let module = models::ModuleModel::get_by_serial_number(context.clone(), serial_number).await;
 
-    if user.is_err() {
-        return Err(user_not_found_response);
+    if module.is_err() {
+        return Err(module_not_found_response);
     }
 
-    let user = user.unwrap();
+    let module = module.unwrap();
 
-    let does_password_match = bcrypt::verify(password, user.password.as_str());
+    let does_private_key_match = bcrypt::verify(private_key, module.private_key.as_str());
 
-    if does_password_match.is_err() {
+    if does_private_key_match.is_err() {
         return Err(types::RestError::new(
             http::StatusCode::INTERNAL_SERVER_ERROR,
-            "could not verify password",
+            "could not verify private key",
         ));
     }
 
-    let does_password_match = does_password_match.unwrap();
+    let does_private_key_match = does_private_key_match.unwrap();
 
-    if !does_password_match {
-        return Err(user_not_found_response);
+    if !does_private_key_match {
+        return Err(module_not_found_response);
     }
 
     let time_valid: Duration = match remember_me {
@@ -53,8 +52,8 @@ pub async fn login_user_controller(
     let valid_until: DateTime<Utc> = Utc::now() + time_valid;
     let session_id = models::SessionModel::create(
         context_session_clone,
-        types::ClientType::User,
-        user.email,
+        types::ClientType::Module,
+        module.serial_number,
         user_agent,
         valid_until,
     )

@@ -76,6 +76,7 @@ async fn main() -> Result<(), ()> {
                     .service(views::user::login_route)
                     .service(views::user::register_route),
             )
+            .service(web::scope("/module").service(views::module::login_route))
             .service(
                 web::scope("/session")
                     .service(views::session::verify_route)

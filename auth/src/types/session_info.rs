@@ -1,4 +1,5 @@
 use crate::models;
+use crate::types;
 
 use chrono::{serde::ts_seconds, DateTime, Utc};
 use serde::Serialize;
@@ -7,8 +8,8 @@ use serde::Serialize;
 pub struct SessionInfo {
     pub internal_id: i32,
 
-    pub user_id: i32,
-    pub user_email: String,
+    pub client_type: types::ClientType,
+    pub client_identifier: String,
 
     pub user_agent: Option<String>,
 
@@ -27,8 +28,8 @@ impl SessionInfo {
         SessionInfo {
             internal_id: session.internal_id,
 
-            user_id: session.user_id,
-            user_email: session.user_email,
+            client_type: session.client_type,
+            client_identifier: session.client_identifier,
 
             user_agent: session.user_agent,
 

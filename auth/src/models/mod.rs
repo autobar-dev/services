@@ -1,5 +1,7 @@
-mod user;
+mod module;
 mod session;
+mod user;
 
-pub use user::UserModel;
+pub use module::ModuleModel;
 pub use session::SessionModel;
+pub use user::UserModel;
