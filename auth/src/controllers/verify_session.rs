@@ -1,8 +1,8 @@
 use actix_web::http;
 use chrono::Utc;
 
-use crate::types;
 use crate::models;
+use crate::types;
 
 pub async fn verify_session_controller(
     context: types::AppContext,
@@ -11,15 +11,12 @@ pub async fn verify_session_controller(
 ) -> Result<String, types::RestError> {
     let context_session_clone = context.clone();
 
-    let session = models::SessionModel::get_by_session_id(
-        context_session_clone,
-        session_id
-    ).await;
+    let session = models::SessionModel::get_by_session_id(context_session_clone, session_id).await;
 
     if session.is_err() {
         return Err(types::RestError::new(
             http::StatusCode::NOT_FOUND,
-            "session not found"
+            "session not found",
         ));
     }
 
@@ -27,35 +24,32 @@ pub async fn verify_session_controller(
 
     if Utc::now() > session.valid_until {
         let context_delete_clone = context.clone();
-        let _delete_old_session = models::SessionModel::delete(
-            context_delete_clone,
-            session_id
-        ).await;
+        let _delete_old_session =
+            models::SessionModel::delete(context_delete_clone, session_id).await;
 
         return Err(types::RestError::new(
             http::StatusCode::BAD_REQUEST,
-            "session out of date"
+            "session out of date",
         ));
     }
 
     let context_config_clone = context.clone();
 
-    if  context_config_clone.config.allow_only_same_user_agent &&
-        user_agent.is_some() && 
-        session.user_agent.is_some() && 
-        user_agent.unwrap() != session.user_agent.unwrap() {
+    if context_config_clone.config.allow_only_same_user_agent
+        && user_agent.is_some()
+        && session.user_agent.is_some()
+        && user_agent.unwrap() != session.user_agent.unwrap()
+    {
         return Err(types::RestError::new(
             http::StatusCode::BAD_REQUEST,
-            "user agent different than one creating the session"
+            "user agent different than one creating the session",
         ));
     }
 
     let context_update_last_used_clone = context.clone();
 
-    let updated_rows = models::SessionModel::update_last_used(
-        context_update_last_used_clone,
-        session_id
-    ).await;
+    let updated_rows =
+        models::SessionModel::update_last_used(context_update_last_used_clone, session_id).await;
 
     if updated_rows.is_err() {
         return Err(types::RestError::new(
@@ -64,5 +58,5 @@ pub async fn verify_session_controller(
         ));
     }
 
-    Ok(session.user_email)
+    Ok(session.client_identifier)
 }

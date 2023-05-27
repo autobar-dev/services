@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = { version = "4.3.1", features = ["cookies"] }
+anyhow = "1.0.71"
 bcrypt = "0.14.0"
 chrono = { version = "0.4.24", features = ["serde", "clock"] }
 dotenv = "0.15.0"
@@ -16,6 +17,7 @@ log = "0.4.17"
 log4rs = { version = "1.2.0", features = ["console_appender"] }
 serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.95"
+serde_repr = "0.1.12"
 sqlx = { version = "0.6.3", features = ["postgres", "uuid", "chrono", "runtime-tokio-native-tls", "offline", "macros"] }
 time = "0.3.20"
 uuid = { version = "1.3.1", features = ["v4", "serde"] }

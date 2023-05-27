@@ -3,13 +3,15 @@ use serde::Serialize;
 
 use crate::models;
 
+use super::ClientType;
+
 #[derive(Debug, Serialize)]
 pub struct Session {
     pub id: uuid::Uuid,
     pub internal_id: i32,
 
-    pub user_id: i32,
-    pub user_email: String,
+    pub client_type: ClientType,
+    pub client_identifier: String,
 
     pub user_agent: Option<String>,
 
@@ -29,8 +31,8 @@ impl Session {
             id: session.id,
             internal_id: session.internal_id,
 
-            user_id: session.user_id,
-            user_email: session.user_email,
+            client_type: session.client_type,
+            client_identifier: session.client_identifier,
 
             user_agent: session.user_agent,
 

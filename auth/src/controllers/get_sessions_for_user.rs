@@ -20,10 +20,19 @@ pub async fn get_sessions_for_user(
 
     let user = user.unwrap();
 
-    let _delete_sessions =
-        models::SessionModel::delete_all_expired_for_user(context.clone(), user.id).await;
+    let _delete_sessions = models::SessionModel::delete_all_expired_for_client(
+        context.clone(),
+        types::ClientType::User,
+        user.email.clone(),
+    )
+    .await;
 
-    let sessions = models::SessionModel::all_for_user(context.clone(), user.id).await;
+    let sessions = models::SessionModel::all_for_client(
+        context.clone(),
+        types::ClientType::User,
+        user.email.clone(),
+    )
+    .await;
 
     if sessions.is_err() {
         return Err(types::RestError::new(

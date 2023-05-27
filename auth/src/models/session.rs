@@ -2,15 +2,15 @@ use chrono::{serde::ts_seconds, DateTime, Utc};
 use serde::Serialize;
 use uuid::{self, Uuid};
 
-use crate::types;
+use crate::types::{self, ClientType};
 
 #[derive(Clone, Serialize, Debug, sqlx::FromRow)]
 pub struct SessionModel {
     pub id: uuid::Uuid,
     pub internal_id: i32,
 
-    pub user_id: i32,
-    pub user_email: String,
+    pub client_type: ClientType,
+    pub client_identifier: String,
 
     pub user_agent: Option<String>,
 
@@ -22,6 +22,11 @@ pub struct SessionModel {
 
     #[serde(with = "ts_seconds")]
     pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, sqlx::Type)]
+struct ClientTypeRecord {
+    client_type: ClientType,
 }
 
 impl SessionModel {
@@ -40,26 +45,47 @@ impl SessionModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query_as!(
-            SessionModel,
-            "SELECT s.*, u.email as user_email
+        let client_type: ClientTypeRecord = sqlx::query_as!(
+            ClientTypeRecord,
+            r#"SELECT client_type AS "client_type: ClientType"
             FROM sessions s
-            INNER JOIN users u
-            ON s.user_id = u.id
-            WHERE s.id = $1;",
+            WHERE s.id = $1;"#,
             session_uuid
         )
         .fetch_one(&mut conn)
-        .await;
+        .await?;
 
-        if result.is_err() {
-            let result_err = result.unwrap_err();
-
-            log::error!("Error fetching session: {:?}", result_err);
-            return Err(result_err);
+        match client_type.client_type {
+            ClientType::User => {
+                sqlx::query_as!(
+                    SessionModel,
+                    r#"SELECT
+                    s.id, s.user_agent, s.valid_until, s.last_used, s.created_at, s.internal_id, s.client_type as "client_type: ClientType", u.email AS client_identifier
+                    FROM sessions s
+                    INNER JOIN users u
+                    ON s.client_identifier = u.id
+                    WHERE s.id = $1;"#,
+                    session_uuid
+                )
+                .fetch_one(&mut conn)
+                .await
+            },
+            ClientType::Module => {
+                
+                sqlx::query_as!(
+                    SessionModel,
+                    r#"SELECT
+                    s.id, s.user_agent, s.valid_until, s.last_used, s.created_at, s.internal_id, s.client_type as "client_type: ClientType", m.serial_number AS client_identifier
+                    FROM sessions s
+                    INNER JOIN modules m
+                    ON s.client_identifier = m.id
+                    WHERE s.id = $1;"#,
+                    session_uuid
+                )
+                .fetch_one(&mut conn)
+                .await
+            },
         }
-
-        Ok(result.unwrap())
     }
 
     pub async fn get_by_internal_id(
@@ -77,31 +103,52 @@ impl SessionModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query_as!(
-            SessionModel,
-            "SELECT s.*, u.email as user_email
+        let client_type = sqlx::query_as!(
+            ClientTypeRecord,
+            r#"SELECT client_type AS "client_type: ClientType"
             FROM sessions s
-            INNER JOIN users u
-            ON s.user_id = u.id
-            WHERE s.internal_id = $1;",
+            WHERE s.internal_id = $1;"#,
             internal_id
         )
         .fetch_one(&mut conn)
-        .await;
+        .await?;
 
-        if result.is_err() {
-            let result_err = result.unwrap_err();
+        let session_data: Result<SessionModel, sqlx::Error> = match client_type.client_type {
+            ClientType::User => {
+                sqlx::query_as!(
+                    SessionModel,
+                    r#"SELECT s.id, s.user_agent, s.valid_until, s.last_used, s.created_at, s.internal_id, s.client_type as "client_type: ClientType", u.email AS client_identifier
+                    FROM sessions s
+                    INNER JOIN users u
+                    ON s.client_identifier = u.id
+                    WHERE s.internal_id = $1;"#,
+                    internal_id
+                )
+                .fetch_one(&mut conn)
+                .await
+            }
+            ClientType::Module => {
+                sqlx::query_as!(
+                    SessionModel,
+                    r#"SELECT s.id, s.user_agent, s.valid_until, s.last_used, s.created_at, s.internal_id, s.client_type AS "client_type: ClientType", m.serial_number AS client_identifier
+                    FROM sessions s
+                    INNER JOIN modules m
+                    ON s.client_identifier = m.id
+                    WHERE s.internal_id = $1;"#,
+                    internal_id
+                )
+                .fetch_one(&mut conn)
+                .await
+            }
+        };
 
-            log::error!("Error fetching session: {:?}", result_err);
-            return Err(result_err);
-        }
-
-        Ok(result.unwrap())
+        session_data
     }
 
-    pub async fn all_for_user(
+    pub async fn all_for_client(
         context: types::AppContext,
-        user_id: i32,
+        client_type: ClientType,
+        client_identifier: String,
     ) -> Result<Vec<SessionModel>, sqlx::Error> {
         let conn = context.database_pool.acquire().await;
 
@@ -114,33 +161,40 @@ impl SessionModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query_as!(
-            SessionModel,
-            "SELECT s.*, u.email as user_email
-            FROM sessions s
-            INNER JOIN users u
-            ON s.user_id = u.id
-            WHERE s.user_id = $1;",
-            user_id
-        )
-        .fetch_all(&mut conn)
-        .await;
-
-        if result.is_err() {
-            let result_err = result.unwrap_err();
-
-            log::error!("Error getting all sessions for user: {:?}", result_err);
-            return Err(result_err);
+        match client_type {
+            ClientType::User => {
+                sqlx::query_as!(
+                    SessionModel,
+                    r#"SELECT s.id, s.user_agent, s.valid_until, s.last_used, s.created_at, s.internal_id, s.client_type AS "client_type: ClientType", u.email AS client_identifier
+                    FROM sessions s
+                    INNER JOIN users u
+                    ON s.client_identifier = u.id
+                    WHERE u.email = $1;"#,
+                    client_identifier
+                )
+                .fetch_all(&mut conn)
+                .await
+            },
+            ClientType::Module => {
+                sqlx::query_as!(
+                    SessionModel,
+                    r#"SELECT s.id, s.user_agent, s.valid_until, s.last_used, s.created_at, s.internal_id, s.client_type AS "client_type: ClientType", m.serial_number AS client_identifier
+                    FROM sessions s
+                    INNER JOIN modules m
+                    ON s.client_identifier = m.id
+                    WHERE m.serial_number = $1;"#,
+                    client_identifier
+                )
+                .fetch_all(&mut conn)
+                .await
+            },
         }
-
-        let result = result.unwrap();
-
-        Ok(result)
     }
 
     pub async fn create(
         context: types::AppContext,
-        user_id: i32,
+        client_type: ClientType,
+        client_identifier: String,
         user_agent: Option<String>,
         valid_until: DateTime<Utc>,
     ) -> Result<Uuid, sqlx::Error> {
@@ -155,28 +209,42 @@ impl SessionModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query!(
-            "INSERT INTO sessions
-            (user_id, user_agent, valid_until)
-            VALUES ($1, $2, $3)
-            RETURNING id;",
-            user_id,
-            user_agent,
-            valid_until
-        )
-        .fetch_one(&mut conn)
-        .await;
+        match client_type {
+            ClientType::User => {
+                let result = sqlx::query!(
+                    r#"INSERT INTO sessions
+                    (client_identifier, user_agent, valid_until, client_type)
+                    SELECT u.id, $1, $2, 'user'
+                    FROM users u
+                    WHERE u.email = $3
+                    RETURNING id;"#,
+                    user_agent,
+                    valid_until,
+                    client_identifier
+                )
+                .fetch_one(&mut conn)
+                .await?;
 
-        if result.is_err() {
-            let result_err = result.unwrap_err();
+                Ok(result.id)
+            },
+            ClientType::Module => {
+                let result = sqlx::query!(
+                    r#"INSERT INTO sessions
+                    (client_identifier, user_agent, valid_until, client_type)
+                    SELECT m.id, $1, $2, 'module'
+                    FROM modules m
+                    WHERE m.serial_number = $3
+                    RETURNING id;"#,
+                    user_agent,
+                    valid_until,
+                    client_identifier
+                )
+                .fetch_one(&mut conn)
+                .await?;
 
-            log::error!("Error creating new session: {:?}", result_err);
-            return Err(result_err);
+                Ok(result.id)
+            }
         }
-
-        let result = result.unwrap();
-
-        Ok(result.id)
     }
 
     pub async fn update_last_used(
@@ -215,9 +283,10 @@ impl SessionModel {
         Ok(result.rows_affected())
     }
 
-    pub async fn delete_all_expired_for_user(
+    pub async fn delete_all_expired_for_client(
         context: types::AppContext,
-        user_id: i32,
+        client_type: ClientType,
+        client_identifier: String,
     ) -> Result<u64, sqlx::Error> {
         let conn = context.database_pool.acquire().await;
 
@@ -230,23 +299,32 @@ impl SessionModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query!(
-            "DELETE FROM sessions
-            WHERE user_id = $1
-            AND valid_until < CURRENT_TIMESTAMP;",
-            user_id
-        )
-        .execute(&mut conn)
-        .await;
-
-        if result.is_err() {
-            let result_err = result.unwrap_err();
-
-            log::error!("Error deleting expired sessions: {:?}", result_err);
-            return Err(result_err);
-        }
-
-        let result = result.unwrap();
+        let result = match client_type {
+            ClientType::User => {
+                sqlx::query!(
+                    "DELETE FROM sessions s
+                    USING users u
+                    WHERE s.client_identifier = u.id
+                    AND u.email = $1
+                    AND s.valid_until < CURRENT_TIMESTAMP;",
+                    client_identifier
+                )
+                .execute(&mut conn)
+                .await?
+            },
+            ClientType::Module => {
+                sqlx::query!(
+                    "DELETE FROM sessions s
+                    USING modules m
+                    WHERE s.client_identifier = m.id
+                    AND m.serial_number = $1
+                    AND s.valid_until < CURRENT_TIMESTAMP;",
+                    client_identifier
+                )
+                .execute(&mut conn)
+                .await?
+            },
+        };
 
         Ok(result.rows_affected())
     }

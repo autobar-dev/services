@@ -103,7 +103,7 @@ pub async fn remove_by_internal_id_route(
 
     let session = session.unwrap();
 
-    if session.user_id != user.id {
+    if session.client_identifier != user.email {
         return HttpResponse::Unauthorized().json(RemoveByInternalIdResponse {
             status: "error".to_string(),
             error: Some("you are not allowed to remove somebody else's session".to_string()),
