@@ -13,6 +13,9 @@ pub struct Config {
 
     #[envconfig(from = "SSE_HEARTBEAT_INTERVAL")]
     pub sse_heartbeat_interval: f32,
+
+    #[envconfig(from = "AUTH_SERVICE_URL")]
+    pub auth_service_url: String,
 }
 
 pub fn load() -> Result<Config, envconfig::Error> {
