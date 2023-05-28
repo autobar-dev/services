@@ -1,14 +1,22 @@
 use actix_web::http;
+use actix_web::http::header::HeaderValue;
 use chrono::Utc;
 
 use crate::models;
 use crate::types;
 
+#[derive(Clone, Debug)]
+pub struct VerifySessionData {
+    pub client_type: types::ClientType,
+    pub client_identifier: String,
+}
+
 pub async fn verify_session_controller(
     context: types::AppContext,
     session_id: uuid::Uuid,
+    internal_header: Option<&HeaderValue>,
     user_agent: Option<String>,
-) -> Result<String, types::RestError> {
+) -> Result<VerifySessionData, types::RestError> {
     let context_session_clone = context.clone();
 
     let session = models::SessionModel::get_by_session_id(context_session_clone, session_id).await;
@@ -35,7 +43,8 @@ pub async fn verify_session_controller(
 
     let context_config_clone = context.clone();
 
-    if context_config_clone.config.allow_only_same_user_agent
+    if internal_header.is_none()
+        && context_config_clone.config.allow_only_same_user_agent
         && user_agent.is_some()
         && session.user_agent.is_some()
         && user_agent.unwrap() != session.user_agent.unwrap()
@@ -58,5 +67,8 @@ pub async fn verify_session_controller(
         ));
     }
 
-    Ok(session.client_identifier)
+    Ok(VerifySessionData {
+        client_type: session.client_type,
+        client_identifier: session.client_identifier,
+    })
 }

@@ -1,5 +1,5 @@
-use crate::controllers::verify_session_controller;
 use crate::types;
+use crate::{controllers::verify_session_controller, types::consts::INTERNAL_HEADER_NAME};
 
 use actix_web::{
     cookie::Cookie, get, http, http::header, web, HttpRequest, HttpResponse, Responder,
@@ -13,7 +13,8 @@ pub struct VerifyQuery {
 
 #[derive(Serialize, Debug)]
 struct VerifyResponseData {
-    email: String,
+    client_type: types::ClientType,
+    client_identifier: String,
 }
 
 #[derive(Serialize, Debug)]
@@ -71,13 +72,20 @@ pub async fn verify_route(
 
     let provided_uuid = provided_uuid.unwrap();
 
-    let user_email =
-        verify_session_controller(data.get_ref().clone(), provided_uuid, user_agent).await;
+    let internal_header = req.headers().get(INTERNAL_HEADER_NAME);
 
-    if user_email.is_err() {
-        let user_email_error = user_email.unwrap_err();
+    let verify_session_data = verify_session_controller(
+        data.get_ref().clone(),
+        provided_uuid,
+        internal_header,
+        user_agent,
+    )
+    .await;
 
-        return match user_email_error.status {
+    if verify_session_data.is_err() {
+        let verify_session_data_error = verify_session_data.unwrap_err();
+
+        return match verify_session_data_error.status {
             http::StatusCode::NOT_FOUND => HttpResponse::NotFound().json(VerifyResponse {
                 status: "error".to_string(),
                 data: None,
@@ -96,11 +104,14 @@ pub async fn verify_route(
         };
     }
 
-    let user_email = user_email.unwrap();
+    let verify_session_data = verify_session_data.unwrap();
 
     HttpResponse::Ok().json(VerifyResponse {
         status: "ok".to_string(),
         error: None,
-        data: Some(VerifyResponseData { email: user_email }),
+        data: Some(VerifyResponseData {
+            client_type: verify_session_data.client_type,
+            client_identifier: verify_session_data.client_identifier,
+        }),
     })
 }

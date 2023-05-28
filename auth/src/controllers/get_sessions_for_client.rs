@@ -5,32 +5,42 @@ use crate::types::SessionInfo;
 use actix_web::http;
 use actix_web::http::StatusCode;
 
-pub async fn get_sessions_for_user(
+pub async fn get_sessions_for_client(
     context: types::AppContext,
-    user_email: String,
+    client_type: types::ClientType,
+    client_identifier: String,
 ) -> Result<Vec<SessionInfo>, types::RestError> {
-    let user = models::UserModel::get_by_email(context.clone(), user_email).await;
+    let client_not_found = match client_type {
+        types::ClientType::User => {
+            models::UserModel::get_by_email(context.clone(), client_identifier.clone())
+                .await
+                .is_err()
+        }
+        types::ClientType::Module => {
+            models::ModuleModel::get_by_serial_number(context.clone(), client_identifier.clone())
+                .await
+                .is_err()
+        }
+    };
 
-    if user.is_err() {
+    if client_not_found {
         return Err(types::RestError::new(
             StatusCode::NOT_FOUND,
-            "user not found",
+            "client not found",
         ));
     }
 
-    let user = user.unwrap();
-
     let _delete_sessions = models::SessionModel::delete_all_expired_for_client(
         context.clone(),
-        types::ClientType::User,
-        user.email.clone(),
+        client_type,
+        client_identifier.clone(),
     )
     .await;
 
     let sessions = models::SessionModel::all_for_client(
         context.clone(),
-        types::ClientType::User,
-        user.email.clone(),
+        client_type,
+        client_identifier.clone(),
     )
     .await;
 

@@ -3,6 +3,7 @@ use crate::controllers::get_user_controller;
 use crate::controllers::remove_session_controller;
 use crate::controllers::verify_session_controller;
 use crate::types;
+use crate::types::consts::INTERNAL_HEADER_NAME;
 
 use actix_web::cookie::Cookie;
 use actix_web::http::header;
@@ -70,27 +71,20 @@ pub async fn remove_by_internal_id_route(
 
     let provided_uuid = provided_uuid.unwrap();
 
-    let user_email = verify_session_controller(context.clone(), provided_uuid, user_agent).await;
+    let internal_header = req.headers().get(INTERNAL_HEADER_NAME);
 
-    if user_email.is_err() {
+    let verify_session_data =
+        verify_session_controller(context.clone(), provided_uuid, internal_header, user_agent)
+            .await;
+
+    if verify_session_data.is_err() {
         return HttpResponse::BadRequest().json(RemoveByInternalIdResponse {
             status: "error".to_string(),
             error: Some("cannot verify session".to_string()),
         });
     }
 
-    let user_email = user_email.unwrap();
-
-    let user = get_user_controller(context.clone(), user_email).await;
-
-    if user.is_err() {
-        return HttpResponse::BadRequest().json(RemoveByInternalIdResponse {
-            status: "error".to_string(),
-            error: Some("failed to retrieve user".to_string()),
-        });
-    }
-
-    let user = user.unwrap();
+    let verify_session_data = verify_session_data.unwrap();
 
     let session = get_session_by_internal_id_controller(context.clone(), body.internal_id).await;
 
@@ -103,7 +97,7 @@ pub async fn remove_by_internal_id_route(
 
     let session = session.unwrap();
 
-    if session.client_identifier != user.email {
+    if session.client_identifier != verify_session_data.client_identifier {
         return HttpResponse::Unauthorized().json(RemoveByInternalIdResponse {
             status: "error".to_string(),
             error: Some("you are not allowed to remove somebody else's session".to_string()),
