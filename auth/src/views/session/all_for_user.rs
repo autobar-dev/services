@@ -1,28 +1,28 @@
 use crate::{
-    controllers::{get_sessions_for_user, verify_session_controller},
-    types,
+    controllers::{get_sessions_for_client, verify_session_controller},
+    types::{self, consts::INTERNAL_HEADER_NAME},
 };
 
 use actix_web::{cookie::Cookie, get, http::header, web, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
-pub struct AllForUserQuery {
+pub struct AllForClientQuery {
     session_id: Option<String>,
 }
 
 #[derive(Serialize, Debug)]
-pub struct AllForUserResponse {
+pub struct AllForClientResponse {
     status: String,
     error: Option<String>,
     data: Option<Vec<types::SessionInfo>>,
 }
 
-#[get("/all-for-user")]
+#[get("/all-for-client")]
 pub async fn all_for_user_route(
     req: HttpRequest,
     data: web::Data<types::AppContext>,
-    query: web::Query<AllForUserQuery>,
+    query: web::Query<AllForClientQuery>,
 ) -> impl Responder {
     let user_agent_header = req.headers().get(header::USER_AGENT);
     let mut user_agent: Option<String> = None;
@@ -51,7 +51,7 @@ pub async fn all_for_user_route(
                 .value(),
         );
     } else {
-        return HttpResponse::BadRequest().json(AllForUserResponse {
+        return HttpResponse::BadRequest().json(AllForClientResponse {
             status: "error".to_string(),
             error: Some("session_id is missing from both query and cookies".to_string()),
             data: None,
@@ -59,7 +59,7 @@ pub async fn all_for_user_route(
     }
 
     if provided_uuid.is_err() {
-        return HttpResponse::BadRequest().json(AllForUserResponse {
+        return HttpResponse::BadRequest().json(AllForClientResponse {
             status: "error".to_string(),
             error: Some("could not parse session id".to_string()),
             data: None,
@@ -68,22 +68,31 @@ pub async fn all_for_user_route(
 
     let provided_uuid = provided_uuid.unwrap();
 
-    let user_email = verify_session_controller(context.clone(), provided_uuid, user_agent).await;
+    let internal_header = req.headers().get(INTERNAL_HEADER_NAME);
 
-    if user_email.is_err() {
-        return HttpResponse::BadRequest().json(AllForUserResponse {
+    let verify_session_data =
+        verify_session_controller(context.clone(), provided_uuid, internal_header, user_agent)
+            .await;
+
+    if verify_session_data.is_err() {
+        return HttpResponse::BadRequest().json(AllForClientResponse {
             status: "error".to_string(),
             error: Some("invalid session".to_string()),
             data: None,
         });
     }
 
-    let user_email = user_email.unwrap();
+    let verify_session_data = verify_session_data.unwrap();
 
-    let session_infos = get_sessions_for_user(context.clone(), user_email).await;
+    let session_infos = get_sessions_for_client(
+        context.clone(),
+        verify_session_data.client_type,
+        verify_session_data.client_identifier,
+    )
+    .await;
 
     if session_infos.is_err() {
-        return HttpResponse::InternalServerError().json(AllForUserResponse {
+        return HttpResponse::InternalServerError().json(AllForClientResponse {
             status: "error".to_string(),
             error: Some("unknown error occured".to_string()),
             data: None,
@@ -92,7 +101,7 @@ pub async fn all_for_user_route(
 
     let session_infos = session_infos.unwrap();
 
-    HttpResponse::Ok().json(AllForUserResponse {
+    HttpResponse::Ok().json(AllForClientResponse {
         status: "ok".to_string(),
         error: None,
         data: Some(session_infos),

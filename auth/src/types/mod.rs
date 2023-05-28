@@ -1,5 +1,6 @@
 mod app_context;
 mod client_type;
+pub mod consts;
 mod meta;
 mod rest_error;
 mod session;
