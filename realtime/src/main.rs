@@ -1,5 +1,6 @@
 mod config;
 mod routes;
+mod services;
 mod types;
 mod utils;
 
@@ -52,6 +53,9 @@ async fn main() -> Result<(), ()> {
         meta: types::Meta {
             hash: meta_hash,
             version: meta_version,
+        },
+        services: types::Services {
+            auth_service: services::AuthService::new(config.auth_service_url),
         },
     };
 

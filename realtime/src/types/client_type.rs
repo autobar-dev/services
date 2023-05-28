@@ -1,8 +1,9 @@
 use std::fmt;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum ClientType {
     Module,
     User,
@@ -11,8 +12,8 @@ pub enum ClientType {
 impl fmt::Display for ClientType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::Module => write!(f, "MODULE"),
-            Self::User => write!(f, "USER"),
+            Self::Module => write!(f, "module"),
+            Self::User => write!(f, "user"),
         }
     }
 }
