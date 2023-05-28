@@ -9,7 +9,7 @@ mod verify_session;
 
 pub use get_session_by_internal_id::get_session_by_internal_id_controller;
 pub use get_sessions_for_client::get_sessions_for_client;
-pub use get_user::get_user_controller;
+pub use get_user::_get_user_controller;
 pub use login_module::login_module_controller;
 pub use login_user::login_user_controller;
 pub use register_user::register_user_controller;

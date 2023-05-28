@@ -31,14 +31,14 @@ impl ModuleModel {
         .await
     }
 
-    pub async fn create(
+    pub async fn _create(
         context: types::AppContext,
         serial_number: String,
         private_key_hash: String,
     ) -> Result<(), sqlx::Error> {
         let mut conn = context.database_pool.acquire().await?;
 
-        let result = sqlx::query!(
+        let _result = sqlx::query!(
             "INSERT INTO modules
             (serial_number, private_key)
             VALUES ($1, $2);",

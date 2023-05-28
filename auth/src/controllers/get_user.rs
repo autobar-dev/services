@@ -3,7 +3,7 @@ use actix_web::http::StatusCode;
 use crate::models;
 use crate::types;
 
-pub async fn get_user_controller(
+pub async fn _get_user_controller(
     context: types::AppContext,
     email: String,
 ) -> Result<types::User, types::RestError> {

@@ -107,7 +107,7 @@ pub async fn login_route(
             status: "ok".to_string(),
             error: None,
             data: Some(LoginModuleResponseData {
-                session_id: session_id.clone(),
+                session_id,
             }),
         })
 }

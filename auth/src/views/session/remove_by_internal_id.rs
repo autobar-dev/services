@@ -1,5 +1,5 @@
 use crate::controllers::get_session_by_internal_id_controller;
-use crate::controllers::get_user_controller;
+
 use crate::controllers::remove_session_controller;
 use crate::controllers::verify_session_controller;
 use crate::types;
