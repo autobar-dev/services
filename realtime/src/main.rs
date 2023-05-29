@@ -65,6 +65,7 @@ async fn main() -> Result<(), ()> {
             .service(routes::meta_route)
             .service(routes::events_route)
             .service(routes::send_route)
+            .service(routes::send_command_route)
     })
     .bind(("0.0.0.0", config.port))
     .unwrap_or_else(|err| panic!("error binding to port: {:?}", err));

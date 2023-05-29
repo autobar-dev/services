@@ -1,5 +1,7 @@
 mod client_identifier_to_queue_name;
 mod client_identifier_to_redis_key;
+mod publish_to_queue;
 
 pub use client_identifier_to_queue_name::client_identifier_to_queue_name;
 pub use client_identifier_to_redis_key::client_identifier_to_redis_key;
+pub use publish_to_queue::publish_to_queue;

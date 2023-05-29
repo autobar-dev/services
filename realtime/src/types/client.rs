@@ -13,6 +13,8 @@ use std::time::Duration;
 use crate::types;
 use crate::utils::{client_identifier_to_queue_name, client_identifier_to_redis_key};
 
+use super::Message;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum ClientState {
     Initializing,
@@ -44,9 +46,26 @@ impl Client {
     }
 
     pub async fn send(self, message: String) -> Result<(), SendError> {
+        let parsed_message: Message = serde_json::from_str(message.as_str()).unwrap();
+
+        log::debug!("raw message to send: {:?}", message);
+        log::debug!("parsed message to send: {:?}", parsed_message);
+
+        let body: String;
+        let event_name = match parsed_message {
+            Message::Command(message) => {
+                body = message.body;
+                "command"
+            }
+            Message::Simple(message) => {
+                body = message.body;
+                "simple"
+            }
+        };
+
         let send_result = self
             .sse_sender
-            .send(sse::Data::new(message).event("message"))
+            .send(sse::Data::new(body).event(event_name))
             .await;
 
         if send_result.is_err() {
@@ -111,6 +130,7 @@ impl Client {
             self.client_type
         );
 
+        // heartbeat thread
         tokio::spawn(async move {
             while heartbeat_self_clone.state == ClientState::Listening {
                 let now: DateTime<Utc> = Utc::now();
@@ -137,6 +157,7 @@ impl Client {
 
         let consumer_self_clone = self.clone();
 
+        // queue consumer and client sender thread
         tokio::spawn(async move {
             while let Some(delivery) = consumer.next().await {
                 let loop_self_clone = consumer_self_clone.clone();
