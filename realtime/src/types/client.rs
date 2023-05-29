@@ -57,8 +57,6 @@ impl Client {
     }
 
     pub async fn listen(mut self, context: types::AppContext) -> anyhow::Result<()> {
-        self.state = ClientState::Listening;
-
         let now: DateTime<Utc> = Utc::now();
         let now_string = now.to_rfc3339();
 
@@ -66,22 +64,6 @@ impl Client {
 
         let client_type = self.client_type;
         let identifier = self.clone().identifier;
-
-        redis::cmd("SET")
-            .arg(&[
-                client_identifier_to_redis_key(client_type, identifier.clone()),
-                now_string,
-            ])
-            .query_async(&mut conn)
-            .await?;
-
-        let mut heartbeat_interval = tokio::time::interval(Duration::from_secs_f32(
-            context.config.sse_heartbeat_interval,
-        ));
-
-        heartbeat_interval.tick().await; // ticks immediately
-
-        let heartbeat_context_clone = context.clone();
 
         let _ = context
             .amqp_channel
@@ -103,7 +85,31 @@ impl Client {
             )
             .await?;
 
+        redis::cmd("SET")
+            .arg(&[
+                client_identifier_to_redis_key(client_type, identifier.clone()),
+                now_string,
+            ])
+            .query_async(&mut conn)
+            .await?;
+
+        self.state = ClientState::Listening;
+
+        let mut heartbeat_interval = tokio::time::interval(Duration::from_secs_f32(
+            context.config.sse_heartbeat_interval,
+        ));
+
+        heartbeat_interval.tick().await; // ticks immediately
+
+        let heartbeat_context_clone = context.clone();
+
         let heartbeat_self_clone = self.clone();
+
+        log::debug!(
+            "listening on connection {} ({})",
+            self.identifier,
+            self.client_type
+        );
 
         tokio::spawn(async move {
             while heartbeat_self_clone.state == ClientState::Listening {
@@ -176,6 +182,12 @@ impl Client {
     pub async fn cancel(mut self, context: types::AppContext) -> anyhow::Result<()> {
         self.state = ClientState::Cancelling;
 
+        log::debug!(
+            "cancelling {} ({}) connection",
+            self.identifier,
+            self.client_type
+        );
+
         let mut conn = context.redis_pool.get().await?;
 
         redis::cmd("DEL")
@@ -193,6 +205,12 @@ impl Client {
                 QueueDeleteOptions::default(),
             )
             .await?;
+
+        log::debug!(
+            "cancelled {} ({}) connection",
+            self.identifier,
+            self.client_type
+        );
 
         Ok(())
     }
