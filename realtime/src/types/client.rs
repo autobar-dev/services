@@ -46,19 +46,18 @@ impl Client {
     }
 
     pub async fn send(self, message: String) -> Result<(), SendError> {
-        let parsed_message: Message = serde_json::from_str(message.as_str()).unwrap();
-
         log::debug!("raw message to send: {:?}", message);
-        log::debug!("parsed message to send: {:?}", parsed_message);
 
         let body: String;
+        let parsed_message: Message = serde_json::from_str(message.as_str()).unwrap();
+
         let event_name = match parsed_message {
-            Message::Command(message) => {
-                body = message.body;
+            Message::Command(_) => {
+                body = message.clone();
                 "command"
             }
-            Message::Simple(message) => {
-                body = message.body;
+            Message::Simple(simple_message) => {
+                body = simple_message.body;
                 "simple"
             }
         };

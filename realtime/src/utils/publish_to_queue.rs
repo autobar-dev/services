@@ -11,13 +11,18 @@ pub async fn publish_to_queue(
     client_identifier: String,
     message: Message,
 ) -> anyhow::Result<()> {
+    let message_string = json!(message).to_string();
+    let bytes_to_publish = message_string.as_bytes();
+
+    log::debug!("string message payload to publish: {}", message_string);
+
     context
         .amqp_channel
         .basic_publish(
             "",
             client_identifier_to_queue_name(client_type, client_identifier).as_str(),
             BasicPublishOptions::default(),
-            json!(message).to_string().as_bytes(),
+            bytes_to_publish,
             BasicProperties::default(),
         )
         .await?;
