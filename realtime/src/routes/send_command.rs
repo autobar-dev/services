@@ -1,8 +1,7 @@
 use actix_web::{post, web, HttpResponse, Responder};
 use deadpool_redis::redis;
 
-use serde::{Deserialize};
-
+use serde::Deserialize;
 
 use crate::{
     types::{AppContext, ClientType, CommandMessage, Message},
@@ -14,7 +13,7 @@ pub struct SendCommandBody {
     client_type: String,
     identifier: String,
     command: String,
-    body: String,
+    args: String,
 }
 
 #[post("/send-command")]
@@ -23,6 +22,10 @@ pub async fn send_command_route(
     body: web::Json<SendCommandBody>,
 ) -> impl Responder {
     let context = data.as_ref().to_owned();
+
+    if serde_json::from_str::<serde_json::Value>(body.args.as_str()).is_err() {
+        return HttpResponse::BadRequest().body("command body cannot be parsed");
+    }
 
     let client_type: Option<ClientType> = match body.client_type.to_lowercase().as_str() {
         "module" => Some(ClientType::Module),
@@ -77,7 +80,7 @@ pub async fn send_command_route(
 
     let message = CommandMessage {
         command: body.command.clone(),
-        body: body.body.clone(),
+        args: body.args.clone(),
     };
 
     let publish_result = publish_to_queue(

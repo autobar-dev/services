@@ -8,7 +8,7 @@ pub struct SimpleMessage {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CommandMessage {
     pub command: String,
-    pub body: String,
+    pub args: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
