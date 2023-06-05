@@ -2,6 +2,20 @@ services:
   # redis:
   #   image: "redis:alpine"
 
+  currencyservice:
+    env_file:
+      # specify DATABASE_URL
+      # specify EXCHANGE_RATE_API_KEY
+      - currency.env
+    env:
+      - PORT=80
+      - PAST_RATE_RETENTION=172800
+    build:
+      context: ./auth
+      args:
+        COMMIT_SHA: "currency-no-commit"
+        VERSION: "0.0.0-test"
+
   authservice:
     env_file:
       # specify DATABASE_URL
