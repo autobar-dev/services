@@ -7,11 +7,11 @@ services:
       # specify DATABASE_URL
       # specify EXCHANGE_RATE_API_KEY
       - currency.env
-    env:
+    environment:
       - PORT=80
       - PAST_RATE_RETENTION=172800
     build:
-      context: ./auth
+      context: ./currency
       args:
         COMMIT_SHA: "currency-no-commit"
         VERSION: "0.0.0-test"
