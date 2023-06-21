@@ -1,0 +1,3 @@
+ALTER TABLE transactions
+ADD COLUMN created_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+ALTER COLUMN id SET NOT NULL;
