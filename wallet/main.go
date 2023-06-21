@@ -19,12 +19,11 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("failed to load .env file", err)
-		os.Exit(1)
 	}
 
 	config, err := types.LoadEnvVars()
 	if err != nil {
-		fmt.Println("failed to load .env file", err)
+		fmt.Println("failed to load .env vars", err)
 		os.Exit(1)
 	}
 
