@@ -6,7 +6,8 @@ import (
 )
 
 type Repositories struct {
-	Wallet *repositories.WalletRepository
+	Wallet      *repositories.WalletRepository
+	Transaction *repositories.TransactionRepository
 }
 
 type AppContext struct {

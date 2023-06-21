@@ -10,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"go.a5r.dev/services/wallet/repositories"
+	transaction_routes "go.a5r.dev/services/wallet/routes/transaction"
 	wallet_routes "go.a5r.dev/services/wallet/routes/wallet"
 	"go.a5r.dev/services/wallet/types"
 )
@@ -40,7 +41,8 @@ func main() {
 		Message:  "yooo sup",
 		Database: database,
 		Repositories: &types.Repositories{
-			Wallet: repositories.NewWalletRepository(database),
+			Wallet:      repositories.NewWalletRepository(database),
+			Transaction: repositories.NewTransactionRepository(database),
 		},
 	}
 
@@ -54,8 +56,9 @@ func main() {
 		}
 	})
 
-	e.POST("/wallet/create", wallet_routes.CreateRoute)
 	e.GET("/wallet", wallet_routes.GetRoute)
+	e.POST("/wallet/create", wallet_routes.CreateRoute)
+	e.GET("/transaction/get-all", transaction_routes.GetAllRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

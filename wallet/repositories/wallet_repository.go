@@ -2,16 +2,15 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 type PostgresWallet struct {
-	id            int
-	user_email    string
-	currency_code string
+	Id           int    `db:"id"`
+	UserEmail    string `db:"user_email"`
+	CurrencyCode string `db:"currency_code"`
 }
 
 type WalletRepository struct {
@@ -31,9 +30,12 @@ func (wr WalletRepository) Get(user_email string) (*PostgresWallet, error) {
 
 	result := wr.db.QueryRowx(get_wallet_query, user_email)
 
-	fmt.Println(result)
+	var wallet PostgresWallet
+	if err := result.StructScan(&wallet); err != nil {
+		return nil, errors.New("wallet not found or database error")
+	}
 
-	return nil, errors.New("no wallet found for specified user")
+	return &wallet, nil
 }
 
 func (wr WalletRepository) Create(user_email string, currency_code string) error {
