@@ -50,6 +50,18 @@ services:
     # depends_on:
     #   - redis
 
+  walletservice:
+    env_file:
+      # specify DATABASE_URL
+      - wallet.env
+    environment:
+      - PORT=80
+    build:
+      context: ./wallet
+      args:
+        COMMIT_SHA: "wallet-no-commit"
+        VERSION: "0.0.0-test"
+
   gateway:
     image: "nginx"
     ports:
