@@ -8,9 +8,8 @@ import (
 )
 
 type PostgresWallet struct {
-	Id           int    `db:"id"`
-	UserEmail    string `db:"user_email"`
-	CurrencyCode string `db:"currency_code"`
+	Id        int    `db:"id"`
+	UserEmail string `db:"user_email"`
 }
 
 type WalletRepository struct {
@@ -23,7 +22,7 @@ func NewWalletRepository(db *sqlx.DB) *WalletRepository {
 
 func (wr WalletRepository) Get(user_email string) (*PostgresWallet, error) {
 	get_wallet_query := `
-    SELECT id, user_email, currency_code
+    SELECT id, user_email
     FROM wallets
     WHERE user_email=$1;
   `
@@ -38,14 +37,14 @@ func (wr WalletRepository) Get(user_email string) (*PostgresWallet, error) {
 	return &wallet, nil
 }
 
-func (wr WalletRepository) Create(user_email string, currency_code string) error {
+func (wr WalletRepository) Create(user_email string) error {
 	create_wallet_query := `
     INSERT INTO wallets
-    (user_email, currency_code)
-    VALUES ($1, $2);
+    (user_email)
+    VALUES ($1);
   `
 
-	_, err := wr.db.Exec(create_wallet_query, user_email, currency_code)
+	_, err := wr.db.Exec(create_wallet_query, user_email)
 
 	return err
 }

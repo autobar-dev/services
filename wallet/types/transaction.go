@@ -5,10 +5,11 @@ import "time"
 type TransactionType string
 
 const (
-	TransactionTypeDeposit  TransactionType = "deposit"
-	TransactionTypeWithdraw TransactionType = "withdraw"
-	TransactionTypePurchase TransactionType = "purchase"
-	TransactionTypeRefund   TransactionType = "refund"
+	TransactionTypeDeposit        TransactionType = "deposit"
+	TransactionTypeWithdraw       TransactionType = "withdraw"
+	TransactionTypePurchase       TransactionType = "purchase"
+	TransactionTypeRefund         TransactionType = "refund"
+	TransactionTypeCurrencyChange TransactionType = "currency_change"
 )
 
 type Transaction struct {

@@ -15,6 +15,8 @@ func PostgresTransactionTypeToTransactionType(ptt repositories.PostgresTransacti
 		tt = types.TransactionTypePurchase
 	case repositories.PostgresTransactionTypeRefund:
 		tt = types.TransactionTypeRefund
+	case repositories.PostgresTransactionTypeCurrencyChange:
+		tt = types.TransactionTypeCurrencyChange
 	}
 
 	return tt
@@ -31,9 +33,9 @@ func PostgresTransactionToTransaction(pt repositories.PostgresTransaction) *type
 	}
 }
 
-func ConstructBalanceAndCurrencyCodeFromTransactions(ts []types.Transaction, cc string) (int, string) {
+func ConstructBalanceAndCurrencyCodeFromTransactions(ts []types.Transaction) (int, string) {
 	balance := 0
-	currency_code := cc
+	currency_code := ""
 
 	for _, transaction := range ts {
 		switch transaction.TransactionType {
@@ -45,6 +47,9 @@ func ConstructBalanceAndCurrencyCodeFromTransactions(ts []types.Transaction, cc 
 			balance -= transaction.Value
 		case types.TransactionTypeRefund:
 			balance += transaction.Value
+		case types.TransactionTypeCurrencyChange:
+			balance = transaction.Value
+			currency_code = transaction.CurrencyCode
 		}
 	}
 
@@ -52,7 +57,7 @@ func ConstructBalanceAndCurrencyCodeFromTransactions(ts []types.Transaction, cc 
 }
 
 func ConstructWallet(pw repositories.PostgresWallet, ts []types.Transaction) *types.Wallet {
-	balance, currency_code := ConstructBalanceAndCurrencyCodeFromTransactions(ts, pw.CurrencyCode)
+	balance, currency_code := ConstructBalanceAndCurrencyCodeFromTransactions(ts)
 
 	return &types.Wallet{
 		Id:           pw.Id,

@@ -11,10 +11,11 @@ import (
 type PostgresTransactionType string
 
 const (
-	PostgresTransactionTypeDeposit  PostgresTransactionType = "deposit"
-	PostgresTransactionTypeWithdraw PostgresTransactionType = "withdraw"
-	PostgresTransactionTypePurchase PostgresTransactionType = "purchase"
-	PostgresTransactionTypeRefund   PostgresTransactionType = "refund"
+	PostgresTransactionTypeDeposit        PostgresTransactionType = "deposit"
+	PostgresTransactionTypeWithdraw       PostgresTransactionType = "withdraw"
+	PostgresTransactionTypePurchase       PostgresTransactionType = "purchase"
+	PostgresTransactionTypeRefund         PostgresTransactionType = "refund"
+	PostgresTransactionTypeCurrencyChange PostgresTransactionType = "currency_change"
 )
 
 type PostgresTransaction struct {
