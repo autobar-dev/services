@@ -55,7 +55,7 @@ func main() {
 		}
 	})
 
-	e.GET("/wallet", wallet_routes.GetRoute)
+	e.GET("/wallet/", wallet_routes.GetRoute)
 	e.POST("/wallet/create", wallet_routes.CreateRoute)
 	e.GET("/transaction/get-all", transaction_routes.GetAllRoute)
 
