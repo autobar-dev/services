@@ -1,4 +1,4 @@
-package transactions
+package transaction
 
 import (
 	"github.com/labstack/echo/v4"
@@ -38,7 +38,7 @@ func GetAllRoute(c echo.Context) error {
 		})
 	}
 
-	return rest_context.JSON(400, &GetAllTransactionsRouteResponse{
+	return rest_context.JSON(200, &GetAllTransactionsRouteResponse{
 		Status: "ok",
 		Error:  nil,
 		Data:   transactions,

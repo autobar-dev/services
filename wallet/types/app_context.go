@@ -8,10 +8,11 @@ import (
 type Repositories struct {
 	Wallet      *repositories.WalletRepository
 	Transaction *repositories.TransactionRepository
+	Currency    *repositories.CurrencyRepository
 }
 
 type AppContext struct {
-	Message      string
+	Meta         *Meta
 	Database     *sqlx.DB
 	Repositories *Repositories
 }

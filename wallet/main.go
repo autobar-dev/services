@@ -10,9 +10,12 @@ import (
 	_ "github.com/lib/pq"
 
 	"go.a5r.dev/services/wallet/repositories"
+	routes "go.a5r.dev/services/wallet/routes"
 	transaction_routes "go.a5r.dev/services/wallet/routes/transaction"
+	create_transaction_routes "go.a5r.dev/services/wallet/routes/transaction/create"
 	wallet_routes "go.a5r.dev/services/wallet/routes/wallet"
 	"go.a5r.dev/services/wallet/types"
+	"go.a5r.dev/services/wallet/utils"
 )
 
 func main() {
@@ -37,9 +40,10 @@ func main() {
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		Message:  "yooo sup",
+		Meta:     utils.LoadMeta(),
 		Database: database,
 		Repositories: &types.Repositories{
+			Currency:    repositories.NewCurrencyRepository(config.CurrencyServiceURL),
 			Wallet:      repositories.NewWalletRepository(database),
 			Transaction: repositories.NewTransactionRepository(database),
 		},
@@ -55,9 +59,16 @@ func main() {
 		}
 	})
 
+	e.GET("/meta", routes.MetaRoute)
 	e.GET("/wallet/", wallet_routes.GetRoute)
 	e.POST("/wallet/create", wallet_routes.CreateRoute)
+	e.GET("/transaction/get", transaction_routes.GetRoute)
 	e.GET("/transaction/get-all", transaction_routes.GetAllRoute)
+	e.POST("/transaction/create/deposit", create_transaction_routes.DepositRoute)
+	e.POST("/transaction/create/withdraw", create_transaction_routes.WithdrawRoute)
+	e.POST("/transaction/create/purchase", create_transaction_routes.PurchaseRoute)
+	e.POST("/transaction/create/refund", create_transaction_routes.RefundRoute)
+	e.POST("/transaction/create/currency-change", create_transaction_routes.CurrencyChangeRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

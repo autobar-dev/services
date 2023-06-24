@@ -14,7 +14,7 @@ func GetAllTransactionsController(app_context *types.AppContext, email string) (
 		return nil, err
 	}
 
-	pts, err := tr.GetForWallet(pw.Id)
+	pts, err := tr.GetAllForWallet(pw.Id)
 	if err != nil {
 		return nil, err
 	}

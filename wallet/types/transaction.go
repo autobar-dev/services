@@ -12,6 +12,14 @@ const (
 	TransactionTypeCurrencyChange TransactionType = "currency_change"
 )
 
+var ValidTransactionTypes = []TransactionType{
+	TransactionTypeDeposit,
+	TransactionTypeWithdraw,
+	TransactionTypePurchase,
+	TransactionTypeRefund,
+	TransactionTypeCurrencyChange,
+}
+
 type Transaction struct {
 	Id              string          `json:"id"`
 	WalletId        int             `json:"wallet_id"`

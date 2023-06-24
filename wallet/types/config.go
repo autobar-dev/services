@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	Port        int
-	DatabaseURL string
+	Port               int
+	DatabaseURL        string
+	CurrencyServiceURL string
 }
 
 func LoadEnvVars() (*Config, error) {
@@ -22,8 +23,14 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("DATABASE_URL env var not set")
 	}
 
+	currency_service_url := os.Getenv("CURRENCY_SERVICE_URL")
+	if currency_service_url == "" {
+		return nil, errors.New("CURRENCY_SERVICE_URL env var not set")
+	}
+
 	return &Config{
-		Port:        port,
-		DatabaseURL: database_url,
+		Port:               port,
+		DatabaseURL:        database_url,
+		CurrencyServiceURL: currency_service_url,
 	}, nil
 }

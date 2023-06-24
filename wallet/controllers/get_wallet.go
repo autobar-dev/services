@@ -18,7 +18,11 @@ func GetWalletController(app_context *types.AppContext, email string) (*types.Wa
 		return nil, err
 	}
 
-	wallet := utils.ConstructWallet(*pw, *transactions)
+	wallet, err := utils.ConstructWallet(*pw, *transactions)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return wallet, nil
 }

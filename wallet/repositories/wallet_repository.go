@@ -37,14 +37,22 @@ func (wr WalletRepository) Get(user_email string) (*PostgresWallet, error) {
 	return &wallet, nil
 }
 
-func (wr WalletRepository) Create(user_email string) error {
+func (wr WalletRepository) Create(user_email string) (*PostgresWallet, error) {
 	create_wallet_query := `
     INSERT INTO wallets
     (user_email)
-    VALUES ($1);
+    VALUES ($1)
+  	RETURNING id, user_email;
   `
 
-	_, err := wr.db.Exec(create_wallet_query, user_email)
+	row := wr.db.QueryRowx(create_wallet_query, user_email)
 
-	return err
+	var pw PostgresWallet
+	err := row.StructScan(&pw)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pw, nil
 }
