@@ -102,7 +102,7 @@ pub async fn get_rate_controller(
     // Check if the rate is old enough to refetch
     let now = chrono::Utc::now();
     let rate_is_old = rate.updated_at
-        < now - chrono::Duration::seconds(context.config.past_rate_retention.into());
+        < now - chrono::Duration::seconds(context.config.past_rate_retention_seconds.into());
 
     if rate_is_old {
         log::info!(
