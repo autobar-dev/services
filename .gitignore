@@ -1,3 +1,4 @@
 auth.env
 realtime.env
 currency.env
+wallet.env
