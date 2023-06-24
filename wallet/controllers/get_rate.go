@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"go.a5r.dev/services/wallet/types"
-	"go.a5r.dev/services/wallet/utils"
 )
 
 func GetRateController(app_context *types.AppContext, from string, to string) (*types.Rate, error) {
@@ -24,5 +23,9 @@ func GetRateController(app_context *types.AppContext, from string, to string) (*
 		return nil, err
 	}
 
-	return utils.ServiceRateToRate(*rate), nil
+	return &types.Rate{
+		From: rate.From,
+		To:   rate.To,
+		Rate: rate.Rate,
+	}, nil
 }

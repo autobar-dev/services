@@ -38,7 +38,7 @@ func GetRoute(c echo.Context) error {
 		})
 	}
 
-	return rest_context.JSON(400, &GetWalletRouteResponse{
+	return rest_context.JSON(200, &GetWalletRouteResponse{
 		Status: "ok",
 		Error:  nil,
 		Data:   wallet,

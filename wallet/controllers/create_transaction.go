@@ -12,6 +12,7 @@ import (
 func CreateTransactionController(app_context *types.AppContext, user_email string, transaction_type types.TransactionType, value int, currency_code string) (*types.Transaction, error) {
 	tr := app_context.Repositories.Transaction
 	cr := app_context.Repositories.Currency
+	car := app_context.Repositories.Cache
 
 	currency_code = strings.ToUpper(currency_code)
 
@@ -39,6 +40,10 @@ func CreateTransactionController(app_context *types.AppContext, user_email strin
 	transaction_id, err := tr.Create(wallet.Id, ptt, value, currency_code)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := car.ClearWallet(user_email); err != nil {
+		fmt.Println("failed to clear wallet from cache")
 	}
 
 	pt, err := tr.Get(*transaction_id)

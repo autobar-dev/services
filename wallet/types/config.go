@@ -10,6 +10,7 @@ type Config struct {
 	Port               int
 	DatabaseURL        string
 	CurrencyServiceURL string
+	RedisURL           string
 }
 
 func LoadEnvVars() (*Config, error) {
@@ -28,9 +29,15 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("CURRENCY_SERVICE_URL env var not set")
 	}
 
+	redis_url := os.Getenv("REDIS_URL")
+	if redis_url == "" {
+		return nil, errors.New("REDIS_URL env var not set")
+	}
+
 	return &Config{
 		Port:               port,
 		DatabaseURL:        database_url,
 		CurrencyServiceURL: currency_service_url,
+		RedisURL:           redis_url,
 	}, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 
 	"go.a5r.dev/services/wallet/repositories"
 	routes "go.a5r.dev/services/wallet/routes"
@@ -36,16 +37,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	redis_options, err := redis.ParseURL(config.RedisURL)
+	redis_client := redis.NewClient(redis_options)
+
 	e := echo.New()
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		Meta:     utils.LoadMeta(),
-		Database: database,
+		Meta: utils.LoadMeta(),
 		Repositories: &types.Repositories{
 			Currency:    repositories.NewCurrencyRepository(config.CurrencyServiceURL),
 			Wallet:      repositories.NewWalletRepository(database),
 			Transaction: repositories.NewTransactionRepository(database),
+			Cache:       repositories.NewCacheRepository(redis_client),
 		},
 	}
 

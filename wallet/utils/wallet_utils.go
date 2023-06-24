@@ -17,3 +17,12 @@ func ConstructWallet(pw repositories.PostgresWallet, ts []types.Transaction) (*t
 
 	return wb.Build()
 }
+
+func RedisWalletToWallet(rw repositories.RedisWallet, user_email string) *types.Wallet {
+	return &types.Wallet{
+		Id:           rw.Id,
+		UserEmail:    user_email,
+		Balance:      rw.Balance,
+		CurrencyCode: rw.CurrencyCode,
+	}
+}
