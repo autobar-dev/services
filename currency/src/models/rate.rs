@@ -3,7 +3,6 @@ use crate::app_context::Context;
 use chrono::{serde::ts_seconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct RateModel {
     pub id: i32,
@@ -70,7 +69,7 @@ impl RateModel {
             (from_currency, to_currency, rate)
             VALUES ($1, $2, $3)
             ON CONFLICT
-            ON CONSTRAINT rates_from_currency_to_currency_key
+            ON CONSTRAINT rate_from_to_combination_unique
             DO UPDATE SET
               rate = $3,
               updated_at = CURRENT_TIMESTAMP;

@@ -8,6 +8,8 @@ pub struct CurrencyModel {
     pub id: i32,
     pub code: String,
     pub name: String,
+    pub minor_unit_divisor: i32,
+    pub symbol: Option<String>,
     pub enabled: bool,
 
     #[serde(with = "ts_seconds")]
@@ -33,8 +35,8 @@ impl CurrencyModel {
         let result = sqlx::query_as!(
             CurrencyModel,
             "SELECT * 
-            FROM enabled_currencies
-            WHERE code = $1",
+            FROM currencies
+            WHERE code = $1;",
             code
         )
         .fetch_one(&mut conn)
@@ -62,7 +64,7 @@ impl CurrencyModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query_as!(CurrencyModel, "SELECT * FROM enabled_currencies;")
+        let result = sqlx::query_as!(CurrencyModel, "SELECT * FROM currencies;")
             .fetch_all(&mut conn)
             .await;
 
@@ -92,7 +94,7 @@ impl CurrencyModel {
 
         let result = sqlx::query_as!(
             CurrencyModel,
-            "SELECT * FROM enabled_currencies WHERE enabled = true;",
+            "SELECT * FROM currencies WHERE enabled = true;",
         )
         .fetch_all(&mut conn)
         .await;
@@ -126,7 +128,7 @@ impl CurrencyModel {
         let mut conn = conn.unwrap();
 
         let result = sqlx::query!(
-            "UPDATE enabled_currencies SET enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE code = $2;",
+            "UPDATE currencies SET enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE code = $2;",
             enabled,
             code
         )
@@ -147,6 +149,8 @@ impl CurrencyModel {
         context: Context,
         code: String,
         name: String,
+        minor_unit_divisor: i32,
+        symbol: Option<String>,
         enabled: bool,
     ) -> Result<u64, sqlx::Error> {
         let conn = context.database_pool.acquire().await;
@@ -161,9 +165,13 @@ impl CurrencyModel {
         let mut conn = conn.unwrap();
 
         let result = sqlx::query!(
-            "INSERT INTO enabled_currencies (code, name, enabled) VALUES ($1, $2, $3);",
+            "INSERT INTO currencies
+            (code, name, minor_unit_divisor, symbol, enabled)
+            VALUES ($1, $2, $3, $4, $5);",
             code,
             name,
+            minor_unit_divisor,
+            symbol,
             enabled,
         )
         .execute(&mut conn)
@@ -191,7 +199,7 @@ impl CurrencyModel {
 
         let mut conn = conn.unwrap();
 
-        let result = sqlx::query!("DELETE FROM enabled_currencies WHERE code = $1;", code)
+        let result = sqlx::query!("DELETE FROM currencies WHERE code = $1;", code)
             .execute(&mut conn)
             .await;
 

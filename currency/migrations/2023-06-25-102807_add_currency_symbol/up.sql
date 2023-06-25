@@ -1,0 +1,2 @@
+ALTER TABLE currencies
+ADD COLUMN symbol VARCHAR(8) DEFAULT NULL;
