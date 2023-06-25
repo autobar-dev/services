@@ -1,17 +1,18 @@
 use actix_web_lab::sse::{self, SendError};
 use chrono::{DateTime, Utc};
-use deadpool_redis::redis;
 use futures_lite::stream::StreamExt;
 use lapin::options::{
-    BasicAckOptions, BasicConsumeOptions, QueueDeclareOptions, QueueDeleteOptions,
+    BasicAckOptions, BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions,
+    QueueDeclareOptions, QueueDeleteOptions,
 };
 use lapin::types::FieldTable;
+use lapin::ExchangeKind;
 use std::str;
 
 use std::time::Duration;
 
 use crate::types;
-use crate::utils::{client_identifier_to_queue_name, client_identifier_to_redis_key};
+use crate::utils::client_identifier_to_exchange_name;
 
 use super::Message;
 
@@ -29,6 +30,8 @@ pub struct Client {
     pub client_type: types::ClientType,
     pub identifier: String,
     pub sse_sender: sse::Sender, // shouldnt be pub?
+
+    pub queue_name: Option<String>,
 }
 
 impl Client {
@@ -42,6 +45,7 @@ impl Client {
             client_type,
             identifier,
             sse_sender,
+            queue_name: None,
         }
     }
 
@@ -75,19 +79,35 @@ impl Client {
     }
 
     pub async fn listen(mut self, context: types::AppContext) -> anyhow::Result<()> {
-        let now: DateTime<Utc> = Utc::now();
-        let now_string = now.to_rfc3339();
-
-        let mut conn = context.clone().redis_pool.get().await?;
-
         let client_type = self.client_type;
         let identifier = self.clone().identifier;
 
         let _ = context
             .amqp_channel
-            .queue_declare(
-                client_identifier_to_queue_name(client_type, identifier.clone()).as_str(),
-                QueueDeclareOptions::default(),
+            .exchange_declare(
+                &client_identifier_to_exchange_name(client_type, identifier.clone()),
+                ExchangeKind::Fanout,
+                ExchangeDeclareOptions::default(),
+                FieldTable::default(),
+            )
+            .await?;
+
+        let mut queue_declare_options = QueueDeclareOptions::default();
+        queue_declare_options.exclusive = true;
+        let queue = context
+            .amqp_channel
+            .queue_declare("", queue_declare_options, FieldTable::default())
+            .await?;
+
+        self.queue_name = Some(queue.name().to_string());
+
+        let _ = context
+            .amqp_channel
+            .queue_bind(
+                self.queue_name.clone().unwrap().as_str(),
+                &client_identifier_to_exchange_name(client_type, identifier.clone()),
+                "",
+                QueueBindOptions::default(),
                 FieldTable::default(),
             )
             .await?;
@@ -96,20 +116,18 @@ impl Client {
         let mut consumer = context
             .amqp_channel
             .basic_consume(
-                client_identifier_to_queue_name(client_type, identifier.clone()).as_str(),
+                self.queue_name.clone().unwrap().as_str(),
                 consumer_tag.as_str(),
                 BasicConsumeOptions::default(),
                 FieldTable::default(),
             )
             .await?;
 
-        redis::cmd("SET")
-            .arg(&[
-                client_identifier_to_redis_key(client_type, identifier.clone()),
-                now_string,
-            ])
-            .query_async(&mut conn)
-            .await?;
+        log::info!(
+            "consuming queue {} as consumer_tag {}",
+            self.queue_name.clone().unwrap(),
+            consumer_tag
+        );
 
         self.state = ClientState::Listening;
 
@@ -120,7 +138,6 @@ impl Client {
         heartbeat_interval.tick().await; // ticks immediately
 
         let heartbeat_context_clone = context.clone();
-
         let heartbeat_self_clone = self.clone();
 
         log::debug!(
@@ -208,20 +225,10 @@ impl Client {
             self.client_type
         );
 
-        let mut conn = context.redis_pool.get().await?;
-
-        redis::cmd("DEL")
-            .arg(client_identifier_to_redis_key(
-                self.client_type,
-                self.clone().identifier,
-            ))
-            .query_async(&mut conn)
-            .await?;
-
         context
             .amqp_channel
             .queue_delete(
-                &client_identifier_to_queue_name(self.client_type, self.clone().identifier),
+                self.queue_name.unwrap().as_str(),
                 QueueDeleteOptions::default(),
             )
             .await?;

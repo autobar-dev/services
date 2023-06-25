@@ -5,7 +5,6 @@ mod types;
 mod utils;
 
 use actix_web::{web::Data, App, HttpServer};
-use deadpool_redis::Runtime;
 use std::fs;
 
 #[actix_web::main]
@@ -14,16 +13,6 @@ async fn main() -> Result<(), ()> {
         .or_else::<(), _>(|err| panic!("error loading log4rs.yaml: {:?}", err));
 
     let config = config::load().unwrap_or_else(|err| panic!("error loading config: {:?}", err));
-
-    let redis_pool_config = deadpool_redis::Config::from_url(config.clone().redis_url);
-    let redis_pool = redis_pool_config
-        .create_pool(Some(Runtime::Tokio1))
-        .unwrap_or_else(|err| panic!("could not create Redis pool: {:?}", err));
-
-    let _ = redis_pool
-        .get()
-        .await
-        .unwrap_or_else(|err| panic!("failed to connect to Redis: {:?}", err));
 
     let amqp_connection = lapin::Connection::connect(
         config.amqp_url.as_str(),
@@ -48,7 +37,6 @@ async fn main() -> Result<(), ()> {
 
     let app_context = types::AppContext {
         config: config.clone(),
-        redis_pool,
         amqp_channel,
         meta: types::Meta {
             hash: meta_hash,

@@ -1,11 +1,12 @@
 use lapin::{options::BasicPublishOptions, BasicProperties};
 use serde_json::json;
 
-use crate::types::{AppContext, ClientType, Message};
+use crate::{
+    types::{AppContext, ClientType, Message},
+    utils::client_identifier_to_exchange_name,
+};
 
-use super::client_identifier_to_queue_name;
-
-pub async fn publish_to_queue(
+pub async fn publish_to_exchange(
     context: AppContext,
     client_type: ClientType,
     client_identifier: String,
@@ -19,8 +20,8 @@ pub async fn publish_to_queue(
     context
         .amqp_channel
         .basic_publish(
+            &client_identifier_to_exchange_name(client_type, client_identifier),
             "",
-            client_identifier_to_queue_name(client_type, client_identifier).as_str(),
             BasicPublishOptions::default(),
             bytes_to_publish,
             BasicProperties::default(),

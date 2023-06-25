@@ -1,11 +1,10 @@
 use actix_web::{post, web, HttpResponse, Responder};
-use deadpool_redis::redis;
 
 use serde::Deserialize;
 
 use crate::{
     types::{AppContext, ClientType, CommandMessage, Message},
-    utils::{client_identifier_to_redis_key, publish_to_queue},
+    utils::publish_to_exchange,
 };
 
 #[derive(Clone, Debug, Deserialize)]
@@ -46,44 +45,12 @@ pub async fn send_command_route(
 
     let client_type = client_type.unwrap();
 
-    let conn = context.redis_pool.get().await;
-
-    if conn.is_err() {
-        return HttpResponse::InternalServerError().body("could not get redis connection");
-    }
-
-    let mut conn = conn.unwrap();
-
-    let client_connected: Result<bool, redis::RedisError> = redis::cmd("EXISTS")
-        .arg(client_identifier_to_redis_key(
-            client_type,
-            body.identifier.clone(),
-        ))
-        .query_async(&mut conn)
-        .await;
-
-    if client_connected.is_err() {
-        log::error!(
-            "failed to retrieve if client is connected: {:?}",
-            client_connected.unwrap_err()
-        );
-
-        return HttpResponse::InternalServerError()
-            .body("failed to retrieve if client is connected");
-    }
-
-    let client_connected = client_connected.unwrap();
-
-    if !client_connected {
-        return HttpResponse::NotFound().body("client not found");
-    }
-
     let message = CommandMessage {
         command: body.command.clone(),
         args: body.args.clone(),
     };
 
-    let publish_result = publish_to_queue(
+    let publish_result = publish_to_exchange(
         context,
         client_type,
         body.identifier.clone(),
@@ -95,5 +62,5 @@ pub async fn send_command_route(
         return HttpResponse::InternalServerError().body("could not deliver message");
     }
 
-    HttpResponse::Ok().body("successfully sent")
+    HttpResponse::Ok().body("successfully submitted")
 }

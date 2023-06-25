@@ -1,15 +1,11 @@
 use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 use actix_web_lab::sse;
-use deadpool_redis::redis;
 use serde::Deserialize;
 
-use crate::{
-    types::{
-        self,
-        consts::{SESSION_COOKIE_NAME, SESSION_HEADER_NAME},
-        Client,
-    },
-    utils::client_identifier_to_redis_key,
+use crate::types::{
+    self,
+    consts::{SESSION_COOKIE_NAME, SESSION_HEADER_NAME},
+    Client,
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -65,46 +61,11 @@ pub async fn events_route(
     }
 
     let session_data = session_data.unwrap();
-
     if session_data.is_none() {
         return HttpResponse::Unauthorized().body("session invalid");
     }
 
     let session_data = session_data.unwrap();
-
-    let redis_connection = context.redis_pool.get().await;
-
-    if redis_connection.is_err() {
-        log::error!("failed to get Redis connection");
-        return HttpResponse::InternalServerError().body("failed to acquire connection to Redis");
-    }
-
-    let mut redis_connection = redis_connection.unwrap();
-
-    let client_connected: Result<bool, redis::RedisError> = redis::cmd("EXISTS")
-        .arg(client_identifier_to_redis_key(
-            session_data.client_type,
-            session_data.client_identifier.clone(),
-        ))
-        .query_async(&mut redis_connection)
-        .await;
-
-    if client_connected.is_err() {
-        log::error!("failed to get client state from Redis");
-        return HttpResponse::InternalServerError().body("failed to get client state from Redis");
-    }
-
-    let client_connected = client_connected.unwrap();
-
-    if client_connected {
-        log::debug!(
-            "client with identifier {} is already connected",
-            session_data.client_identifier.clone()
-        );
-        return HttpResponse::BadRequest()
-            .body("client is already connected or connection still shutting down");
-    }
-
     let (sender, sse_stream) = sse::channel(2);
 
     let client = Client::new(
@@ -117,7 +78,6 @@ pub async fn events_route(
 
     if listen_result.is_err() {
         log::error!("Listen error: {:?}", listen_result.unwrap_err());
-
         return HttpResponse::InternalServerError().body("failed to listen");
     }
 
