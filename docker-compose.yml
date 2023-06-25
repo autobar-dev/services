@@ -9,7 +9,7 @@ services:
       - currency.env
     environment:
       - PORT=80
-      - PAST_RATE_RETENTION=172800
+      - PAST_RATE_RETENTION_SECONDS=172800
     build:
       context: ./currency
       args:
