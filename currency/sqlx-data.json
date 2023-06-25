@@ -1,55 +1,5 @@
 {
   "db": "PostgreSQL",
-  "228717e6fe23f4eedc0d3c98e940f2f8a371036d81d152c708c2b377818e89b0": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Int4"
-        },
-        {
-          "name": "code",
-          "ordinal": 1,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "name",
-          "ordinal": 2,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "enabled",
-          "ordinal": 3,
-          "type_info": "Bool"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 4,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 5,
-          "type_info": "Timestamptz"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text"
-        ]
-      }
-    },
-    "query": "SELECT * \n            FROM enabled_currencies\n            WHERE code = $1"
-  },
   "27887fc79335ac10d9954a7b41b012d106d5978cdf1ba6a321852c1eeabaff73": {
     "describe": {
       "columns": [
@@ -95,21 +45,32 @@
     },
     "query": "SELECT * FROM rates WHERE from_currency = $1 AND to_currency = $2;"
   },
-  "475775f2717ac41bd36462ba807b1bda63f27d5e75d44d72dd0603741c448918": {
+  "3462e758636ef03708509c422e8febe3effa97df5b97037df9905febcdd69667": {
     "describe": {
       "columns": [],
       "nullable": [],
       "parameters": {
         "Left": [
-          "Varchar",
-          "Varchar",
-          "Float8"
+          "Bool",
+          "Text"
         ]
       }
     },
-    "query": "\n            INSERT INTO rates\n            (from_currency, to_currency, rate)\n            VALUES ($1, $2, $3)\n            ON CONFLICT\n            ON CONSTRAINT rates_from_currency_to_currency_key\n            DO UPDATE SET\n              rate = $3,\n              updated_at = CURRENT_TIMESTAMP;\n            "
+    "query": "UPDATE currencies SET enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE code = $2;"
   },
-  "5c2f87cbae416b3c3e8a41737f72f5f696105e861bc40be63399dbee31b62397": {
+  "551176a0a349edc83df7dc68b14b8d0f957a253212ffdd1bdb278ec49d262c09": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "DELETE FROM currencies WHERE code = $1;"
+  },
+  "561a6705722e2f6697177c3019cfe0f2b36a006d113ac51e09268313c2899318": {
     "describe": {
       "columns": [
         {
@@ -125,22 +86,32 @@
         {
           "name": "name",
           "ordinal": 2,
-          "type_info": "Varchar"
+          "type_info": "Text"
+        },
+        {
+          "name": "minor_unit_divisor",
+          "ordinal": 3,
+          "type_info": "Int4"
         },
         {
           "name": "enabled",
-          "ordinal": 3,
-          "type_info": "Bool"
-        },
-        {
-          "name": "created_at",
           "ordinal": 4,
-          "type_info": "Timestamptz"
+          "type_info": "Bool"
         },
         {
           "name": "updated_at",
           "ordinal": 5,
           "type_info": "Timestamptz"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 6,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "symbol",
+          "ordinal": 7,
+          "type_info": "Varchar"
         }
       ],
       "nullable": [
@@ -149,13 +120,15 @@
         false,
         false,
         false,
-        false
+        false,
+        false,
+        true
       ],
       "parameters": {
         "Left": []
       }
     },
-    "query": "SELECT * FROM enabled_currencies WHERE enabled = true;"
+    "query": "SELECT * FROM currencies WHERE enabled = true;"
   },
   "8395fbd337d88b09fde49e52a9bd8552d37793b57b9c8df489530a12d10f84b8": {
     "describe": {
@@ -170,20 +143,7 @@
     },
     "query": "DELETE FROM rates WHERE from_currency = $1 AND to_currency = $2;"
   },
-  "90d8fd77d5470b129ef619f82eb6f3af7260566d3d3da9b962b904258d1cc593": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": [
-          "Bool",
-          "Text"
-        ]
-      }
-    },
-    "query": "UPDATE enabled_currencies SET enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE code = $2;"
-  },
-  "cd00388b64d74d0f0d3c0ae506f27eec4dc8450b88796791a98e6be2980a2692": {
+  "a0c0c4a868371631344a95c0f170c1a3fbddcb7ad1e8d6c261ac406153a94d31": {
     "describe": {
       "columns": [],
       "nullable": [],
@@ -191,25 +151,13 @@
         "Left": [
           "Varchar",
           "Varchar",
-          "Bool"
+          "Float8"
         ]
       }
     },
-    "query": "INSERT INTO enabled_currencies (code, name, enabled) VALUES ($1, $2, $3);"
+    "query": "\n            INSERT INTO rates\n            (from_currency, to_currency, rate)\n            VALUES ($1, $2, $3)\n            ON CONFLICT\n            ON CONSTRAINT rate_from_to_combination_unique\n            DO UPDATE SET\n              rate = $3,\n              updated_at = CURRENT_TIMESTAMP;\n            "
   },
-  "ce74d866cb04786e3cafc187ebf5348a0640fdcefc8505583f652edaadd5ec98": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": [
-          "Text"
-        ]
-      }
-    },
-    "query": "DELETE FROM enabled_currencies WHERE code = $1;"
-  },
-  "fa09708ebf3164993234985c70ab40c201ede6bcba711d1bf362ed17584694c3": {
+  "ae317e1735507fc4afe2e9dc5c1b963746b748aaeef86455f38de5bc1dea0390": {
     "describe": {
       "columns": [
         {
@@ -225,22 +173,32 @@
         {
           "name": "name",
           "ordinal": 2,
-          "type_info": "Varchar"
+          "type_info": "Text"
+        },
+        {
+          "name": "minor_unit_divisor",
+          "ordinal": 3,
+          "type_info": "Int4"
         },
         {
           "name": "enabled",
-          "ordinal": 3,
-          "type_info": "Bool"
-        },
-        {
-          "name": "created_at",
           "ordinal": 4,
-          "type_info": "Timestamptz"
+          "type_info": "Bool"
         },
         {
           "name": "updated_at",
           "ordinal": 5,
           "type_info": "Timestamptz"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 6,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "symbol",
+          "ordinal": 7,
+          "type_info": "Varchar"
         }
       ],
       "nullable": [
@@ -249,12 +207,92 @@
         false,
         false,
         false,
-        false
+        false,
+        false,
+        true
       ],
       "parameters": {
         "Left": []
       }
     },
-    "query": "SELECT * FROM enabled_currencies;"
+    "query": "SELECT * FROM currencies;"
+  },
+  "b4fef00bcfcdaf5eab0dee123c58fe6eca32e2182ee720c142a66ed245759601": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text",
+          "Int4",
+          "Varchar",
+          "Bool"
+        ]
+      }
+    },
+    "query": "INSERT INTO currencies\n            (code, name, minor_unit_divisor, symbol, enabled)\n            VALUES ($1, $2, $3, $4, $5);"
+  },
+  "ecbeee297aa78104493b4f6bb71cdd07cc1174b936b801e229cd962f4addc755": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "code",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "minor_unit_divisor",
+          "ordinal": 3,
+          "type_info": "Int4"
+        },
+        {
+          "name": "enabled",
+          "ordinal": 4,
+          "type_info": "Bool"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 6,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "symbol",
+          "ordinal": 7,
+          "type_info": "Varchar"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT * \n            FROM currencies\n            WHERE code = $1;"
   }
 }
