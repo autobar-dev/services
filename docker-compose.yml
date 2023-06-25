@@ -41,7 +41,6 @@ services:
       - PORT=80
       - SSE_HEARTBEAT_INTERVAL=5
       - AUTH_SERVICE_URL=http://authservice
-      - REDIS_URL=redis://redis:6379
     build:
       context: ./realtime
       args:
