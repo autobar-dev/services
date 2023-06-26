@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"fmt"
+
 	"go.a5r.dev/services/module/types"
 	"go.a5r.dev/services/module/utils"
 )
 
-func CreateModuleController(app_context *types.AppContext) (*types.Module, error) {
+func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleResponse, error) {
 	mr := app_context.Repositories.Module
+	ar := app_context.Repositories.Auth
 
 	valid_serial_number := false
 	serial_number := ""
@@ -25,7 +28,17 @@ func CreateModuleController(app_context *types.AppContext) (*types.Module, error
 		return nil, err
 	}
 
-	module, err := GetModuleController(app_context, *serial_number_returned)
+	service_module, err := ar.Create(*serial_number_returned)
+	if err != nil {
+		fmt.Printf("IMPORTANT: failed to create module in auth service: %+v\n", err)
+		return nil, err
+	}
 
-	return module, nil
+	module, err := GetModuleController(app_context, *serial_number_returned)
+	if err != nil {
+		return nil, err
+	}
+
+	cmr := utils.ConstructCreateModuleResponse(service_module, module)
+	return cmr, nil
 }

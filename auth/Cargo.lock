@@ -1684,6 +1684,7 @@ dependencies = [
  "fancy-regex",
  "log",
  "log4rs",
+ "rand",
  "serde",
  "serde_json",
  "serde_repr",

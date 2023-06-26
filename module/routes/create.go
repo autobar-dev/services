@@ -7,9 +7,9 @@ import (
 )
 
 type CreateModuleRouteResponse struct {
-	Status string        `json:"status"`
-	Data   *types.Module `json:"data"`
-	Error  *string       `json:"error"`
+	Status string                      `json:"status"`
+	Data   *types.CreateModuleResponse `json:"data"`
+	Error  *string                     `json:"error"`
 }
 
 func CreateModuleRoute(c echo.Context) error {
@@ -21,14 +21,14 @@ func CreateModuleRoute(c echo.Context) error {
 	if err != nil {
 		err := err.Error()
 
-		return rest_context.JSON(400, &GetModuleRouteResponse{
+		return rest_context.JSON(400, &CreateModuleRouteResponse{
 			Status: "error",
 			Data:   nil,
 			Error:  &err,
 		})
 	}
 
-	return rest_context.JSON(200, &GetModuleRouteResponse{
+	return rest_context.JSON(200, &CreateModuleRouteResponse{
 		Status: "ok",
 		Data:   module,
 		Error:  nil,

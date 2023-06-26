@@ -44,6 +44,7 @@ func main() {
 		Meta: utils.LoadMeta(),
 		Repositories: &types.Repositories{
 			Module: repositories.NewModuleRepository(database),
+			Auth:   repositories.NewAuthRepository(config.AuthServiceURL),
 		},
 	}
 

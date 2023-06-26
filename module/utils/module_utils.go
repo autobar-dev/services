@@ -8,7 +8,7 @@ import (
 )
 
 func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
-	var prices map[string]int32
+	var prices map[string]int
 	_ = json.Unmarshal([]byte(pm.Prices), &prices)
 
 	return &types.Module{
@@ -18,5 +18,17 @@ func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
 		ProductSlug:  pm.ProductSlug,
 		Prices:       prices,
 		CreatedAt:    pm.CreatedAt,
+	}
+}
+
+func ConstructCreateModuleResponse(sm *repositories.ServiceModule, module *types.Module) *types.CreateModuleResponse {
+	return &types.CreateModuleResponse{
+		Id:           module.Id,
+		SerialNumber: module.SerialNumber,
+		StationSlug:  module.StationSlug,
+		ProductSlug:  module.ProductSlug,
+		Prices:       module.Prices,
+		CreatedAt:    module.CreatedAt,
+		PrivateKey:   sm.PrivateKey,
 	}
 }

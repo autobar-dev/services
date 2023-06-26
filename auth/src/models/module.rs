@@ -31,7 +31,7 @@ impl ModuleModel {
         .await
     }
 
-    pub async fn _create(
+    pub async fn create(
         context: types::AppContext,
         serial_number: String,
         private_key_hash: String,
