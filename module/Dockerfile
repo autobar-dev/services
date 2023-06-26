@@ -13,7 +13,7 @@ RUN echo ${VERSION} > .meta/VERSION
 
 # Copy source code and build
 COPY . .
-RUN go build -o ./service-wallet
+RUN go build -o ./service-module
 
 # Runtime image
 FROM alpine AS runtime
@@ -22,6 +22,6 @@ WORKDIR /app
 
 COPY --from=builder /app/.meta ./.meta
 # COPY --from=builder /app/log4rs.yaml ./log4rs.yaml
-COPY --from=builder /app/service-wallet ./service-wallet
+COPY --from=builder /app/service-module ./service-module
 
-CMD ["./service-wallet"]
+CMD ["./service-module"]

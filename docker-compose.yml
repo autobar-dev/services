@@ -65,6 +65,21 @@ services:
     depends_on:
       - redis
 
+  moduleservice:
+    env_file:
+      # specify DATABASE_URL
+      - module.env
+    environment:
+      - PORT=80
+      - AUTH_SERVICE_URL=http://authservice
+    build:
+      context: ./module
+      args:
+        COMMIT_SHA: "module-no-commit"
+        VERSION: "0.0.0-test"
+    depends_on:
+      - redis
+
   gateway:
     image: "nginx"
     ports:
