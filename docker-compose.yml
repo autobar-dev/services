@@ -77,8 +77,6 @@ services:
       args:
         COMMIT_SHA: "module-no-commit"
         VERSION: "0.0.0-test"
-    depends_on:
-      - redis
 
   gateway:
     image: "nginx"
@@ -86,3 +84,9 @@ services:
       - "4000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - currencyservice
+      - authservice
+      - realtimeservice
+      - walletservice
+      - moduleservice
