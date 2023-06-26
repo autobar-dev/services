@@ -1,0 +1,15 @@
+package types
+
+import "time"
+
+type Module struct {
+	Id           int32  `json:"id"`
+	SerialNumber string `json:"serial_number"`
+
+	StationSlug *string `json:"station_slug"`
+	ProductSlug *string `json:"product_slug"`
+
+	Prices map[string]int32 `json:"prices"`
+
+	CreatedAt time.Time `json:"created_at"`
+}
