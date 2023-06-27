@@ -27,3 +27,12 @@ type CreateModuleResponse struct {
 
 	PrivateKey string `json:"private_key"`
 }
+
+type ModuleSentReport struct {
+	Status string `json:"status"`
+}
+
+type ModuleReport struct {
+	Status       string `json:"status"`
+	ResponseTime int    `json:"response_time"`
+}

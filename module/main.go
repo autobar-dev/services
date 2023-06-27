@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
+	"github.com/rabbitmq/amqp091-go"
 
 	"go.a5r.dev/services/module/repositories"
 	"go.a5r.dev/services/module/routes"
@@ -34,6 +35,21 @@ func main() {
 		fmt.Println("failed to connect to database", err)
 		os.Exit(1)
 	}
+	defer database.Close()
+
+	amqp_connection, err := amqp091.Dial(config.AmqpURL)
+	if err != nil {
+		fmt.Println("failed to connect to queue", err)
+		os.Exit(1)
+	}
+	defer amqp_connection.Close()
+
+	amqp_channel, err := amqp_connection.Channel()
+	if err != nil {
+		fmt.Println("failed to open a channel in queue", err)
+		os.Exit(1)
+	}
+	defer amqp_channel.Close()
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -41,10 +57,13 @@ func main() {
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		Meta: utils.LoadMeta(),
+		Meta:        utils.LoadMeta(),
+		AmqpChannel: amqp_channel,
+		Config:      config,
 		Repositories: &types.Repositories{
-			Module: repositories.NewModuleRepository(database),
-			Auth:   repositories.NewAuthRepository(config.AuthServiceURL),
+			Module:   repositories.NewModuleRepository(database),
+			Auth:     repositories.NewAuthRepository(config.AuthServiceURL),
+			Realtime: repositories.NewRealtimeRepository(config.RealtimeServiceURL),
 		},
 	}
 
@@ -60,7 +79,9 @@ func main() {
 
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/", routes.GetModuleRoute)
+	e.GET("/request-report", routes.RequestReportRoute)
 	e.POST("/create", routes.CreateModuleRoute)
+	e.POST("/report", routes.ReportRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }
