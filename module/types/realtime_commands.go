@@ -7,5 +7,5 @@ const (
 )
 
 type RequestReportCommandArgs struct {
-	Channel string `json:"channel"`
+	Queue string `json:"queue"`
 }

@@ -20,7 +20,7 @@ func RequestReportRoute(c echo.Context) error {
 	if serial_number == "" {
 		err := "missing serial_number query argument"
 
-		return rest_context.JSON(400, &GetModuleRouteResponse{
+		return rest_context.JSON(400, &RequestReportRouteResponse{
 			Status: "error",
 			Data:   nil,
 			Error:  &err,
@@ -31,16 +31,16 @@ func RequestReportRoute(c echo.Context) error {
 	if err != nil {
 		err := err.Error()
 
-		return rest_context.JSON(400, &GetModuleRouteResponse{
+		return rest_context.JSON(400, &RequestReportRouteResponse{
 			Status: "error",
 			Data:   nil,
 			Error:  &err,
 		})
 	}
 
-	return rest_context.JSON(200, &GetModuleRouteResponse{
+	return rest_context.JSON(200, &RequestReportRouteResponse{
 		Status: "ok",
-		Data:   module,
+		Data:   module_report,
 		Error:  nil,
 	})
 }

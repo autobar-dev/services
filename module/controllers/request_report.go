@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -30,7 +29,7 @@ func RequestReportController(app_context *types.AppContext, serial_number string
 	queue_name := queue.Name
 
 	args := &types.RequestReportCommandArgs{
-		Channel: queue.Name,
+		Queue: queue.Name,
 	}
 
 	args_json_bytes, _ := json.Marshal(args)
@@ -84,7 +83,11 @@ func RequestReportController(app_context *types.AppContext, serial_number string
 		return nil, err
 	}
 
-	// time_delta :=
-	// subtract start_time from received_time
+	time_delta := received_time.Sub(start_time)
 
+	module_report_response := &types.ModuleReport{
+		Status:       module_sent_report.Status,
+		ResponseTime: int(time_delta.Milliseconds()),
+	}
+	return module_report_response, nil
 }

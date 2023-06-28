@@ -6,6 +6,12 @@ import (
 	"go.a5r.dev/services/module/types"
 )
 
+type ReportRouteRequestBody struct {
+	Queue string `json:"queue"`
+
+	Status string `json:"status"`
+}
+
 type ReportRouteResponse struct {
 	Status string  `json:"status"`
 	Data   *string `json:"data"`
@@ -35,6 +41,18 @@ func ReportRoute(c echo.Context) error {
 		})
 	}
 
+	var rrrb ReportRouteRequestBody
+	err := rest_context.Bind(&rrrb)
+	if err != nil {
+		err := "missing or incorrect values for queue or status body parameters"
+
+		return rest_context.JSON(400, &ReportRouteResponse{
+			Status: "error",
+			Error:  &err,
+			Data:   nil,
+		})
+	}
+
 	session_data, err := controllers.VerifySessionController(&app_context, *session_id)
 	if err != nil {
 		err := err.Error()
@@ -55,11 +73,24 @@ func ReportRoute(c echo.Context) error {
 		})
 	}
 
-	// publish to queue
+	msr := &types.ModuleSentReport{
+		Status: rrrb.Status,
+	}
+
+	err = controllers.ReportController(&app_context, rrrb.Queue, *msr)
+	if err != nil {
+		err := err.Error()
+
+		return rest_context.JSON(400, &ReportRouteResponse{
+			Status: "error",
+			Data:   nil,
+			Error:  &err,
+		})
+	}
 
 	return rest_context.JSON(200, &CreateModuleRouteResponse{
 		Status: "ok",
-		Data:   module,
+		Data:   nil,
 		Error:  nil,
 	})
 }
