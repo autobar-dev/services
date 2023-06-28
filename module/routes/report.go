@@ -1,13 +1,16 @@
 package routes
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo/v4"
 	"go.a5r.dev/services/module/controllers"
 	"go.a5r.dev/services/module/types"
 )
 
 type ReportRouteRequestBody struct {
-	Queue string `json:"queue"`
+	SessionId string `json:"session_id"`
+	Queue     string `json:"queue"`
 
 	Status string `json:"status"`
 }
@@ -22,34 +25,36 @@ func ReportRoute(c echo.Context) error {
 	rest_context := c.(*types.RestContext)
 	app_context := *(*rest_context).AppContext
 
-	var session_id *string
-
-	session_from_query := c.QueryParam("session_id")
-	session_from_cookie, _ := c.Cookie("session_id")
-
-	if session_from_query != "" {
-		session_id = &session_from_query
-	} else if session_from_cookie != nil {
-		session_id = &session_from_cookie.Value
-	} else {
-		err := "session not available from either session or cookie"
-
-		return rest_context.JSON(400, &ReportRouteResponse{
-			Status: "error",
-			Data:   nil,
-			Error:  &err,
-		})
-	}
-
 	var rrrb ReportRouteRequestBody
 	err := rest_context.Bind(&rrrb)
 	if err != nil {
-		err := "missing or incorrect values for queue or status body parameters"
+		fmt.Println(err)
+		err := "missing or incorrect values for session_id, queue or status body parameters"
 
 		return rest_context.JSON(400, &ReportRouteResponse{
 			Status: "error",
 			Error:  &err,
 			Data:   nil,
+		})
+	}
+
+	var session_id *string
+
+	session_from_body := rrrb.SessionId
+	session_from_cookie, _ := c.Cookie("session_id")
+
+	if session_from_body != "" {
+		session_id = &session_from_body
+	} else if session_from_cookie != nil {
+		session_id = &session_from_cookie.Value
+	} else {
+		err := "session not available from either body or cookie"
+		fmt.Println(err)
+
+		return rest_context.JSON(400, &ReportRouteResponse{
+			Status: "error",
+			Data:   nil,
+			Error:  &err,
 		})
 	}
 

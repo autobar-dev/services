@@ -68,10 +68,13 @@ services:
   moduleservice:
     env_file:
       # specify DATABASE_URL
+      # specify AMQP_URL
       - module.env
     environment:
       - PORT=80
       - AUTH_SERVICE_URL=http://authservice
+      - REALTIME_SERVICE_URL=http://realtimeurl
+      - MODULE_REPORT_TIMEOUT_SECONDS=10
     build:
       context: ./module
       args:

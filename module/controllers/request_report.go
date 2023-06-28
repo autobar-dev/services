@@ -28,6 +28,20 @@ func RequestReportController(app_context *types.AppContext, serial_number string
 
 	queue_name := queue.Name
 
+	messages, err := amqp_channel.Consume(
+		queue_name,
+		"",    // consumer
+		true,  // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		_, _ = amqp_channel.QueueDelete(queue_name, false, false, true)
+		return nil, err
+	}
+
 	args := &types.RequestReportCommandArgs{
 		Queue: queue.Name,
 	}
@@ -38,20 +52,6 @@ func RequestReportController(app_context *types.AppContext, serial_number string
 	start_time := time.Now()
 
 	err = rr.SendCommand(serial_number, repositories.ModuleServiceRealtimeClientType, types.RequestReportCommandName, args_json)
-	if err != nil {
-		_, _ = amqp_channel.QueueDelete(queue_name, false, false, true)
-		return nil, err
-	}
-
-	messages, err := amqp_channel.Consume(
-		queue_name,
-		"",    // consumer
-		true,  // auto-ack
-		false, // exclusive
-		false, // no-local
-		false, // no-wait
-		nil,   // args
-	)
 	if err != nil {
 		_, _ = amqp_channel.QueueDelete(queue_name, false, false, true)
 		return nil, err
