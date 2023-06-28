@@ -73,7 +73,7 @@ services:
     environment:
       - PORT=80
       - AUTH_SERVICE_URL=http://authservice
-      - REALTIME_SERVICE_URL=http://realtimeurl
+      - REALTIME_SERVICE_URL=http://realtimeservice
       - MODULE_REPORT_TIMEOUT_SECONDS=10
     build:
       context: ./module
