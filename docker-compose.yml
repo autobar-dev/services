@@ -33,21 +33,21 @@ services:
         COMMIT_SHA: "auth-no-commit"
         VERSION: "0.0.0-test"
 
-  realtimeservice:
-    env_file:
-      # specify AMQP_URL
-      - realtime.env
-    environment:
-      - PORT=80
-      - SSE_HEARTBEAT_INTERVAL=5
-      - AUTH_SERVICE_URL=http://authservice
-    build:
-      context: ./realtime
-      args:
-        COMMIT_SHA: "realtime-no-commit"
-        VERSION: "0.0.0-test"
-    depends_on:
-      - redis
+  # realtimeservice:
+  #   env_file:
+  #     # specify AMQP_URL
+  #     - realtime.env
+  #   environment:
+  #     - PORT=80
+  #     - SSE_HEARTBEAT_INTERVAL=5
+  #     - AUTH_SERVICE_URL=http://authservice
+  #   build:
+  #     context: ./realtime
+  #     args:
+  #       COMMIT_SHA: "realtime-no-commit"
+  #       VERSION: "0.0.0-test"
+  #   depends_on:
+  #     - redis
 
   walletservice:
     env_file:
@@ -82,14 +82,15 @@ services:
         VERSION: "0.0.0-test"
 
   gateway:
-    image: "nginx"
+    image: "caddy:alpine"
     ports:
       - "4000:80"
+      - "4443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./Caddyfile:/etc/caddy/Caddyfile
     depends_on:
       - currencyservice
       - authservice
-      - realtimeservice
+      # - realtimeservice
       - walletservice
       - moduleservice

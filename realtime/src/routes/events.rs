@@ -1,5 +1,5 @@
 use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
-use actix_web_lab::sse;
+use actix_web_lab::sse::{self, ChannelStream};
 use serde::Deserialize;
 
 use crate::types::{
@@ -11,6 +11,12 @@ use crate::types::{
 #[derive(Debug, Clone, Deserialize)]
 pub struct EventsQuery {
     session: Option<String>,
+}
+
+impl Drop for Client {
+    fn drop(&mut self) {
+        log::info!("DROPPING CLIENT {}");
+    }
 }
 
 #[get("/events")]

@@ -1,0 +1,24 @@
+api.autobar.ovh
+
+header X-Internal ""
+
+handle_path /currency/* {
+  reverse_proxy http://currencyservice
+}
+
+handle_path /auth/* {
+  reverse_proxy http://authservice
+}
+
+# handle_path /realtime/* {
+#   reverse_proxy http://realtimeservice
+# }
+
+handle_path /wallet/* {
+  reverse_proxy http://walletservice
+}
+
+handle_path /module/* {
+  reverse_proxy http://moduleservice
+}
+

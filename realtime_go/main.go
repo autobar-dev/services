@@ -2,20 +2,17 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
-	"time"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
-	_ "github.com/lib/pq"
-	"github.com/rabbitmq/amqp091-go"
+	sse "github.com/r3labs/sse/v2"
+	amqp "github.com/rabbitmq/amqp091-go"
 
-	"go.a5r.dev/services/module/repositories"
-	"go.a5r.dev/services/module/routes"
-	"go.a5r.dev/services/module/types"
-	"go.a5r.dev/services/module/utils"
+	"go.a5r.dev/services/realtime/repositories"
+	"go.a5r.dev/services/realtime/routes"
+	"go.a5r.dev/services/realtime/types"
+	"go.a5r.dev/services/realtime/utils"
 )
 
 func main() {
@@ -30,16 +27,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	database, err := sqlx.Connect("postgres", config.DatabaseURL)
+	amqp_connection, err := amqp.Dial(config.AmqpURL)
 	if err != nil {
-		fmt.Println("failed to connect to database", err)
-		os.Exit(1)
-	}
-	defer database.Close()
-
-	amqp_connection, err := amqp091.Dial(config.AmqpURL)
-	if err != nil {
-		fmt.Println("failed to connect to queue", err)
+		fmt.Println("failed to connect to amqp", err)
 		os.Exit(1)
 	}
 	defer amqp_connection.Close()
@@ -51,7 +41,8 @@ func main() {
 	}
 	defer amqp_channel.Close()
 
-	rand.Seed(time.Now().UnixNano())
+	sse_server := sse.New()
+	defer sse_server.Close()
 
 	e := echo.New()
 	e.HideBanner = true
@@ -61,10 +52,9 @@ func main() {
 		AmqpChannel: amqp_channel,
 		Config:      config,
 		Repositories: &types.Repositories{
-			Module:   repositories.NewModuleRepository(database),
-			Auth:     repositories.NewAuthRepository(config.AuthServiceURL),
-			Realtime: repositories.NewRealtimeRepository(config.RealtimeServiceURL),
+			Auth: repositories.NewAuthRepository(config.AuthServiceURL),
 		},
+		SseServer: sse_server,
 	}
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -78,11 +68,7 @@ func main() {
 	})
 
 	e.GET("/meta", routes.MetaRoute)
-	e.GET("/", routes.GetModuleRoute)
-	e.GET("/get-all", routes.GetAllModulesRoute)
-	e.GET("/request-report", routes.RequestReportRoute)
-	e.POST("/create", routes.CreateModuleRoute)
-	e.POST("/report", routes.ReportRoute)
+	e.GET("/events", routes.EventsRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

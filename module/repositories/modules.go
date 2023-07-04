@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -44,6 +46,34 @@ func (mr ModuleRepository) Get(serial_number string) (*PostgresModule, error) {
 	}
 
 	return &pm, nil
+}
+
+func (mr ModuleRepository) GetAll() (*[]PostgresModule, error) {
+	get_module_query := `
+		SELECT id, serial_number, station_slug, product_slug, prices, created_at
+		FROM modules;
+	`
+
+	rows, err := mr.db.Queryx(get_module_query)
+	if err != nil {
+		return nil, err
+	}
+
+	modules := []PostgresModule{}
+
+	for rows.Next() {
+		var pm PostgresModule
+		err = rows.StructScan(&pm)
+
+		if err != nil {
+			fmt.Printf("cannot parse postgres module: %v\n", err)
+			return nil, errors.New("some modules failed to be parsed")
+		}
+
+		modules = append(modules, pm)
+	}
+
+	return &modules, nil
 }
 
 func (mr ModuleRepository) Create(serial_number string) (*string, error) {

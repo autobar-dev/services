@@ -78,9 +78,9 @@ impl Client {
         Ok(())
     }
 
-    pub async fn listen(mut self, context: types::AppContext) -> anyhow::Result<()> {
+    pub async fn listen(&mut self, context: types::AppContext) -> anyhow::Result<()> {
         let client_type = self.client_type;
-        let identifier = self.clone().identifier;
+        let identifier = self.clone().identifier.clone();
 
         let _ = context
             .amqp_channel
@@ -218,6 +218,7 @@ impl Client {
 
     pub async fn cancel(mut self, context: types::AppContext) -> anyhow::Result<()> {
         self.state = ClientState::Cancelling;
+        let queue_name = self.queue_name.clone().unwrap();
 
         log::debug!(
             "cancelling {} ({}) connection",
@@ -227,10 +228,7 @@ impl Client {
 
         context
             .amqp_channel
-            .queue_delete(
-                self.queue_name.unwrap().as_str(),
-                QueueDeleteOptions::default(),
-            )
+            .queue_delete(queue_name.as_str(), QueueDeleteOptions::default())
             .await?;
 
         log::debug!(
