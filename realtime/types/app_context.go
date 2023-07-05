@@ -3,11 +3,14 @@ package types
 import (
 	sse "github.com/r3labs/sse/v2"
 	amqp "github.com/rabbitmq/amqp091-go"
+
 	"go.a5r.dev/services/realtime/repositories"
 )
 
 type Repositories struct {
-	Auth *repositories.AuthRepository
+	Auth  *repositories.AuthRepository
+	Redis *repositories.RedisRepository
+	Mq    *repositories.MqRepository
 }
 
 type AppContext struct {

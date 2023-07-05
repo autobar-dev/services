@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
+
 	"go.a5r.dev/services/realtime/types"
 )
 
