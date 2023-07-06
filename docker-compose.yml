@@ -85,8 +85,8 @@ services:
   gateway:
     image: "caddy:alpine"
     ports:
-      - "4000:80"
-      - "4443:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
     depends_on:
