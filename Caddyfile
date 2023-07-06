@@ -1,6 +1,6 @@
 api.autobar.ovh
 
-header X-Internal ""
+request_header -X-Internal ""
 
 handle_path /currency/* {
   reverse_proxy http://currencyservice
@@ -11,10 +11,10 @@ handle_path /auth/* {
 }
 
 handle_path /realtime/* {
-  header Content-Type "text/event-stream"
-  header Connection "keep-alive"
-  header Cache-Control "no-cache"
-  header X-Accel-Buffering "no"
+  header Content-Type "text/event-stream" defer
+  header Connection "keep-alive" defer
+  header Cache-Control "no-cache" defer
+  header X-Accel-Buffering "no" defer
   
   reverse_proxy http://realtimeservice
 }
