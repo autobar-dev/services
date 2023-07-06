@@ -89,6 +89,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
+      - ~/Volumes/caddy/:/data
     depends_on:
       - currencyservice
       - authservice
