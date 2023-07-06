@@ -11,12 +11,15 @@ handle_path /auth/* {
 }
 
 handle_path /realtime/* {
-  header Content-Type "text/event-stream" defer
-  header Connection "keep-alive" defer
-  header Cache-Control "no-cache" defer
-  header X-Accel-Buffering "no" defer
   
-  reverse_proxy http://realtimeservice
+  reverse_proxy http://realtimeservice {
+    flush_interval -1
+
+    header_up Content-Type "text/event-stream"
+    header_up Connection "keep-alive"
+    header_up Cache-Control "no-cache"
+    header_up X-Accel-Buffering "no"
+  }
 }
 
 handle_path /wallet/* {
