@@ -11,6 +11,11 @@ handle_path /auth/* {
 }
 
 handle_path /realtime/* {
+  header Content-Type "text/event-stream"
+  header Connection "keep-alive"
+  header Cache-Control "no-cache"
+  header X-Accel-Buffering "no"
+  
   reverse_proxy http://realtimeservice
 }
 
