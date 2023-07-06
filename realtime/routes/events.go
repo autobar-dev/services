@@ -44,6 +44,8 @@ func EventsRoute(c echo.Context) error {
 
 	session_data, err := ar.VerifySession(session)
 	if err != nil {
+		fmt.Printf("error while verifying session: %+v\n", err)
+
 		return rest_context.JSON(400, &EventsRouteResponse{
 			Status: "error",
 			Error:  "session is not valid",
