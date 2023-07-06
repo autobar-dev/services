@@ -27,18 +27,29 @@ type ServiceSessionData struct {
 
 type AuthRepository struct {
 	service_url string
+	http_client *http.Client
 }
 
 func NewAuthRepository(service_url string) *AuthRepository {
+	client := &http.Client{}
+
 	return &AuthRepository{
 		service_url: service_url,
+		http_client: client,
 	}
 }
 
 func (ar AuthRepository) VerifySession(session string) (*ServiceSessionData, error) {
 	url := fmt.Sprintf("%s/session/verify?session_id=%s", ar.service_url, session)
 
-	response, err := http.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("X-Internal", "realtime")
+
+	response, err := ar.http_client.Do(req)
 	if err != nil {
 		return nil, err
 	}
