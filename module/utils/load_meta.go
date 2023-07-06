@@ -11,7 +11,7 @@ func LoadMeta() *types.Meta {
 	commit_sha := ""
 	version := ""
 
-	if commit_sha_bytes, err := os.ReadFile(".meta/COMMIT_SHA"); err == nil {
+	if commit_sha_bytes, err := os.ReadFile(".meta/HASH"); err == nil {
 		commit_sha = strings.TrimSpace(string(commit_sha_bytes))
 	}
 
