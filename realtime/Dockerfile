@@ -1,6 +1,8 @@
 # Builder image
 FROM golang:alpine AS builder
 
+RUN apk update && apk add git
+
 WORKDIR /app
 
 # Insert commit sha and version
