@@ -1,6 +1,9 @@
 # Builder image
 FROM golang:alpine AS builder
 
+ARG GITHUB_USER
+ARG GITHUB_PAT
+
 RUN apk update && apk add git
 RUN echo "machine github.com login $GITHUB_USER password $GITHUB_PAT" > ~/.netrc
 

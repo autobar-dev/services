@@ -41,7 +41,7 @@ blocks:
             - echo "Building dependencies stage..."
             - docker buildx build --load --progress=plain --target=deps-builder auth/
             - echo "Building image and pushing to GHCR..."
-            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-auth:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" auth/'
+            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-auth:latest-dev --build-arg GITHUB_USER=$GITHUB_USER --build-arg GITHUB_PAT=$GITHUB_PAT --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" auth/'
     dependencies: []
   - name: (s) Realtime - Build
     run:
