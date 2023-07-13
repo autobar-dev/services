@@ -56,8 +56,6 @@ blocks:
             - checkout
             - echo "Logging in to GHCR..."
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
-            - echo "Building dependencies stage..."
-            - docker buildx build --load --progress=plain --target=deps-builder realtime/
             - echo "Building image and pushing to GHCR..."
             - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-realtime:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" realtime/'
     dependencies: []
