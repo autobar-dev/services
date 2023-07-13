@@ -13,6 +13,7 @@ RUN echo ${VERSION} > .meta/VERSION
 
 # Copy source code and build
 COPY . .
+ENV GOPRIVATE=github.com/autobar-dev/shared-libraries
 RUN go build -o ./service-wallet
 
 # Runtime image

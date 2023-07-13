@@ -83,16 +83,28 @@ services:
         VERSION: "0.0.0-test"
 
   gateway:
-    image: "caddy:alpine"
+    image: "nginx"
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ~/Volumes/caddy/:/data
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - currencyservice
       - authservice
       - realtimeservice
       - walletservice
       - moduleservice
+  # gateway:
+  #   image: "caddy:alpine"
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - ~/Volumes/caddy/:/data
+  #   depends_on:
+  #     - currencyservice
+  #     - authservice
+  #     - realtimeservice
+  #     - walletservice
+  #     - moduleservice

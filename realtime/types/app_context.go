@@ -4,11 +4,12 @@ import (
 	sse "github.com/r3labs/sse/v2"
 	amqp "github.com/rabbitmq/amqp091-go"
 
+	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"go.a5r.dev/services/realtime/repositories"
 )
 
 type Repositories struct {
-	Auth  *repositories.AuthRepository
+	Auth  *authrepository.AuthRepository
 	Redis *repositories.RedisRepository
 	Mq    *repositories.MqRepository
 }

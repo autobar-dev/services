@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
 	sse "github.com/r3labs/sse/v2"
@@ -61,7 +62,7 @@ func main() {
 		AmqpChannel: amqp_channel,
 		Config:      config,
 		Repositories: &types.Repositories{
-			Auth:  repositories.NewAuthRepository(config.AuthServiceURL),
+			Auth:  authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
 			Redis: repositories.NewRedisRepository(redis_client),
 			Mq:    repositories.NewMqRepository(amqp_channel),
 		},

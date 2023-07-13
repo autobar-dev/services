@@ -1,18 +1,18 @@
 package utils
 
 import (
-	"go.a5r.dev/services/realtime/repositories"
+	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"go.a5r.dev/services/realtime/types"
 )
 
-func ServiceClientTypeToClientType(sct repositories.ServiceAuthClientType) types.ClientType {
+func ServiceClientTypeToClientType(sct authrepository.ServiceAuthClientType) types.ClientType {
 	var ct types.ClientType
 
 	switch sct {
-	case repositories.UserServiceAuthClientType:
+	case authrepository.UserServiceAuthClientType:
 		ct = types.UserClientType
 		break
-	case repositories.ModuleServiceAuthClientType:
+	case authrepository.ModuleServiceAuthClientType:
 		ct = types.ModuleClientType
 		break
 	}
