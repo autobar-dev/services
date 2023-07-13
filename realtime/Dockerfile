@@ -2,6 +2,7 @@
 FROM golang:alpine AS builder
 
 RUN apk update && apk add git
+RUN echo "machine github.com login $GITHUB_USER password $GITHUB_PAT" > ~/.netrc
 
 WORKDIR /app
 
