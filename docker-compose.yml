@@ -82,6 +82,19 @@ services:
         COMMIT_SHA: "module-no-commit"
         VERSION: "0.0.0-test"
 
+  productservice:
+    env_file:
+      # specify DATABASE_URL
+      - product.env
+    environment:
+      - PORT=80
+      - REDIS_URL=redis://redis:6379
+    build:
+      context: ./product
+      args:
+        COMMIT_SHA: "product-no-commit"
+        VERSION: "0.0.0-test"
+
   gateway:
     image: "nginx"
     ports:
@@ -94,17 +107,4 @@ services:
       - realtimeservice
       - walletservice
       - moduleservice
-  # gateway:
-  #   image: "caddy:alpine"
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #     - ~/Volumes/caddy/:/data
-  #   depends_on:
-  #     - currencyservice
-  #     - authservice
-  #     - realtimeservice
-  #     - walletservice
-  #     - moduleservice
+      - productservice

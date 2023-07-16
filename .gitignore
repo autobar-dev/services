@@ -3,3 +3,4 @@ realtime.env
 currency.env
 wallet.env
 module.env
+product.env
