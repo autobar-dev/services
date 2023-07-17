@@ -77,7 +77,7 @@ blocks:
     dependencies: []
   - name: (s) Module - Build
     run:
-      when: 'branch = ''develop'' and change_in(''/wallet/'', {default_branch: ''develop''})'
+      when: 'branch = ''develop'' and change_in(''/module/'', {default_branch: ''develop''})'
     task:
       secrets:
         - name: GitHub Credentials
@@ -90,4 +90,20 @@ blocks:
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image and pushing to GHCR..."
             - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-module:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" module/'
+    dependencies: []
+  - name: (s) Product - Build
+    run:
+      when: 'branch = ''develop'' and change_in(''/product/'', {default_branch: ''develop''})'
+    task:
+      secrets:
+        - name: GitHub Credentials
+      jobs:
+        - name: Build and push
+          commands:
+            - echo "Checking out..."
+            - checkout
+            - echo "Logging in to GHCR..."
+            - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
+            - echo "Building image and pushing to GHCR..."
+            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-product:latest-dev --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" product/'
     dependencies: []
