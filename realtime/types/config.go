@@ -12,6 +12,7 @@ type Config struct {
 	AuthServiceURL              string
 	AmqpURL                     string
 	RedisURL                    string
+	ServiceBasepath             string
 }
 
 func LoadEnvVars() (*Config, error) {
@@ -40,11 +41,14 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("REDIS_URL env var not set")
 	}
 
+	service_basepath := os.Getenv("SERVICE_BASEPATH")
+
 	return &Config{
 		Port:                        port,
 		SseHeartbeatIntervalSeconds: sse_heartbeat_interval,
 		AuthServiceURL:              auth_service_url,
 		AmqpURL:                     amqp_url,
 		RedisURL:                    redis_url,
+		ServiceBasepath:             service_basepath,
 	}, nil
 }

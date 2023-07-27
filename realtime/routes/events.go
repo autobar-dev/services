@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -86,12 +85,11 @@ func EventsRoute(c echo.Context) error {
 		new_stream_name := utils.ExchangeNameFromClientInfo(ct, id) + fmt.Sprintf("_%s", unique_id)
 
 		app_context.SseServer.CreateStream(new_stream_name)
+		redirect_uri := fmt.Sprintf("%s/events?stream=%s&identifier=%s&client_type=%s&session=%s", app_context.Config.ServiceBasepath, new_stream_name, identifier, client_type, session_from_query)
 
-		url_path_parts := strings.Split(rest_context.Request().URL.Path, "/")
-		url_path_parts_without_events := url_path_parts[:len(url_path_parts)-1]
-		basepath := fmt.Sprintf("/%s", strings.Join(url_path_parts_without_events, "/"))
+		fmt.Printf("redirect uri: %s\n", redirect_uri)
 
-		return rest_context.Redirect(302, fmt.Sprintf("%sevents?stream=%s&identifier=%s&client_type=%s&session=%s", basepath, new_stream_name, identifier, client_type, session_from_query))
+		return rest_context.Redirect(302, redirect_uri)
 	}
 
 	// There is a listener at this point
