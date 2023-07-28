@@ -8,8 +8,12 @@ mod utils;
 mod views;
 
 use actix_web::{web, HttpServer};
-use sqlx::postgres::PgPoolOptions;
-use std::{fs, process};
+use chrono::{DateTime, Utc};
+use sqlx::{
+    postgres::{PgConnectOptions, PgPoolOptions},
+    ConnectOptions,
+};
+use std::{fs, process, str::FromStr};
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
@@ -37,9 +41,14 @@ async fn main() -> Result<(), ()> {
         log::warn!("Cookies set will not have *secure* set");
     }
 
+    let pg_options = PgConnectOptions::from_str(&config.database_url)
+        .unwrap_or_else(|err| panic!("failed to parse database URI: {}", err))
+        .disable_statement_logging()
+        .clone();
+
     let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(&config.database_url)
+        .connect_with(pg_options)
         .await;
 
     if pool.is_err() {
@@ -49,22 +58,10 @@ async fn main() -> Result<(), ()> {
 
     let pool = pool.unwrap();
 
-    let meta_hash = fs::read_to_string(".meta/HASH")
-        .unwrap_or("".to_string())
-        .trim_end()
-        .to_string();
-    let meta_version = fs::read_to_string(".meta/VERSION")
-        .unwrap_or("".to_string())
-        .trim_end()
-        .to_string();
-
     let app_context = types::AppContext {
         database_pool: pool.clone(),
         config: config.clone(),
-        meta: types::Meta {
-            hash: meta_hash,
-            version: meta_version,
-        },
+        meta_factors: utils::get_meta_factors(),
     };
 
     let http_server = HttpServer::new(move || {
