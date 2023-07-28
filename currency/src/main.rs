@@ -14,7 +14,7 @@ use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     ConnectOptions,
 };
-use std::fs;
+
 use std::{process, str::FromStr};
 
 #[actix_web::main]
