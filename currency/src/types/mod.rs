@@ -2,12 +2,13 @@ mod currency;
 mod enabled_currency;
 pub mod error;
 mod meta;
-mod remote_rate;
 mod rate;
+mod remote_rate;
 
+pub use currency::Currency;
 pub use enabled_currency::EnabledCurrency;
 pub use error::RestError;
-pub use currency::Currency;
-pub use meta::Meta;
-pub use remote_rate::RemoteRate;
+pub use meta::{Meta, MetaFactors};
 pub use rate::Rate;
+pub use remote_rate::RemoteRate;
+
