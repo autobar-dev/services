@@ -83,7 +83,7 @@ func (pr ProductRepository) GetAll() (*[]PostgresProduct, error) {
 	return &products, nil
 }
 
-func (pr ProductRepository) Create(names map[string]string, descriptions map[string]string, cover string, enabled bool) (*string, error) {
+func (pr ProductRepository) Create(names map[string]string, descriptions map[string]string, cover *string, enabled bool) (*string, error) {
 	names_bytes, _ := json.Marshal(names)
 	names_str := string(names_bytes)
 
@@ -109,10 +109,12 @@ func (pr ProductRepository) Create(names map[string]string, descriptions map[str
 	return &product_id, nil
 }
 
-func (pr ProductRepository) Edit(id string, input PostgresEditProductInput) error {
+func (pr ProductRepository) Edit(id string, input *PostgresEditProductInput) error {
 	arg_counter := 2
 	args_list := make([]interface{}, 0)
 	args_names_list := []string{}
+
+	args_list = append(args_list, id) // first argument is always the id
 
 	if input.Names != nil {
 		names_bytes, _ := json.Marshal(input.Names)
@@ -149,6 +151,6 @@ func (pr ProductRepository) Edit(id string, input PostgresEditProductInput) erro
 	fmt.Printf("update products query: %s\n", edit_product_query)
 	fmt.Printf("update products arguments: %+v\n", args_list)
 
-	// _, err := pr.db.Exec(edit_product_query, args_list...)
-	return nil
+	_, err := pr.db.Exec(edit_product_query, args_list...)
+	return err
 }

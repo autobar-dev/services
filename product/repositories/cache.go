@@ -98,15 +98,13 @@ func (cr CacheRepository) SetMultipleSlugsToLatestSlug(all_slugs []string) error
 func (cr CacheRepository) ClearMultipleSlugsToLatestSlug(slugs []string) error {
 	ctx := context.Background()
 
-	command := []string{"DEL"}
-	del_args := []string{}
+	pipe := cr.redis.Pipeline()
 	for _, slug := range slugs {
-		del_args = append(del_args, generateSlugToLatestSlugCacheKey(slug))
+		pipe.Del(ctx, generateSlugToLatestSlugCacheKey(slug))
 	}
+	_, err := pipe.Exec(ctx)
 
-	command = append(command, del_args...)
-
-	return cr.redis.Do(ctx, command).Err()
+	return err
 }
 
 func (cr CacheRepository) GetProduct(id string) (*RedisProduct, error) {

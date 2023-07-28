@@ -72,6 +72,7 @@ func main() {
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/", routes.GetProductRoute)
 	e.POST("/new", routes.CreateProductRoute)
+	e.PUT("/edit", routes.EditProductRoute)
 	e.GET("/all", routes.GetAllProductsRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))

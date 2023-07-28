@@ -41,7 +41,7 @@ func CreateProductRoute(c echo.Context) error {
 		})
 	}
 
-	err = controllers.CreateProduct(&app_context, cprb.Slug, cprb.Names, cprb.Descriptions, cprb.Cover)
+	err = controllers.CreateProduct(&app_context, cprb.Slug, cprb.Names, cprb.Descriptions, cprb.Cover, true)
 	if err != nil {
 		err := err.Error()
 		return c.JSON(400, &CreateProductRouteResponse{

@@ -35,7 +35,10 @@ func GetAllProducts(ac *types.AppContext) (*[]types.Product, error) {
 		product := utils.PostgresProductToProduct(pp)
 
 		// Set cache
-		_ = cr.SetProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
+		err = cr.SetProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
+		if err != nil {
+			fmt.Printf("failed to set cache when getting all products: %v", err)
+		}
 
 		products = append(products, *utils.PostgresProductToProduct(pp))
 	}
@@ -45,7 +48,11 @@ func GetAllProducts(ac *types.AppContext) (*[]types.Product, error) {
 	for _, p := range products {
 		rps_save = append(rps_save, *utils.ProductToRedisProduct(p))
 	}
-	_ = cr.SetAllProducts(rps_save)
+	fmt.Println("all products cache miss. updating...")
+	err = cr.SetAllProducts(rps_save)
+	if err != nil {
+		fmt.Printf("failed to set cache when getting all products: %v", err)
+	}
 
 	return &products, nil
 }
