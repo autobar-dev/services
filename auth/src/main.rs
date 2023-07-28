@@ -8,12 +8,12 @@ mod utils;
 mod views;
 
 use actix_web::{web, HttpServer};
-use chrono::{DateTime, Utc};
+
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     ConnectOptions,
 };
-use std::{fs, process, str::FromStr};
+use std::{process, str::FromStr};
 
 #[actix_web::main]
 async fn main() -> Result<(), ()> {
