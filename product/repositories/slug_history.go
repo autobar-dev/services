@@ -73,3 +73,15 @@ func (shr SlugHistoryRepository) GetAllSlugsForProduct(product_id string) (*[]Po
 
 	return &pshes, nil
 }
+
+func (shr SlugHistoryRepository) Create(product_id string, slug string) error {
+	create_slug_history_entry_query := `
+	  INSERT INTO slug_history (
+			product_id, slug
+		) VALUES ($1, $2);
+  `
+
+	_, err := shr.db.Exec(create_slug_history_entry_query, product_id, slug)
+
+	return err
+}

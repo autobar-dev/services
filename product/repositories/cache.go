@@ -13,7 +13,8 @@ type RedisProduct struct {
 	Id           string            `json:"id"`
 	Names        map[string]string `json:"names"`
 	Descriptions map[string]string `json:"descriptions"`
-	Cover        *string           `json:"cover"`
+	Cover        string            `json:"cover"`
+	Enabled      bool              `json:"enabled"`
 	CreatedAt    time.Time         `json:"created_at"`
 	UpdatedAt    time.Time         `json:"updated_at"`
 }
@@ -45,6 +46,8 @@ const productIdToProductCacheKey = "product"
 func generateProductIdToProductCacheKey(id string) string {
 	return fmt.Sprintf("%s:%s", productIdToProductCacheKey, id)
 }
+
+const allProductsCacheKey = "product:all_products"
 
 func (cr CacheRepository) GetProductIdFromLatestSlug(ls string) (*string, error) {
 	ctx := context.Background()
@@ -125,12 +128,13 @@ func (cr CacheRepository) GetProduct(id string) (*RedisProduct, error) {
 	return &rp, nil
 }
 
-func (cr CacheRepository) SetProduct(id string, names map[string]string, descriptions map[string]string, cover *string, created_at time.Time, updated_at time.Time) error {
+func (cr CacheRepository) SetProduct(id string, names map[string]string, descriptions map[string]string, cover string, enabled bool, created_at time.Time, updated_at time.Time) error {
 	rp := RedisProduct{
 		Id:           id,
 		Names:        names,
 		Descriptions: descriptions,
 		Cover:        cover,
+		Enabled:      enabled,
 		CreatedAt:    created_at,
 		UpdatedAt:    updated_at,
 	}
@@ -148,6 +152,42 @@ func (cr CacheRepository) SetProduct(id string, names map[string]string, descrip
 
 func (cr CacheRepository) ClearProduct(id string) error {
 	ctx := context.Background()
-
 	return cr.redis.Del(ctx, generateProductIdToProductCacheKey(id)).Err()
+}
+
+func (cr CacheRepository) GetAllProducts() (*[]RedisProduct, error) {
+	ctx := context.Background()
+
+	rps_compressed, err := cr.redis.Get(ctx, allProductsCacheKey).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	rps_json, err := DecompressBytes([]byte(rps_compressed))
+	if err != nil {
+		return nil, err
+	}
+
+	var rps []RedisProduct
+	_ = json.Unmarshal(rps_json, &rps)
+
+	return &rps, nil
+}
+
+func (cr CacheRepository) SetAllProducts(products []RedisProduct) error {
+	rps_json_bytes, _ := json.Marshal(products)
+
+	// Compress
+	rps_compressed, err := CompressBytes(rps_json_bytes)
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+	return cr.redis.Set(ctx, allProductsCacheKey, rps_compressed, 0).Err()
+}
+
+func (cr CacheRepository) ClearAllProducts() error {
+	ctx := context.Background()
+	return cr.redis.Del(ctx, allProductsCacheKey).Err()
 }

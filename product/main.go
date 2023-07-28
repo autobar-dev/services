@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
+	"github.com/meilisearch/meilisearch-go"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/autobar-dev/services/product/repositories"
@@ -37,6 +38,12 @@ func main() {
 
 	redis_options, err := redis.ParseURL(config.RedisURL)
 	redis_client := redis.NewClient(redis_options)
+	defer redis_client.Close()
+
+	meili_client := meilisearch.NewClient(meilisearch.ClientConfig{
+		Host:   config.MeiliURL,
+		APIKey: config.MeiliApiKey,
+	})
 
 	e := echo.New()
 	e.HideBanner = true
@@ -48,6 +55,7 @@ func main() {
 			Cache:       repositories.NewCacheRepository(redis_client),
 			Product:     repositories.NewProductRepository(database),
 			SlugHistory: repositories.NewSlugHistoryRepository(database),
+			Meili:       repositories.NewMeiliRepository(meili_client),
 		},
 	}
 
@@ -63,6 +71,8 @@ func main() {
 
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/", routes.GetProductRoute)
+	e.POST("/new", routes.CreateProductRoute)
+	e.GET("/all", routes.GetAllProductsRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

@@ -6,6 +6,7 @@ type Repositories struct {
 	Product     *repositories.ProductRepository
 	SlugHistory *repositories.SlugHistoryRepository
 	Cache       *repositories.CacheRepository
+	Meili       *repositories.MeiliRepository
 }
 
 type AppContext struct {

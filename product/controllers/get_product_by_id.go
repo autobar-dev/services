@@ -23,7 +23,7 @@ func GetProductById(ac *types.AppContext, id string) (*types.Product, error) {
 
 	product := utils.PostgresProductToProduct(*pp)
 
-	err = cr.SetProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.CreatedAt, product.UpdatedAt)
+	err = cr.SetProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
 	if err != nil {
 		fmt.Printf("failed to set cache for product_id->product: %v\n", err)
 	}
