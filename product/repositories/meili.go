@@ -44,12 +44,10 @@ func (mr MeiliRepository) AddProduct(id string, names map[string]string, descrip
 		UpdatedAt:    updated_at,
 	}
 
-	r, err := mr.index.AddDocuments(mp)
+	_, err := mr.index.AddDocuments(mp)
 	if err != nil {
 		fmt.Printf("failed to add product to meili: %v\n", err)
 	}
-
-	fmt.Printf("meili result: %v\n", r)
 
 	return err
 }

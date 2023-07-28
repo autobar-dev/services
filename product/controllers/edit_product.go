@@ -104,7 +104,6 @@ func EditProduct(ac *types.AppContext, id string, slug *string, names *map[strin
 		return nil, err
 	}
 
-	fmt.Println("updating product in meili")
 	err = mr.AddProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
 	if err != nil {
 		return nil, err

@@ -18,13 +18,11 @@ func CreateProduct(ac *types.AppContext, slug string, names map[string]string, d
 		return errors.New("product already exists")
 	}
 
-	fmt.Println("creating product in postgres")
 	product_id, err := pr.Create(names, descriptions, cover, enabled)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("creating product slug in postgres")
 	err = shr.Create(*product_id, slug)
 	if err != nil {
 		return err
@@ -41,7 +39,6 @@ func CreateProduct(ac *types.AppContext, slug string, names map[string]string, d
 		fmt.Printf("failed to clear cache for all products: %v", err)
 	}
 
-	fmt.Println("creating product in meili")
 	err = mr.AddProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
 
 	return err

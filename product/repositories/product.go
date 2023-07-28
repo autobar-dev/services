@@ -148,9 +148,6 @@ func (pr ProductRepository) Edit(id string, input *PostgresEditProductInput) err
 	edit_product_query += strings.Join(args_names_list, ", ")
 	edit_product_query += " WHERE id=$1;"
 
-	fmt.Printf("update products query: %s\n", edit_product_query)
-	fmt.Printf("update products arguments: %+v\n", args_list)
-
 	_, err := pr.db.Exec(edit_product_query, args_list...)
 	return err
 }
