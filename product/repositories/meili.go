@@ -33,7 +33,10 @@ type MeiliRepository struct {
 const MeiliProductsIndexName string = "products"
 
 func NewMeiliRepository(client *meilisearch.Client) *MeiliRepository {
-	index, _ := client.GetIndex(MeiliProductsIndexName)
+	index, err := client.GetIndex(MeiliProductsIndexName)
+	if err != nil {
+		fmt.Printf("IMPORTANT: failed to get meili index: %v\n", err)
+	}
 
 	return &MeiliRepository{
 		client: client,
