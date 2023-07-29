@@ -74,6 +74,7 @@ func main() {
 	e.POST("/new", routes.CreateProductRoute)
 	e.PUT("/edit", routes.EditProductRoute)
 	e.GET("/all", routes.GetAllProductsRoute)
+	e.POST("/search", routes.SearchProductsRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

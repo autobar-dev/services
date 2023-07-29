@@ -62,6 +62,7 @@ func MeiliProductToProduct(mp repositories.MeiliProduct) *types.Product {
 		Names:        mp.Names,
 		Descriptions: mp.Descriptions,
 		Cover:        mp.Cover,
+		Enabled:      mp.Enabled,
 		CreatedAt:    mp.CreatedAt,
 		UpdatedAt:    mp.UpdatedAt,
 	}
