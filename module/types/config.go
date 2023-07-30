@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Port                       int
 	DatabaseURL                string
+	RedisURL                   string
 	AuthServiceURL             string
 	RealtimeServiceURL         string
 	AmqpURL                    string
@@ -24,6 +25,11 @@ func LoadEnvVars() (*Config, error) {
 	database_url := os.Getenv("DATABASE_URL")
 	if database_url == "" {
 		return nil, errors.New("DATABASE_URL env var not set")
+	}
+
+	redis_url := os.Getenv("REDIS_URL")
+	if redis_url == "" {
+		return nil, errors.New("REDIS_URL env var not set")
 	}
 
 	amqp_url := os.Getenv("AMQP_URL")
@@ -50,6 +56,7 @@ func LoadEnvVars() (*Config, error) {
 	return &Config{
 		Port:                       port,
 		DatabaseURL:                database_url,
+		RedisURL:                   redis_url,
 		AuthServiceURL:             auth_service_url,
 		RealtimeServiceURL:         realtime_service_url,
 		AmqpURL:                    amqp_url,

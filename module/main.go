@@ -11,6 +11,7 @@ import (
 	echo "github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 	"github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 
 	"go.a5r.dev/services/module/repositories"
 	"go.a5r.dev/services/module/routes"
@@ -37,6 +38,10 @@ func main() {
 	}
 	defer database.Close()
 
+	redis_options, err := redis.ParseURL(config.RedisURL)
+	redis_client := redis.NewClient(redis_options)
+	defer redis_client.Close()
+
 	amqp_connection, err := amqp091.Dial(config.AmqpURL)
 	if err != nil {
 		fmt.Println("failed to connect to queue", err)
@@ -62,6 +67,7 @@ func main() {
 		Config:      config,
 		Repositories: &types.Repositories{
 			Module:   repositories.NewModuleRepository(database),
+			Cache:    repositories.NewCacheRepository(redis_client),
 			Auth:     repositories.NewAuthRepository(config.AuthServiceURL),
 			Realtime: repositories.NewRealtimeRepository(config.RealtimeServiceURL),
 		},
@@ -79,7 +85,8 @@ func main() {
 
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/", routes.GetModuleRoute)
-	e.GET("/get-all", routes.GetAllModulesRoute)
+	e.GET("/all", routes.GetAllModulesRoute)
+	e.GET("/all-for-station", routes.GetAllModulesForStationRoute)
 	e.GET("/request-report", routes.RequestReportRoute)
 	e.POST("/create", routes.CreateModuleRoute)
 	e.POST("/report", routes.ReportRoute)

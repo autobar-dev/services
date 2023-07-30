@@ -1,0 +1,7 @@
+ALTER TABLE modules
+DROP COLUMN station_slug,
+DROP COLUMN product_slug,
+ADD COLUMN station_id TEXT DEFAULT NULL,
+ADD COLUMN product_id TEXT DEFAULT NULL,
+ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN updated_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp;

@@ -13,12 +13,15 @@ type PostgresModule struct {
 	Id           int32  `db:"id"`
 	SerialNumber string `db:"serial_number"`
 
-	StationSlug *string `db:"station_slug"`
-	ProductSlug *string `db:"product_slug"`
+	StationId *string `db:"station_id"`
+	ProductId *string `db:"product_id"`
+
+	Enabled bool `db:"enabled"`
 
 	Prices string `db:"prices"`
 
 	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }
 
 type ModuleRepository struct {
@@ -31,7 +34,7 @@ func NewModuleRepository(db *sqlx.DB) *ModuleRepository {
 
 func (mr ModuleRepository) Get(serial_number string) (*PostgresModule, error) {
 	get_module_query := `
-		SELECT id, serial_number, station_slug, product_slug, prices, created_at
+		SELECT id, serial_number, station_id, product_id, enabled, prices, created_at, updated_at
 		FROM modules
 		WHERE serial_number=$1;
 	`
@@ -49,12 +52,41 @@ func (mr ModuleRepository) Get(serial_number string) (*PostgresModule, error) {
 }
 
 func (mr ModuleRepository) GetAll() (*[]PostgresModule, error) {
-	get_module_query := `
-		SELECT id, serial_number, station_slug, product_slug, prices, created_at
+	get_modules_query := `
+		SELECT id, serial_number, station_id, product_id, enabled, prices, created_at, updated_at
 		FROM modules;
 	`
 
-	rows, err := mr.db.Queryx(get_module_query)
+	rows, err := mr.db.Queryx(get_modules_query)
+	if err != nil {
+		return nil, err
+	}
+
+	modules := []PostgresModule{}
+
+	for rows.Next() {
+		var pm PostgresModule
+		err = rows.StructScan(&pm)
+
+		if err != nil {
+			fmt.Printf("cannot parse postgres module: %v\n", err)
+			return nil, errors.New("some modules failed to be parsed")
+		}
+
+		modules = append(modules, pm)
+	}
+
+	return &modules, nil
+}
+
+func (mr ModuleRepository) GetAllForStation(station_id string) (*[]PostgresModule, error) {
+	get_modules_for_station_query := `
+		SELECT id, serial_number, station_id, product_id, enabled, prices, created_at, updated_at
+		FROM modules
+		WHERE station_id = $1;
+	`
+
+	rows, err := mr.db.Queryx(get_modules_for_station_query, station_id)
 	if err != nil {
 		return nil, err
 	}

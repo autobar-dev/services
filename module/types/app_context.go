@@ -7,6 +7,7 @@ import (
 
 type Repositories struct {
 	Module   *repositories.ModuleRepository
+	Cache    *repositories.CacheRepository
 	Auth     *repositories.AuthRepository
 	Realtime *repositories.RealtimeRepository
 }

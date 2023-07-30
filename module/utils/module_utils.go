@@ -14,21 +14,18 @@ func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
 	return &types.Module{
 		Id:           pm.Id,
 		SerialNumber: pm.SerialNumber,
-		StationSlug:  pm.StationSlug,
-		ProductSlug:  pm.ProductSlug,
+		StationId:    pm.StationId,
+		ProductId:    pm.ProductId,
+		Enabled:      pm.Enabled,
 		Prices:       prices,
 		CreatedAt:    pm.CreatedAt,
+		UpdatedAt:    pm.UpdatedAt,
 	}
 }
 
 func ConstructCreateModuleResponse(sm *repositories.ServiceModule, module *types.Module) *types.CreateModuleResponse {
 	return &types.CreateModuleResponse{
-		Id:           module.Id,
-		SerialNumber: module.SerialNumber,
-		StationSlug:  module.StationSlug,
-		ProductSlug:  module.ProductSlug,
-		Prices:       module.Prices,
-		CreatedAt:    module.CreatedAt,
-		PrivateKey:   sm.PrivateKey,
+		Module:     module,
+		PrivateKey: sm.PrivateKey,
 	}
 }

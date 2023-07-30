@@ -6,26 +6,20 @@ type Module struct {
 	Id           int32  `json:"id"`
 	SerialNumber string `json:"serial_number"`
 
-	StationSlug *string `json:"station_slug"`
-	ProductSlug *string `json:"product_slug"`
+	StationId *string `json:"station_id"`
+	ProductId *string `json:"product_id"`
+
+	Enabled bool `json:"enabled"`
 
 	Prices map[string]int `json:"prices"`
 
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CreateModuleResponse struct {
-	Id           int32  `json:"id"`
-	SerialNumber string `json:"serial_number"`
-
-	StationSlug *string `json:"station_slug"`
-	ProductSlug *string `json:"product_slug"`
-
-	Prices map[string]int `json:"prices"`
-
-	CreatedAt time.Time `json:"created_at"`
-
-	PrivateKey string `json:"private_key"`
+	Module     *Module `json:"module"`
+	PrivateKey string  `json:"private_key"`
 }
 
 type ModuleSentReport struct {
