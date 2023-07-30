@@ -23,6 +23,32 @@ func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
 	}
 }
 
+func RedisModuleToModule(rm repositories.RedisModule) *types.Module {
+	return &types.Module{
+		Id:           rm.Id,
+		SerialNumber: rm.SerialNumber,
+		StationId:    rm.StationId,
+		ProductId:    rm.ProductId,
+		Enabled:      rm.Enabled,
+		Prices:       rm.Prices,
+		CreatedAt:    rm.CreatedAt,
+		UpdatedAt:    rm.UpdatedAt,
+	}
+}
+
+func ModuleToRedisModule(m types.Module) *repositories.RedisModule {
+	return &repositories.RedisModule{
+		Id:           m.Id,
+		SerialNumber: m.SerialNumber,
+		StationId:    m.StationId,
+		ProductId:    m.ProductId,
+		Enabled:      m.Enabled,
+		Prices:       m.Prices,
+		CreatedAt:    m.CreatedAt,
+		UpdatedAt:    m.UpdatedAt,
+	}
+}
+
 func ConstructCreateModuleResponse(sm *repositories.ServiceModule, module *types.Module) *types.CreateModuleResponse {
 	return &types.CreateModuleResponse{
 		Module:     module,

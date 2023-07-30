@@ -77,6 +77,7 @@ services:
       - AUTH_SERVICE_URL=http://authservice
       - REALTIME_SERVICE_URL=http://realtimeservice
       - MODULE_REPORT_TIMEOUT_SECONDS=10
+      - REDIS_URL=redis://redis:6379
     build:
       context: ./module
       args:
@@ -86,6 +87,8 @@ services:
   productservice:
     env_file:
       # specify DATABASE_URL
+      # specify MEILI_URL
+      # specify MEILI_API_KEY
       - product.env
     environment:
       - PORT=80
