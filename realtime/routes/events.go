@@ -87,8 +87,6 @@ func EventsRoute(c echo.Context) error {
 		app_context.SseServer.CreateStream(new_stream_name)
 		redirect_uri := fmt.Sprintf("%s/events?stream=%s&identifier=%s&client_type=%s&session=%s", app_context.Config.ServiceBasepath, new_stream_name, identifier, client_type, session_from_query)
 
-		fmt.Printf("redirect uri: %s\n", redirect_uri)
-
 		return rest_context.Redirect(302, redirect_uri)
 	}
 

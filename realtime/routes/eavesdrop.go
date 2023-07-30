@@ -58,5 +58,7 @@ func EavesdropRoute(c echo.Context) error {
 		})
 	}
 
-	return rest_context.Redirect(302, fmt.Sprintf("/events?identifier=%s&client_type=%s", identifier, ct))
+	redirect_uri := fmt.Sprintf("%s/events?identifier=%s&client_type=%s", app_context.Config.ServiceBasepath, identifier, client_type)
+
+	return rest_context.Redirect(302, redirect_uri)
 }
