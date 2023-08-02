@@ -82,8 +82,8 @@ func main() {
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/events", routes.EventsRoute)
 	e.GET("/eavesdrop", routes.EavesdropRoute)
-	e.POST("/send-simple", routes.SendSimpleRoute)
 	e.POST("/send-command", routes.SendCommandRoute)
+	e.POST("/reply", routes.ReplyRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

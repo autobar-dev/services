@@ -8,8 +8,9 @@ import (
 	"go.a5r.dev/services/realtime/types"
 )
 
-func CreateCommandSseEvent(command_name string, args string) *sse.Event {
-	command := &types.Command{
+func CreateCommandSseEvent(id string, command_name string, args string) *sse.Event {
+	command := &types.Message{
+		Id:      id,
 		Command: command_name,
 		Args:    args,
 	}
@@ -18,16 +19,6 @@ func CreateCommandSseEvent(command_name string, args string) *sse.Event {
 
 	event_name := []byte("command")
 	data := command_json
-
-	return &sse.Event{
-		Event: event_name,
-		Data:  data,
-	}
-}
-
-func CreateSimpleSseEvent(body string) *sse.Event {
-	event_name := []byte("simple")
-	data := []byte(body)
 
 	return &sse.Event{
 		Event: event_name,

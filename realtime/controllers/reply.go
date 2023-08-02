@@ -3,15 +3,17 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"go.a5r.dev/services/realtime/types"
 	"go.a5r.dev/services/realtime/utils"
 )
 
-func SendSimpleMessage(app_context types.AppContext, client_type types.ClientType, identifier string, body string) error {
+func Reply(app_context types.AppContext, client_type types.ClientType, identifier string, message_id string) error {
 	mr := app_context.Repositories.Mq
 	rr := app_context.Repositories.Redis
 
+	// Client message exchange
 	exchange_name := utils.ExchangeNameFromClientInfo(client_type, identifier)
 
 	listeners, err := rr.GetListenersCountForExchange(exchange_name)
@@ -23,16 +25,14 @@ func SendSimpleMessage(app_context types.AppContext, client_type types.ClientTyp
 		return errors.New("no listeners connected")
 	}
 
-	message_bytes, err := json.Marshal(struct {
-		MessageType types.MqMessageType `json:"type"`
-		Body        string              `json:"body"`
-	}{
-		MessageType: types.SimpleMessageType,
-		Body:        body,
-	})
-	if err != nil {
-		return err
+	// Reply exchange
+	reply_exchange_name := utils.ReplyExchangeNameFromClientInfo(client_type, identifier)
+	reply := &types.Reply{
+		Id: message_id,
 	}
+	reply_json, _ := json.Marshal(reply)
 
-	return mr.Publish(exchange_name, string(message_bytes))
+	fmt.Printf("received reply for #%s\n", reply.Id)
+
+	return mr.Publish(reply_exchange_name, string(reply_json))
 }

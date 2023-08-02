@@ -92,8 +92,7 @@ func EventsRoute(c echo.Context) error {
 
 	// There is a listener at this point
 	exchange_name := utils.ExchangeNameFromClientInfo(ct, id)
-
-	queue_name, err := mr.CreatePubSubQueue(exchange_name)
+	queue_name, err := mr.CreatePubSub(exchange_name)
 	if err != nil {
 		return rest_context.JSON(500, &EventsRouteResponse{
 			Status: "error",
@@ -103,8 +102,10 @@ func EventsRoute(c echo.Context) error {
 
 	fmt.Printf("will try to consume %s\n", *queue_name)
 
-	deliveries, err := mr.Consume(*queue_name)
+	queue_consumer_name := utils.QueueConsumerName(*queue_name)
+	deliveries, err := mr.Consume(*queue_name, "")
 	if err != nil {
+		_ = mr.CancelConsumer(queue_consumer_name)
 		return rest_context.JSON(500, &EventsRouteResponse{
 			Status: "error",
 			Error:  "failed to consume queue",
@@ -113,6 +114,7 @@ func EventsRoute(c echo.Context) error {
 
 	err = rr.IncrementListenersCountForExchange(exchange_name)
 	if err != nil {
+		_ = mr.CancelConsumer(queue_consumer_name)
 		return rest_context.JSON(500, &EventsRouteResponse{
 			Status: "error",
 			Error:  "failed to register listener in Redis",
@@ -146,32 +148,14 @@ func EventsRoute(c echo.Context) error {
 			case <-listen_done:
 				return
 			case delivery := <-deliveries:
-				var message map[string]string
+				var message types.Message
 
 				err := json.Unmarshal(delivery.Body, &message)
 				if err != nil {
 					fmt.Printf("failed to parse delivery from queue: %+v\n", err)
-				} else {
-
 				}
 
-				message_type := message["type"]
-
-				switch message_type {
-				case "simple":
-					simple_message_body := message["body"]
-
-					app_context.SseServer.Publish(stream_name, utils.CreateSimpleSseEvent(simple_message_body))
-					break
-				case "command":
-					command_message_command := message["command"]
-					command_message_args := message["args"]
-
-					app_context.SseServer.Publish(stream_name, utils.CreateCommandSseEvent(command_message_command, command_message_args))
-					break
-				default:
-					fmt.Printf("unknown message type from queue: '%s'\n", message["type"])
-				}
+				app_context.SseServer.Publish(stream_name, utils.CreateCommandSseEvent(message.Id, message.Command, message.Args))
 			}
 		}
 	}()
@@ -187,6 +171,7 @@ func EventsRoute(c echo.Context) error {
 			fmt.Printf("error while decrementing listeners count (key=%s): %+v\n", exchange_name, err)
 		}
 
+		_ = mr.CancelConsumer(queue_consumer_name)
 		fmt.Println("client disconnected")
 		return
 	}()
