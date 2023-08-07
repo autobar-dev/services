@@ -9,7 +9,7 @@ import (
 	"go.a5r.dev/services/wallet/utils"
 )
 
-func CreateTransactionController(app_context *types.AppContext, user_email string, transaction_type types.TransactionType, value int, currency_code string) (*types.Transaction, error) {
+func CreateTransactionController(app_context *types.AppContext, user_id string, transaction_type types.TransactionType, value int, currency_code string) (*types.Transaction, error) {
 	tr := app_context.Repositories.Transaction
 	cr := app_context.Repositories.Currency
 	car := app_context.Repositories.Cache
@@ -25,7 +25,7 @@ func CreateTransactionController(app_context *types.AppContext, user_email strin
 		return nil, errors.New("specified currency is disabled")
 	}
 
-	wallet, err := GetWalletController(app_context, user_email)
+	wallet, err := GetWalletController(app_context, user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func CreateTransactionController(app_context *types.AppContext, user_email strin
 		return nil, err
 	}
 
-	if err := car.ClearWallet(user_email); err != nil {
+	if err := car.ClearWallet(user_id); err != nil {
 		fmt.Println("failed to clear wallet from cache")
 	}
 

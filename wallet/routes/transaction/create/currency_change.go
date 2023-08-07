@@ -10,7 +10,7 @@ import (
 )
 
 type TransactionCurrencyChangeRequestBody struct {
-	Email        string `json:"email"`
+	UserId       string `json:"user_id"`
 	CurrencyCode string `json:"currency_code"`
 }
 
@@ -27,7 +27,7 @@ func CurrencyChangeRoute(c echo.Context) error {
 	var tccrb TransactionCurrencyChangeRequestBody
 	err := rest_context.Bind(&tccrb)
 	if err != nil {
-		err := "missing or incorrect values for email or currency_code body parameters"
+		err := "missing or incorrect values for user_id or currency_code body parameters"
 
 		return rest_context.JSON(400, &CreateTransactionCurrencyChangeRouteResponse{
 			Status: "error",
@@ -36,7 +36,7 @@ func CurrencyChangeRoute(c echo.Context) error {
 		})
 	}
 
-	wallet, err := controllers.GetWalletController(&app_context, tccrb.Email)
+	wallet, err := controllers.GetWalletController(&app_context, tccrb.UserId)
 	if err != nil {
 		err := "failed to retrieve wallet"
 
@@ -61,7 +61,7 @@ func CurrencyChangeRoute(c echo.Context) error {
 	new_balance := math.Floor(float64(wallet.Balance) * rate.Rate)
 
 	transaction_type := types.TransactionTypeCurrencyChange
-	transaction, err := controllers.CreateTransactionController(&app_context, tccrb.Email, transaction_type, int(new_balance), tccrb.CurrencyCode)
+	transaction, err := controllers.CreateTransactionController(&app_context, tccrb.UserId, transaction_type, int(new_balance), tccrb.CurrencyCode)
 	if err != nil {
 		err := err.Error()
 

@@ -8,8 +8,8 @@ import (
 )
 
 type PostgresWallet struct {
-	Id        int    `db:"id"`
-	UserEmail string `db:"user_email"`
+	Id     int    `db:"id"`
+	UserId string `db:"user_id"`
 }
 
 type WalletRepository struct {
@@ -20,14 +20,14 @@ func NewWalletRepository(db *sqlx.DB) *WalletRepository {
 	return &WalletRepository{db}
 }
 
-func (wr WalletRepository) Get(user_email string) (*PostgresWallet, error) {
+func (wr WalletRepository) Get(user_id string) (*PostgresWallet, error) {
 	get_wallet_query := `
-    SELECT id, user_email
+    SELECT id, user_id
     FROM wallets
-    WHERE user_email=$1;
+    WHERE user_id=$1;
   `
 
-	result := wr.db.QueryRowx(get_wallet_query, user_email)
+	result := wr.db.QueryRowx(get_wallet_query, user_id)
 
 	var wallet PostgresWallet
 	if err := result.StructScan(&wallet); err != nil {
@@ -37,15 +37,15 @@ func (wr WalletRepository) Get(user_email string) (*PostgresWallet, error) {
 	return &wallet, nil
 }
 
-func (wr WalletRepository) Create(user_email string) (*PostgresWallet, error) {
+func (wr WalletRepository) Create(user_id string) (*PostgresWallet, error) {
 	create_wallet_query := `
     INSERT INTO wallets
-    (user_email)
+    (user_id)
     VALUES ($1)
-  	RETURNING id, user_email;
+  	RETURNING id, user_id;
   `
 
-	row := wr.db.QueryRowx(create_wallet_query, user_email)
+	row := wr.db.QueryRowx(create_wallet_query, user_id)
 
 	var pw PostgresWallet
 	err := row.StructScan(&pw)
