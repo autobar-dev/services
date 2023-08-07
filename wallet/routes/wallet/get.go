@@ -16,10 +16,10 @@ func GetRoute(c echo.Context) error {
 	rest_context := c.(*types.RestContext)
 	app_context := *(*rest_context).AppContext
 
-	user_email := c.QueryParam("email")
+	user_id := c.QueryParam("user_id")
 
-	if user_email == "" {
-		err := "email query parameter not present"
+	if user_id == "" {
+		err := "user_id query parameter not present"
 		return rest_context.JSON(400, &GetWalletRouteResponse{
 			Status: "error",
 			Error:  &err,
@@ -27,7 +27,7 @@ func GetRoute(c echo.Context) error {
 		})
 	}
 
-	wallet, err := controllers.GetWalletController(&app_context, user_email)
+	wallet, err := controllers.GetWalletController(&app_context, user_id)
 	if err != nil {
 		err := err.Error()
 

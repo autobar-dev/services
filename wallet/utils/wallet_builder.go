@@ -5,7 +5,7 @@ import "errors"
 
 type WalletBuilder struct {
 	id            int
-	user_email    string
+	user_id       string
 	balance       int
 	currency_code string
 }
@@ -13,7 +13,7 @@ type WalletBuilder struct {
 func NewWalletBuilder() *WalletBuilder {
 	return &WalletBuilder{
 		id:            0,
-		user_email:    "",
+		user_id:       "",
 		balance:       0,
 		currency_code: "",
 	}
@@ -30,7 +30,7 @@ func (wb *WalletBuilder) Build() (*types.Wallet, error) {
 
 	return &types.Wallet{
 		Id:           wb.id,
-		UserEmail:    wb.user_email,
+		UserId:       wb.user_id,
 		Balance:      wb.balance,
 		CurrencyCode: wb.currency_code,
 	}, nil
@@ -41,8 +41,8 @@ func (wb *WalletBuilder) SetId(id int) *WalletBuilder {
 	return wb
 }
 
-func (wb *WalletBuilder) SetUserEmail(email string) *WalletBuilder {
-	wb.user_email = email
+func (wb *WalletBuilder) SetUserId(user_id string) *WalletBuilder {
+	wb.user_id = user_id
 	return wb
 }
 

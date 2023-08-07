@@ -8,7 +8,7 @@ import (
 	"go.a5r.dev/services/wallet/types"
 )
 
-func CreateWalletController(app_context *types.AppContext, user_email string, currency_code string) (*types.Wallet, error) {
+func CreateWalletController(app_context *types.AppContext, user_id string, currency_code string) (*types.Wallet, error) {
 	wr := app_context.Repositories.Wallet
 	tr := app_context.Repositories.Transaction
 	cr := app_context.Repositories.Currency
@@ -24,7 +24,7 @@ func CreateWalletController(app_context *types.AppContext, user_email string, cu
 		return nil, errors.New("specified currency is disabled")
 	}
 
-	pw, err := wr.Create(user_email)
+	pw, err := wr.Create(user_id)
 	if err != nil {
 		return nil, err
 	}
@@ -33,5 +33,5 @@ func CreateWalletController(app_context *types.AppContext, user_email string, cu
 		return nil, err
 	}
 
-	return GetWalletController(app_context, user_email)
+	return GetWalletController(app_context, user_id)
 }

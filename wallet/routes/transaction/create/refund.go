@@ -8,8 +8,8 @@ import (
 )
 
 type TransactionRefundRequestBody struct {
-	Email string `json:"email"`
-	Value int    `json:"value"`
+	UserId string `json:"user_id"`
+	Value  int    `json:"value"`
 }
 
 type CreateTransactionRefundRouteResponse struct {
@@ -25,7 +25,7 @@ func RefundRoute(c echo.Context) error {
 	var trrb TransactionRefundRequestBody
 	err := rest_context.Bind(&trrb)
 	if err != nil {
-		err := "missing or incorrect values for email or value body parameters"
+		err := "missing or incorrect values for user_id or value body parameters"
 
 		return rest_context.JSON(400, &CreateTransactionRefundRouteResponse{
 			Status: "error",
@@ -34,7 +34,7 @@ func RefundRoute(c echo.Context) error {
 		})
 	}
 
-	wallet, err := controllers.GetWalletController(&app_context, trrb.Email)
+	wallet, err := controllers.GetWalletController(&app_context, trrb.UserId)
 	if err != nil {
 		err := "failed to retrieve wallet"
 
@@ -46,7 +46,7 @@ func RefundRoute(c echo.Context) error {
 	}
 
 	transaction_type := types.TransactionTypeRefund
-	transaction, err := controllers.CreateTransactionController(&app_context, trrb.Email, transaction_type, trrb.Value, wallet.CurrencyCode)
+	transaction, err := controllers.CreateTransactionController(&app_context, trrb.UserId, transaction_type, trrb.Value, wallet.CurrencyCode)
 	if err != nil {
 		err := err.Error()
 

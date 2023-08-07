@@ -2,7 +2,7 @@ package types
 
 type Wallet struct {
 	Id           int    `json:"id"`
-	UserEmail    string `json:"user_email"`
+	UserId       string `json:"user_id"`
 	CurrencyCode string `json:"currency_code"`
 	Balance      int    `json:"balance"`
 }

@@ -26,14 +26,14 @@ func NewCacheRepository(client *redis.Client) *CacheRepository {
 
 const walletCacheKeyPrefix = "wallet"
 
-func generateWalletCacheKey(user_email string) string {
-	return fmt.Sprintf("%s:%s", walletCacheKeyPrefix, user_email)
+func generateWalletCacheKey(user_id string) string {
+	return fmt.Sprintf("%s:%s", walletCacheKeyPrefix, user_id)
 }
 
-func (cr CacheRepository) GetWallet(user_email string) (*RedisWallet, error) {
+func (cr CacheRepository) GetWallet(user_id string) (*RedisWallet, error) {
 	ctx := context.Background()
 
-	rw_json, err := cr.redis.Get(ctx, generateWalletCacheKey(user_email)).Result()
+	rw_json, err := cr.redis.Get(ctx, generateWalletCacheKey(user_id)).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (cr CacheRepository) GetWallet(user_email string) (*RedisWallet, error) {
 	return &rw, nil
 }
 
-func (cr CacheRepository) SetWallet(id int, user_email string, balance int, currency_code string) error {
+func (cr CacheRepository) SetWallet(id int, user_id string, balance int, currency_code string) error {
 	rw := RedisWallet{
 		Id:           id,
 		CurrencyCode: currency_code,
@@ -54,10 +54,10 @@ func (cr CacheRepository) SetWallet(id int, user_email string, balance int, curr
 	rw_json := string(rw_json_bytes)
 
 	ctx := context.Background()
-	return cr.redis.Set(ctx, generateWalletCacheKey(user_email), rw_json, 0).Err()
+	return cr.redis.Set(ctx, generateWalletCacheKey(user_id), rw_json, 0).Err()
 }
 
-func (cr CacheRepository) ClearWallet(user_email string) error {
+func (cr CacheRepository) ClearWallet(user_id string) error {
 	ctx := context.Background()
-	return cr.redis.Del(ctx, generateWalletCacheKey(user_email)).Err()
+	return cr.redis.Del(ctx, generateWalletCacheKey(user_id)).Err()
 }

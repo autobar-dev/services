@@ -9,7 +9,7 @@ func ConstructWallet(pw repositories.PostgresWallet, ts []types.Transaction) (*t
 	wb := NewWalletBuilder()
 
 	wb.SetId(pw.Id)
-	wb.SetUserEmail(pw.UserEmail)
+	wb.SetUserId(pw.UserId)
 
 	for _, t := range ts {
 		wb.AddTransaction(t)
@@ -18,10 +18,10 @@ func ConstructWallet(pw repositories.PostgresWallet, ts []types.Transaction) (*t
 	return wb.Build()
 }
 
-func RedisWalletToWallet(rw repositories.RedisWallet, user_email string) *types.Wallet {
+func RedisWalletToWallet(rw repositories.RedisWallet, user_id string) *types.Wallet {
 	return &types.Wallet{
 		Id:           rw.Id,
-		UserEmail:    user_email,
+		UserId:       user_id,
 		Balance:      rw.Balance,
 		CurrencyCode: rw.CurrencyCode,
 	}

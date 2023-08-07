@@ -8,8 +8,8 @@ import (
 )
 
 type TransactionWithdrawRequestBody struct {
-	Email string `json:"email"`
-	Value int    `json:"value"`
+	UserId string `json:"user_id"`
+	Value  int    `json:"value"`
 }
 
 type CreateTransactionWithdrawRouteResponse struct {
@@ -25,7 +25,7 @@ func WithdrawRoute(c echo.Context) error {
 	var twrb TransactionWithdrawRequestBody
 	err := rest_context.Bind(&twrb)
 	if err != nil {
-		err := "missing or incorrect values for email or value body parameters"
+		err := "missing or incorrect values for user_id or value body parameters"
 
 		return rest_context.JSON(400, &CreateTransactionWithdrawRouteResponse{
 			Status: "error",
@@ -34,7 +34,7 @@ func WithdrawRoute(c echo.Context) error {
 		})
 	}
 
-	wallet, err := controllers.GetWalletController(&app_context, twrb.Email)
+	wallet, err := controllers.GetWalletController(&app_context, twrb.UserId)
 	if err != nil {
 		err := "failed to retrieve wallet"
 
@@ -46,7 +46,7 @@ func WithdrawRoute(c echo.Context) error {
 	}
 
 	transaction_type := types.TransactionTypeWithdraw
-	transaction, err := controllers.CreateTransactionController(&app_context, twrb.Email, transaction_type, twrb.Value, wallet.CurrencyCode)
+	transaction, err := controllers.CreateTransactionController(&app_context, twrb.UserId, transaction_type, twrb.Value, wallet.CurrencyCode)
 	if err != nil {
 		err := err.Error()
 

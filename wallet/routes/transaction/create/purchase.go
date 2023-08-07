@@ -8,8 +8,8 @@ import (
 )
 
 type TransactionPurchaseRequestBody struct {
-	Email string `json:"email"`
-	Value int    `json:"value"`
+	UserId string `json:"user_id"`
+	Value  int    `json:"value"`
 }
 
 type CreateTransactionPurchaseRouteResponse struct {
@@ -25,7 +25,7 @@ func PurchaseRoute(c echo.Context) error {
 	var tprb TransactionPurchaseRequestBody
 	err := rest_context.Bind(&tprb)
 	if err != nil {
-		err := "missing or incorrect values for email or value body parameters"
+		err := "missing or incorrect values for user_id or value body parameters"
 
 		return rest_context.JSON(400, &CreateTransactionDepositRouteResponse{
 			Status: "error",
@@ -34,7 +34,7 @@ func PurchaseRoute(c echo.Context) error {
 		})
 	}
 
-	wallet, err := controllers.GetWalletController(&app_context, tprb.Email)
+	wallet, err := controllers.GetWalletController(&app_context, tprb.UserId)
 	if err != nil {
 		err := "failed to retrieve wallet"
 
@@ -46,7 +46,7 @@ func PurchaseRoute(c echo.Context) error {
 	}
 
 	transaction_type := types.TransactionTypePurchase
-	transaction, err := controllers.CreateTransactionController(&app_context, tprb.Email, transaction_type, tprb.Value, wallet.CurrencyCode)
+	transaction, err := controllers.CreateTransactionController(&app_context, tprb.UserId, transaction_type, tprb.Value, wallet.CurrencyCode)
 	if err != nil {
 		err := err.Error()
 

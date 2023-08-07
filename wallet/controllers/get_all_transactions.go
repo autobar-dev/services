@@ -5,11 +5,11 @@ import (
 	"go.a5r.dev/services/wallet/utils"
 )
 
-func GetAllTransactionsController(app_context *types.AppContext, email string) (*[]types.Transaction, error) {
+func GetAllTransactionsController(app_context *types.AppContext, user_id string) (*[]types.Transaction, error) {
 	wr := app_context.Repositories.Wallet
 	tr := app_context.Repositories.Transaction
 
-	pw, err := wr.Get(email)
+	pw, err := wr.Get(user_id)
 	if err != nil {
 		return nil, err
 	}
