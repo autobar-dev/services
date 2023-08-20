@@ -4,7 +4,7 @@ FROM node:20 AS builder
 ARG GITHUB_USER
 ARG GITHUB_PAT
 
-RUN apk update && apk add git
+RUN apt update && apt install git
 RUN echo "machine github.com login $GITHUB_USER password $GITHUB_PAT" > ~/.netrc
 
 WORKDIR /app
@@ -30,8 +30,9 @@ FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
-COPY --from=builder /app/.meta ./.meta
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.meta ./.meta
 COPY --from=builder /app/dist ./dist
 
 CMD ["node", "dist/main.js"]

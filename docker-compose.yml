@@ -123,4 +123,4 @@ services:
       - walletservice
       - moduleservice
       - productservice
-      - emailtemplate
+      - emailtemplateservice
