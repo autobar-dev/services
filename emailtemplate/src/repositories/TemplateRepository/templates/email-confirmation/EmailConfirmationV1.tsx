@@ -33,6 +33,7 @@ export function EmailConfirmationTemplateV1(props: {
           <Hr />
           <Text>Thanks,</Text>
           <Text>Autobar</Text>
+          <Text>Email V1</Text>
         </Container>
       </Body>
     </Html>
