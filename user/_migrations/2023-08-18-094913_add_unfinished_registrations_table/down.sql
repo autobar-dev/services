@@ -1,0 +1,1 @@
+DROP TABLE unfinished_user_registrations;

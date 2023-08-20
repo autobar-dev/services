@@ -99,6 +99,15 @@ services:
         COMMIT_SHA: "product-no-commit"
         VERSION: "0.0.0-test"
 
+  emailtemplateservice:
+    environment:
+      - PORT=80
+    build:
+      context: ./emailtemplate
+      args:
+        COMMIT_SHA: "emailtemplate-no-commit"
+        VERSION: "0.0.0-test"
+
   gateway:
     image: "nginx"
     ports:
@@ -114,3 +123,4 @@ services:
       - walletservice
       - moduleservice
       - productservice
+      - emailtemplate
