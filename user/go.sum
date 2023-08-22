@@ -4,6 +4,8 @@ github.com/autobar-dev/shared-libraries v0.0.0-20230713223115-7b0478390c4b h1:47
 github.com/autobar-dev/shared-libraries v0.0.0-20230713223115-7b0478390c4b/go.mod h1:9k6cSEYeJ3a0djcLbdrPk5oYKE1dYc/mQKbmE+hJVNo=
 github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230713223115-7b0478390c4b h1:vNUzv43+KZUY1DHu49TtysVoaAPMxozRG7EgoC4hzo8=
 github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230713223115-7b0478390c4b/go.mod h1:PV7j6GRpoRvGOtPJmQpeSJeAnbJPu0R7FuoLC3Aovl8=
+github.com/autobar-dev/shared-libraries/go/emailtemplate-repository v0.0.0-20230822215555-9b8b4082f5a4 h1:WKAepBI8GxnFDaGH6NItjyMLVgFHwIbDay9VokZnnKI=
+github.com/autobar-dev/shared-libraries/go/emailtemplate-repository v0.0.0-20230822215555-9b8b4082f5a4/go.mod h1:yw0GK+mCygOdCwlvB9SOoskOHwhgM29DN8tzL7R3nCU=
 github.com/cespare/xxhash/v2 v2.2.0 h1:DC2CZ1Ep5Y4k3ZQ899DldepgrayRUGE6BBZ/cd9Cj44=
 github.com/cespare/xxhash/v2 v2.2.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

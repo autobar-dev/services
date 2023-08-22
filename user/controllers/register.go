@@ -7,6 +7,7 @@ import (
 	"github.com/autobar-dev/services/user/types"
 	"github.com/autobar-dev/services/user/utils"
 	"github.com/autobar-dev/shared-libraries/go/auth-repository"
+	"github.com/autobar-dev/shared-libraries/go/emailtemplate-repository"
 )
 
 func Register(
