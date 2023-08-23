@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/autobar-dev/services/auth/types"
-	"github.com/autobar-dev/services/auth/utils"
+	"github.com/autobar-dev/services/email/types"
+	"github.com/autobar-dev/services/email/utils"
 
 	"github.com/labstack/echo/v4"
 )

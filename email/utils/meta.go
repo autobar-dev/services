@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/autobar-dev/services/auth/types"
+	"github.com/autobar-dev/services/email/types"
 )
 
 func GetMetaFactors() *types.MetaFactors {

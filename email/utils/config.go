@@ -5,18 +5,13 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/autobar-dev/services/auth/types"
+	"github.com/autobar-dev/services/email/types"
 )
 
 func LoadEnvVars() (*types.Config, error) {
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
 		return nil, err
-	}
-
-	database_url := os.Getenv("DATABASE_URL")
-	if database_url == "" {
-		return nil, errors.New("DATABASE_URL env var not set")
 	}
 
 	logger_environment := os.Getenv("LOGGER_ENVIRONMENT")
@@ -29,10 +24,27 @@ func LoadEnvVars() (*types.Config, error) {
 		return nil, errors.New("JWT_KEY env var not set")
 	}
 
+	smtp_hostname := os.Getenv("SMTP_HOSTNAME")
+	if smtp_hostname == "" {
+		return nil, errors.New("SMTP_HOSTNAME env var not set")
+	}
+
+	smtp_port, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	if err != nil {
+		return nil, err
+	}
+
+	smtp_username := os.Getenv("SMTP_USERNAME")
+
+	smtp_password := os.Getenv("SMTP_PASSWORD")
+
 	return &types.Config{
 		Port:              port,
-		DatabaseURL:       database_url,
 		LoggerEnvironment: logger_environment,
 		JwtKey:            jwt_key,
+		SmtpHostname:      smtp_hostname,
+		SmtpPort:          smtp_port,
+		SmtpUsername:      smtp_username,
+		SmtpPassword:      smtp_password,
 	}, nil
 }

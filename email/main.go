@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/autobar-dev/services/auth/routes"
-	oauth_routes "github.com/autobar-dev/services/auth/routes/oauth"
-	"github.com/autobar-dev/services/auth/types"
-	"github.com/autobar-dev/services/auth/utils"
+	"github.com/autobar-dev/services/email/providers"
+	"github.com/autobar-dev/services/email/routes"
+	"github.com/autobar-dev/services/email/types"
+	"github.com/autobar-dev/services/email/utils"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -31,32 +29,21 @@ func main() {
 	logger := utils.GetLogger(config.LoggerEnvironment)
 	defer logger.Sync()
 
-	// Connect to database
-	database, err := sqlx.Connect("postgres", config.DatabaseURL)
-	if err != nil {
-		logger.Fatalf("failed to connect to database", err)
-	}
-	defer database.Close()
-
 	// Create app context
 	app_context := &types.AppContext{
 		Logger:       logger,
 		MetaFactors:  utils.GetMetaFactors(),
 		Config:       config,
 		Repositories: &types.Repositories{},
+		Providers: &types.Providers{
+			Email: providers.NewSmtpEmailProvider(
+				config.SmtpHostname,
+				config.SmtpPort,
+				config.SmtpUsername,
+				config.SmtpPassword,
+			),
+		},
 	}
-
-	// Initialize OAuth
-	// oauth_manager, err := utils.SetupOAuthManager(app_context)
-	// if err != nil {
-	// 	logger.Fatalf("failed to set up OAuth manager", err)
-	// }
-	//
-	// oauth_server, err := utils.SetupOAuthServer(app_context, oauth_manager)
-	// if err != nil {
-	// 	logger.Fatalf("failed to set up OAuth server", err)
-	// }
-	// app_context.Repositories.OAuthServer = oauth_server
 
 	// Initialize HTTP server
 	e := echo.New()
@@ -73,9 +60,7 @@ func main() {
 	})
 
 	e.GET("/meta", routes.MetaRoute)
-
-	e.Any("/oauth/authorize", oauth_routes.AuthorizeRoute)
-	e.POST("/oauth/token", oauth_routes.TokenRoute)
+	e.POST("/send", routes.SendRoute)
 
 	logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }
