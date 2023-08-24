@@ -15,14 +15,104 @@ type PostgresRefreshToken struct {
 	CreatedAt          time.Time `db:"created_at"`
 }
 
-type PostgresRefreshTokenRepository struct {
+type RefreshTokenRepository struct {
 	db *sqlx.DB
 }
 
-func NewPostgresRefreshTokenRepository(db *sqlx.DB) *PostgresRefreshTokenRepository {
-	return &PostgresRefreshTokenRepository{db}
+func NewRefreshTokenRepository(db *sqlx.DB) *RefreshTokenRepository {
+	return &RefreshTokenRepository{db}
 }
 
-func (rtr *PostgresRefreshTokenRepository) Create(user_id string, token_value string, valid_for time.Duration) error {
+func (rtr *RefreshTokenRepository) CreateForUser(user_id string, token_value string, valid_until time.Time) error {
+	create_token_query := `
+		INSERT INTO refresh_tokens
+		(user_id, token, expires_at)
+		VALUES ($1, $2, $3);
+	`
+
+	_, err := rtr.db.Exec(create_token_query, user_id, token_value, valid_until)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (rtr *RefreshTokenRepository) CreateForModule(serial_number string, token_value string, valid_until time.Time) error {
+	create_token_query := `
+		INSERT INTO refresh_tokens
+		(serial_number, token, expires_at)
+		VALUES ($1, $2, $3);
+	`
+
+	_, err := rtr.db.Exec(create_token_query, serial_number, token_value, valid_until)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (rtr *RefreshTokenRepository) GetByToken(token string) (*PostgresRefreshToken, error) {
+	get_token_query := `
+		SELECT *
+		FROM refresh_tokens
+		WHERE token = $1;
+	`
+
+	row := rtr.db.QueryRowx(get_token_query, token)
+
+	var prt PostgresRefreshToken
+	err := row.StructScan(&prt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &prt, nil
+}
+
+func (rtr *RefreshTokenRepository) GetById(token_id string) (*PostgresRefreshToken, error) {
+	get_token_query := `
+		SELECT *
+		FROM refresh_tokens
+		WHERE id = $1;
+	`
+
+	row := rtr.db.QueryRowx(get_token_query, token_id)
+
+	var prt PostgresRefreshToken
+	err := row.StructScan(&prt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &prt, nil
+}
+
+func (rtr *RefreshTokenRepository) DeleteById(token_id string) error {
+	delete_token_query := `
+		DELETE FROM refresh_tokens
+		WHERE id = $1;
+	`
+
+	_, err := rtr.db.Exec(delete_token_query, token_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (rtr *RefreshTokenRepository) DeleteByToken(token string) error {
+	delete_token_query := `
+		DELETE FROM refresh_tokens
+		WHERE token = $1;
+	`
+
+	_, err := rtr.db.Exec(delete_token_query, token)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

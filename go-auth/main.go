@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 
+	"github.com/autobar-dev/shared-libraries/go/user-repository"
+
 	"github.com/autobar-dev/services/auth/providers"
+	"github.com/autobar-dev/services/auth/repositories"
 	"github.com/autobar-dev/services/auth/routes"
 	"github.com/autobar-dev/services/auth/types"
 	"github.com/autobar-dev/services/auth/utils"
@@ -38,31 +41,36 @@ func main() {
 	}
 	defer database.Close()
 
+	// Create repositories
+	auth_user_repository := repositories.NewUserRepository(database)
+	auth_module_repository := repositories.NewModuleRepository(database)
+	refresh_token_repository := repositories.NewRefreshTokenRepository(database)
+
+	user_repository := userrepository.NewUserRepository(config.UserServiceURL, types.MicroserviceName)
+
 	// Create auth provider
-	postgres_auth_provider := providers.NewPostgresAuthProvider(database)
+	postgres_auth_provider := providers.NewPostgresAuthProvider(
+		auth_user_repository,
+		auth_module_repository,
+		refresh_token_repository,
+		config.JwtSecret,
+	)
 
 	// Create app context
 	app_context := &types.AppContext{
-		Logger:       logger,
-		MetaFactors:  utils.GetMetaFactors(),
-		Config:       config,
-		Repositories: &types.Repositories{},
+		Logger:      logger,
+		MetaFactors: utils.GetMetaFactors(),
+		Config:      config,
+		Repositories: &types.Repositories{
+			AuthUser:     auth_user_repository,
+			AuthModule:   auth_module_repository,
+			RefreshToken: refresh_token_repository,
+			User:         user_repository,
+		},
 		Providers: &types.Providers{
 			Auth: postgres_auth_provider,
 		},
 	}
-
-	// Initialize OAuth
-	// oauth_manager, err := utils.SetupOAuthManager(app_context)
-	// if err != nil {
-	// 	logger.Fatalf("failed to set up OAuth manager", err)
-	// }
-	//
-	// oauth_server, err := utils.SetupOAuthServer(app_context, oauth_manager)
-	// if err != nil {
-	// 	logger.Fatalf("failed to set up OAuth server", err)
-	// }
-	// app_context.Repositories.OAuthServer = oauth_server
 
 	// Initialize HTTP server
 	e := echo.New()
@@ -79,9 +87,6 @@ func main() {
 	})
 
 	e.GET("/meta", routes.MetaRoute)
-
-	e.Any("/oauth/authorize", oauth_routes.AuthorizeRoute)
-	e.POST("/oauth/token", oauth_routes.TokenRoute)
 
 	logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

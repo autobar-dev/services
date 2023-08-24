@@ -6,7 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type PostgresModule struct {
+type PostgresAuthModule struct {
 	Id           int       `db:"id"`
 	SerialNumber string    `db:"serial_number"`
 	PrivateKey   string    `db:"private_key"`
@@ -14,14 +14,18 @@ type PostgresModule struct {
 	UpdatedAt    time.Time `db:"updated_at"`
 }
 
-type PostgresModuleRepository struct {
+type AuthModuleRepository struct {
 	db *sqlx.DB
 }
 
-func NewPostgresModuleRepository(db *sqlx.DB) *PostgresModuleRepository {
-	return &PostgresModuleRepository{db}
+func NewModuleRepository(db *sqlx.DB) *AuthModuleRepository {
+	return &AuthModuleRepository{db}
 }
 
-func (pmr *PostgresModuleRepository) Create(serial_number string, private_key string) error {
+func (pmr *AuthModuleRepository) Create(serial_number string, private_key string) error {
 	return nil
+}
+
+func (pmr *AuthModuleRepository) GetBySerialNumber(serial_number string) (*PostgresAuthModule, error) {
+	return nil, nil
 }

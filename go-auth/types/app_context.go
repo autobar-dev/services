@@ -1,10 +1,17 @@
 package types
 
 import (
+	"github.com/autobar-dev/services/auth/repositories"
+	"github.com/autobar-dev/shared-libraries/go/user-repository"
 	"go.uber.org/zap"
 )
 
-type Repositories struct{}
+type Repositories struct {
+	RefreshToken *repositories.RefreshTokenRepository
+	AuthUser     *repositories.AuthUserRepository
+	AuthModule   *repositories.AuthModuleRepository
+	User         *userrepository.UserRepository
+}
 
 type Providers struct {
 	Auth AuthProvider

@@ -24,15 +24,21 @@ func LoadEnvVars() (*types.Config, error) {
 		return nil, errors.New("LOGGER_ENVIRONMENT env var not set")
 	}
 
-	jwt_key := os.Getenv("JWT_KEY")
-	if jwt_key == "" {
-		return nil, errors.New("JWT_KEY env var not set")
+	jwt_secret := os.Getenv("JWT_SECRET")
+	if jwt_secret == "" {
+		return nil, errors.New("JWT_SECRET env var not set")
+	}
+
+	user_service_url := os.Getenv("USER_SERVICE_URL")
+	if user_service_url == "" {
+		return nil, errors.New("USER_SERVICE_URL env var not set")
 	}
 
 	return &types.Config{
 		Port:              port,
 		DatabaseURL:       database_url,
 		LoggerEnvironment: logger_environment,
-		JwtKey:            jwt_key,
+		JwtSecret:         jwt_secret,
+		UserServiceURL:    user_service_url,
 	}, nil
 }
