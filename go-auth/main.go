@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/autobar-dev/services/auth/providers"
 	"github.com/autobar-dev/services/auth/routes"
-	oauth_routes "github.com/autobar-dev/services/auth/routes/oauth"
 	"github.com/autobar-dev/services/auth/types"
 	"github.com/autobar-dev/services/auth/utils"
 
@@ -38,12 +38,18 @@ func main() {
 	}
 	defer database.Close()
 
+	// Create auth provider
+	postgres_auth_provider := providers.NewPostgresAuthProvider(database)
+
 	// Create app context
 	app_context := &types.AppContext{
 		Logger:       logger,
 		MetaFactors:  utils.GetMetaFactors(),
 		Config:       config,
 		Repositories: &types.Repositories{},
+		Providers: &types.Providers{
+			Auth: postgres_auth_provider,
+		},
 	}
 
 	// Initialize OAuth

@@ -19,11 +19,6 @@ func LoadEnvVars() (*types.Config, error) {
 		return nil, errors.New("LOGGER_ENVIRONMENT env var not set")
 	}
 
-	jwt_key := os.Getenv("JWT_KEY")
-	if jwt_key == "" {
-		return nil, errors.New("JWT_KEY env var not set")
-	}
-
 	smtp_hostname := os.Getenv("SMTP_HOSTNAME")
 	if smtp_hostname == "" {
 		return nil, errors.New("SMTP_HOSTNAME env var not set")
@@ -41,7 +36,6 @@ func LoadEnvVars() (*types.Config, error) {
 	return &types.Config{
 		Port:              port,
 		LoggerEnvironment: logger_environment,
-		JwtKey:            jwt_key,
 		SmtpHostname:      smtp_hostname,
 		SmtpPort:          smtp_port,
 		SmtpUsername:      smtp_username,

@@ -108,6 +108,22 @@ services:
         COMMIT_SHA: "emailtemplate-no-commit"
         VERSION: "0.0.0-test"
 
+  emailservice:
+    env_file:
+      # specify SMTP_HOSTNAME
+      # specify SMTP_PORT
+      # specify SMTP_USERNAME
+      # specify SMTP_PASSWORD
+      - email.env
+    environment:
+      - PORT=80
+      - LOGGER_ENVIRONMENT=development
+    build:
+      context: ./email
+      args:
+        COMMIT_SHA: "email-no-commit"
+        VERSION: "0.0.0-test"
+
   gateway:
     image: "nginx"
     ports:
@@ -124,3 +140,4 @@ services:
       - moduleservice
       - productservice
       - emailtemplateservice
+      - emailservice

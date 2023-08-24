@@ -1,20 +1,9 @@
 package types
 
-import "time"
-
-type Tokens struct {
-	AccessToken  string
-	RefreshToken string
-}
-
-type AccessTokenPayload struct {
-	UserId  string
-	Scope   []string
-	Expires time.Time
-}
-
 type AuthProvider interface {
-	Login
-	Refresh(refresh_token string) *Tokens
-	VerifyAccessToken(access_token string) *AccessTokenPayload
+	Login(email string, password string, remember_me bool) (*Tokens, error)
+	Logout(refresh_token string) error
+	Register(email string, password string) (*Tokens, error)
+	Refresh(refresh_token string) (*Tokens, error)
+	VerifyAccessToken(access_token string) (*AccessTokenPayload, error)
 }

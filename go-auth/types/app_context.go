@@ -1,12 +1,13 @@
 package types
 
 import (
-	"github.com/go-oauth2/oauth2/v4/server"
 	"go.uber.org/zap"
 )
 
-type Repositories struct {
-	OAuthServer *server.Server
+type Repositories struct{}
+
+type Providers struct {
+	Auth AuthProvider
 }
 
 type AppContext struct {
@@ -14,4 +15,5 @@ type AppContext struct {
 	MetaFactors  *MetaFactors
 	Config       *Config
 	Repositories *Repositories
+	Providers    *Providers
 }
