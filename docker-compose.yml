@@ -6,7 +6,8 @@ services:
     env_file:
       # specify DATABASE_URL
       # specify EXCHANGE_RATE_API_KEY
-      - currency.env
+      - .env/currency.env
+      - .env/common.env
     environment:
       - PORT=80
       - PAST_RATE_RETENTION_SECONDS=172800
@@ -19,7 +20,8 @@ services:
   authservice:
     env_file:
       # specify DATABASE_URL
-      - auth.env
+      - .env/auth.env
+      - .env/common.env
     environment:
       - PORT=80
       - ALLOW_ONLY_SAME_USER_AGENT=true
@@ -36,7 +38,8 @@ services:
   realtimeservice:
     env_file:
       # specify AMQP_URL
-      - realtime.env
+      - .env/realtime.env
+      - .env/common.env
     environment:
       - PORT=80
       - SSE_HEARTBEAT_INTERVAL_SECONDS=5
@@ -54,7 +57,8 @@ services:
   walletservice:
     env_file:
       # specify DATABASE_URL
-      - wallet.env
+      - .env/wallet.env
+      - .env/common.env
     environment:
       - PORT=80
       - CURRENCY_SERVICE_URL=http://currencyservice
@@ -71,7 +75,8 @@ services:
     env_file:
       # specify DATABASE_URL
       # specify AMQP_URL
-      - module.env
+      - .env/module.env
+      - .env/common.env
     environment:
       - PORT=80
       - AUTH_SERVICE_URL=http://authservice
@@ -89,7 +94,8 @@ services:
       # specify DATABASE_URL
       # specify MEILI_URL
       # specify MEILI_API_KEY
-      - product.env
+      - .env/product.env
+      - .env/common.env
     environment:
       - PORT=80
       - REDIS_URL=redis://redis:6379
@@ -100,6 +106,8 @@ services:
         VERSION: "0.0.0-test"
 
   emailtemplateservice:
+    env_file:
+      - .env/common.env
     environment:
       - PORT=80
     build:
@@ -114,7 +122,8 @@ services:
       # specify SMTP_PORT
       # specify SMTP_USERNAME
       # specify SMTP_PASSWORD
-      - email.env
+      - .env/email.env
+      - .env/common.env
     environment:
       - PORT=80
       - LOGGER_ENVIRONMENT=development

@@ -1,8 +1,2 @@
-auth.env
-realtime.env
-currency.env
-wallet.env
-module.env
-product.env
-
+.env/
 certs/
