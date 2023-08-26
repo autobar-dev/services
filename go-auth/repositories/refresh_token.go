@@ -41,7 +41,7 @@ func (rtr *RefreshTokenRepository) CreateForUser(user_id string, token_value str
 func (rtr *RefreshTokenRepository) CreateForModule(serial_number string, token_value string, valid_until time.Time) error {
 	create_token_query := `
 		INSERT INTO refresh_tokens
-		(serial_number, token, expires_at)
+		(module_serial_number, token, expires_at)
 		VALUES ($1, $2, $3);
 	`
 

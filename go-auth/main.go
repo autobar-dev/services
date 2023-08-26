@@ -3,8 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/autobar-dev/shared-libraries/go/user-repository"
-
+	"github.com/autobar-dev/services/auth/middleware"
 	"github.com/autobar-dev/services/auth/providers"
 	"github.com/autobar-dev/services/auth/repositories"
 	"github.com/autobar-dev/services/auth/routes"
@@ -46,8 +45,6 @@ func main() {
 	auth_module_repository := repositories.NewModuleRepository(database)
 	refresh_token_repository := repositories.NewRefreshTokenRepository(database)
 
-	user_repository := userrepository.NewUserRepository(config.UserServiceURL, types.MicroserviceName)
-
 	// Create auth provider
 	postgres_auth_provider := providers.NewPostgresAuthProvider(
 		auth_user_repository,
@@ -65,7 +62,6 @@ func main() {
 			AuthUser:     auth_user_repository,
 			AuthModule:   auth_module_repository,
 			RefreshToken: refresh_token_repository,
-			User:         user_repository,
 		},
 		Providers: &types.Providers{
 			Auth: postgres_auth_provider,
@@ -81,12 +77,22 @@ func main() {
 			rest_context := &types.RestContext{
 				c,
 				app_context,
+				nil,
 			}
 			return next(rest_context)
 		}
 	})
 
+	// Access token processing middleware
+	e.Use(middleware.AccessTokenMiddleware)
+
 	e.GET("/meta", routes.MetaRoute)
+	e.POST("/refresh", routes.RefreshRoute)
+	e.GET("/is-valid", routes.IsValidRoute)
+	e.POST("/user/login", routes.LoginUserRoute)
+	e.POST("/user/register", routes.RegisterUserRoute)
+	e.POST("/module/login", routes.LoginModuleRoute)
+	e.POST("/module/register", routes.RegisterModuleRoute)
 
 	logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

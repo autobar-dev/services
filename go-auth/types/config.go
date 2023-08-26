@@ -5,5 +5,4 @@ type Config struct {
 	DatabaseURL       string
 	LoggerEnvironment string
 	JwtSecret         string
-	UserServiceURL    string
 }

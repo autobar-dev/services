@@ -5,7 +5,10 @@ import (
 	"reflect"
 )
 
-var RefreshTokenCharacters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+var (
+	RefreshTokenCharacters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	PrivateKeyCharacters   = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+)
 
 func RandomString(length int, character_set []rune) string {
 	result := make([]rune, length)

@@ -41,7 +41,7 @@ func (pur *AuthUserRepository) GetById(user_id string) (*PostgresAuthUser, error
 	get_user_query := `
  		SELECT *
 		FROM users
-		WHERE id = $1:
+		WHERE id = $1;
 	`
 
 	row := pur.db.QueryRowx(get_user_query, user_id)
@@ -59,7 +59,7 @@ func (pur *AuthUserRepository) GetByEmail(email string) (*PostgresAuthUser, erro
 	get_user_query := `
  		SELECT *
 		FROM users
-		WHERE email = $1:
+		WHERE email = $1;
 	`
 
 	row := pur.db.QueryRowx(get_user_query, email)

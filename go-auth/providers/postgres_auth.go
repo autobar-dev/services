@@ -2,6 +2,7 @@ package providers
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/autobar-dev/services/auth/repositories"
@@ -43,15 +44,21 @@ func (p *PostgresAuthProvider) LoginUser(
 	password string,
 	remember_me bool,
 ) (refresh_token *string, err error) {
+	fmt.Printf("getting user with email %s\n", email)
+
 	auth_user, err := p.user_repository.GetByEmail(email)
 	if err != nil {
 		return nil, err
 	}
 
+	fmt.Printf("validating password for user %s\n", auth_user.Id)
+
 	err = bcrypt.CompareHashAndPassword([]byte(auth_user.Password), []byte(password))
 	if err != nil {
 		return nil, errors.New("invalid password")
 	}
+
+	fmt.Printf("validation successful, generating refresh token for user %s\n", auth_user.Id)
 
 	return p.createUserRefreshToken(auth_user.Id, remember_me)
 }
@@ -60,13 +67,13 @@ func (p *PostgresAuthProvider) RegisterUser(
 	user_id string,
 	email string,
 	password string,
-) (refresh_token *string, err error) {
-	err = p.user_repository.Create(user_id, email, password)
+) error {
+	password_hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return p.createUserRefreshToken(user_id, false)
+	return p.user_repository.Create(user_id, email, string(password_hash))
 }
 
 func (p *PostgresAuthProvider) LoginModule(
@@ -89,13 +96,13 @@ func (p *PostgresAuthProvider) LoginModule(
 func (p *PostgresAuthProvider) RegisterModule(
 	serial_number string,
 	private_key string,
-) (*string, error) {
-	err := p.module_repository.Create(serial_number, private_key)
+) error {
+	private_key_hash, err := bcrypt.GenerateFromPassword([]byte(private_key), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return p.createModuleRefreshToken(serial_number)
+	return p.module_repository.Create(serial_number, string(private_key_hash))
 }
 
 func (p *PostgresAuthProvider) InvalidateRefreshTokenById(
@@ -122,14 +129,14 @@ func (p *PostgresAuthProvider) GetRefreshTokenOwner(
 		return nil, errors.New("invalid refresh token")
 	}
 
-	var owner_type types.RefreshTokenOwnerType
+	var owner_type types.TokenOwnerType
 	var identifier string
 
 	if rt.UserId != nil {
-		owner_type = types.UserRefreshTokenOwnerType
+		owner_type = types.UserTokenOwnerType
 		identifier = *rt.UserId
 	} else {
-		owner_type = types.ModuleRefreshTokenOwnerType
+		owner_type = types.ModuleTokenOwnerType
 		identifier = *rt.ModuleSerialNumber
 	}
 

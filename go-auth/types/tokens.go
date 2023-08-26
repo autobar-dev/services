@@ -1,14 +1,28 @@
 package types
 
-type RefreshTokenOwnerType string
+import "github.com/golang-jwt/jwt/v4"
+
+type TokenOwnerType string
 
 const (
-	UserRefreshTokenOwnerType   RefreshTokenOwnerType = "user"
-	ModuleRefreshTokenOwnerType RefreshTokenOwnerType = "module"
+	UserTokenOwnerType   TokenOwnerType = "user"
+	ModuleTokenOwnerType TokenOwnerType = "module"
 )
 
+type AccessTokenClaims struct {
+	*jwt.RegisteredClaims
+	ClientType TokenOwnerType `json:"sub_typ"`
+	Role       *string        `json:"rol"`
+}
+
+type AccessTokenPayload struct {
+	ClientType TokenOwnerType
+	Identifier string
+	Role       *string
+}
+
 type RefreshTokenOwner struct {
-	Type       RefreshTokenOwnerType
+	Type       TokenOwnerType
 	Identifier string
 }
 

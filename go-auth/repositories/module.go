@@ -23,9 +23,33 @@ func NewModuleRepository(db *sqlx.DB) *AuthModuleRepository {
 }
 
 func (pmr *AuthModuleRepository) Create(serial_number string, private_key string) error {
+	create_module_query := `
+		INSERT INTO modules (serial_number, private_key)
+		VALUES ($1, $2);
+	`
+
+	_, err := pmr.db.Exec(create_module_query, serial_number, private_key)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (pmr *AuthModuleRepository) GetBySerialNumber(serial_number string) (*PostgresAuthModule, error) {
-	return nil, nil
+	get_module_query := `
+ 		SELECT *
+		FROM modules
+		WHERE serial_number = $1;
+	`
+
+	row := pmr.db.QueryRowx(get_module_query, serial_number)
+
+	var pm PostgresAuthModule
+	err := row.StructScan(&pm)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pm, nil
 }
