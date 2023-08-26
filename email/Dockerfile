@@ -1,6 +1,12 @@
 # Builder image
 FROM golang:alpine AS builder
 
+ARG GITHUB_USER
+ARG GITHUB_PAT
+
+RUN apk update && apk add git
+RUN echo "machine github.com login $GITHUB_USER password $GITHUB_PAT" > ~/.netrc
+
 WORKDIR /app
 
 # Insert commit sha and version
@@ -13,6 +19,7 @@ RUN echo ${VERSION} > .meta/VERSION
 
 # Copy source code and build
 COPY . .
+ENV GOPRIVATE=github.com/autobar-dev/shared-libraries
 RUN go build -o ./service-email
 
 # Runtime image

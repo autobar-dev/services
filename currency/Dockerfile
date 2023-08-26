@@ -1,6 +1,12 @@
 # Dependency builder image
 FROM rust:1.69-slim AS deps-builder
 
+ARG GITHUB_USER
+ARG GITHUB_PAT
+
+RUN apt update && apt install -y git
+RUN echo "machine github.com login $GITHUB_USER password $GITHUB_PAT" > ~/.netrc
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y pkg-config libssl-dev
