@@ -1,9 +1,10 @@
 module github.com/autobar-dev/services/auth
 
-go 1.20
+go 1.21.0
 
 require (
-	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827113809-f070e9fb82e5 // indirect
+	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717-1191d524c2bf // indirect
+	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230827185620-154f10f11b78 // indirect
 	github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230824232802-ec249f04f1fb // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.2 // indirect
