@@ -39,7 +39,7 @@ blocks:
             - echo "Logging in to GHCR..."
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image and pushing to GHCR..."
-            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-realtime:latest-dev --build-arg GITHUB_USER="$GITHUB_USER" --build-arg GITHUB_PAT="$GITHUB_PAT" --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" realtime/'
+            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-auth:latest-dev --build-arg GITHUB_USER="$GITHUB_USER" --build-arg GITHUB_PAT="$GITHUB_PAT" --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" auth/'
     dependencies: []
   - name: (s) Realtime - Build
     run:
@@ -136,4 +136,20 @@ blocks:
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image and pushing to GHCR..."
             - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-emailtemplate:latest-dev --build-arg GITHUB_USER="$GITHUB_USER" --build-arg GITHUB_PAT="$GITHUB_PAT" --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" emailtemplate/'
+    dependencies: []
+  - name: (s) Email - Build
+    run:
+      when: 'branch = ''develop'' and change_in(''/email/'', {default_branch: ''develop''})'
+    task:
+      secrets:
+        - name: GitHub Credentials
+      jobs:
+        - name: Build and push
+          commands:
+            - echo "Checking out..."
+            - checkout
+            - echo "Logging in to GHCR..."
+            - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
+            - echo "Building image and pushing to GHCR..."
+            - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-email:latest-dev --build-arg GITHUB_USER="$GITHUB_USER" --build-arg GITHUB_PAT="$GITHUB_PAT" --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" email/'
     dependencies: []
