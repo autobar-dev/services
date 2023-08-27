@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"go.a5r.dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/types"
 )
 
 func ExchangeNameFromClientInfo(ct types.ClientType, identifier string) string {

@@ -11,10 +11,11 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 
-	"go.a5r.dev/services/realtime/repositories"
-	"go.a5r.dev/services/realtime/routes"
-	"go.a5r.dev/services/realtime/types"
-	"go.a5r.dev/services/realtime/utils"
+	"github.com/autobar-dev/services/realtime/middleware"
+	"github.com/autobar-dev/services/realtime/repositories"
+	"github.com/autobar-dev/services/realtime/routes"
+	"github.com/autobar-dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/utils"
 )
 
 func main() {
@@ -58,7 +59,7 @@ func main() {
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		Meta:        utils.LoadMeta(),
+		MetaFactors: utils.GetMetaFactors(),
 		AmqpChannel: amqp_channel,
 		Config:      config,
 		Repositories: &types.Repositories{
@@ -74,10 +75,13 @@ func main() {
 			rest_context := &types.RestContext{
 				c,
 				app_context,
+				nil,
 			}
 			return next(rest_context)
 		}
 	})
+
+	e.Use(middleware.AccessTokenMiddleware)
 
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/events", routes.EventsRoute)

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/autobar-dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"go.a5r.dev/services/realtime/types"
-	"go.a5r.dev/services/realtime/utils"
 )
 
 type EventsRouteResponse struct {
@@ -19,36 +19,15 @@ type EventsRouteResponse struct {
 func EventsRoute(c echo.Context) error {
 	rest_context := c.(*types.RestContext)
 	app_context := *(*rest_context).AppContext
+	client_context := rest_context.ClientContext
 
-	ar := app_context.Repositories.Auth
 	mr := app_context.Repositories.Mq
 	rr := app_context.Repositories.Redis
 
-	session_from_query := rest_context.QueryParam("session")
-	session_from_header := rest_context.Request().Header.Get("session")
-	session_from_cookie, _ := rest_context.Request().Cookie("session_id")
-	session := ""
-
-	if session_from_query != "" {
-		session = session_from_query
-	} else if session_from_header != "" {
-		session = session_from_header
-	} else if session_from_cookie != nil {
-		session = session_from_cookie.Value
-	} else {
+	if client_context == nil {
 		return rest_context.JSON(401, &EventsRouteResponse{
 			Status: "error",
-			Error:  "session not provided",
-		})
-	}
-
-	session_data, err := ar.VerifySession(session)
-	if err != nil {
-		fmt.Printf("error while verifying session: %+v\n", err)
-
-		return rest_context.JSON(400, &EventsRouteResponse{
-			Status: "error",
-			Error:  "session is not valid",
+			Error:  "unauthorized",
 		})
 	}
 
@@ -59,7 +38,7 @@ func EventsRoute(c echo.Context) error {
 	var ct types.ClientType
 
 	if client_type == "" {
-		ct = utils.ServiceClientTypeToClientType(session_data.ClientType)
+		ct = utils.ServiceClientTypeToClientType(client_context.Type)
 	} else {
 		ctp, err := utils.ClientTypeFromString(client_type)
 		if err != nil {
@@ -75,7 +54,7 @@ func EventsRoute(c echo.Context) error {
 	var id string
 
 	if identifier == "" {
-		id = session_data.ClientIdentifier
+		id = client_context.Identifier
 	} else {
 		id = identifier
 	}
@@ -85,7 +64,13 @@ func EventsRoute(c echo.Context) error {
 		new_stream_name := utils.ExchangeNameFromClientInfo(ct, id) + fmt.Sprintf("_%s", unique_id)
 
 		app_context.SseServer.CreateStream(new_stream_name)
-		redirect_uri := fmt.Sprintf("%s/events?stream=%s&identifier=%s&client_type=%s&session=%s", app_context.Config.ServiceBasepath, new_stream_name, identifier, client_type, session_from_query)
+		redirect_uri := fmt.Sprintf(
+			"%s/events?stream=%s&identifier=%s&client_type=%s",
+			app_context.Config.ServiceBasepath,
+			new_stream_name,
+			identifier,
+			client_type,
+		)
 
 		return rest_context.Redirect(302, redirect_uri)
 	}
@@ -155,7 +140,10 @@ func EventsRoute(c echo.Context) error {
 					fmt.Printf("failed to parse delivery from queue: %+v\n", err)
 				}
 
-				app_context.SseServer.Publish(stream_name, utils.CreateCommandSseEvent(message.Id, message.Command, message.Args))
+				app_context.SseServer.Publish(
+					stream_name,
+					utils.CreateCommandSseEvent(message.Id, message.Command, message.Args),
+				)
 			}
 		}
 	}()

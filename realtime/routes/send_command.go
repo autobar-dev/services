@@ -3,9 +3,9 @@ package routes
 import (
 	"github.com/labstack/echo/v4"
 
-	"go.a5r.dev/services/realtime/controllers"
-	"go.a5r.dev/services/realtime/types"
-	"go.a5r.dev/services/realtime/utils"
+	"github.com/autobar-dev/services/realtime/controllers"
+	"github.com/autobar-dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/utils"
 )
 
 type SendCommandRouteBody struct {

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/autobar-dev/services/realtime/types"
 	"github.com/r3labs/sse/v2"
-	"go.a5r.dev/services/realtime/types"
 )
 
 func CreateCommandSseEvent(id string, command_name string, args string) *sse.Event {

@@ -13,6 +13,7 @@ type Config struct {
 	AmqpURL                     string
 	RedisURL                    string
 	ServiceBasepath             string
+	JwtSecret                   string
 }
 
 func LoadEnvVars() (*Config, error) {
@@ -43,6 +44,11 @@ func LoadEnvVars() (*Config, error) {
 
 	service_basepath := os.Getenv("SERVICE_BASEPATH")
 
+	jwt_secret := os.Getenv("JWT_SECRET")
+	if jwt_secret == "" {
+		return nil, errors.New("JWT_SECRET env var not set")
+	}
+
 	return &Config{
 		Port:                        port,
 		SseHeartbeatIntervalSeconds: sse_heartbeat_interval,
@@ -50,5 +56,6 @@ func LoadEnvVars() (*Config, error) {
 		AmqpURL:                     amqp_url,
 		RedisURL:                    redis_url,
 		ServiceBasepath:             service_basepath,
+		JwtSecret:                   jwt_secret,
 	}, nil
 }

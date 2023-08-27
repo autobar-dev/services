@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"go.a5r.dev/services/realtime/types"
-	"go.a5r.dev/services/realtime/utils"
+	"github.com/autobar-dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/utils"
 )
 
 func Reply(app_context types.AppContext, client_type types.ClientType, identifier string, message_id string) error {

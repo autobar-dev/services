@@ -6,12 +6,18 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/autobar-dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/utils"
 	"github.com/google/uuid"
-	"go.a5r.dev/services/realtime/types"
-	"go.a5r.dev/services/realtime/utils"
 )
 
-func SendCommandMessage(app_context types.AppContext, client_type types.ClientType, identifier string, command_name string, args string) error {
+func SendCommandMessage(
+	app_context types.AppContext,
+	client_type types.ClientType,
+	identifier string,
+	command_name string,
+	args string,
+) error {
 	mr := app_context.Repositories.Mq
 	rr := app_context.Repositories.Redis
 

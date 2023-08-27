@@ -3,9 +3,9 @@ package routes
 import (
 	"fmt"
 
+	"github.com/autobar-dev/services/realtime/types"
+	"github.com/autobar-dev/services/realtime/utils"
 	"github.com/labstack/echo/v4"
-	"go.a5r.dev/services/realtime/types"
-	"go.a5r.dev/services/realtime/utils"
 )
 
 type EavesdropRouteResponse struct {
@@ -58,7 +58,12 @@ func EavesdropRoute(c echo.Context) error {
 		})
 	}
 
-	redirect_uri := fmt.Sprintf("%s/events?identifier=%s&client_type=%s", app_context.Config.ServiceBasepath, identifier, client_type)
+	redirect_uri := fmt.Sprintf(
+		"%s/events?identifier=%s&client_type=%s",
+		app_context.Config.ServiceBasepath,
+		identifier,
+		client_type,
+	)
 
 	return rest_context.Redirect(302, redirect_uri)
 }
