@@ -23,12 +23,8 @@ services:
       - .env/auth.env
       - .env/common.env
     environment:
+      - LOGGER_ENVIRONMENT=development
       - PORT=80
-      - ALLOW_ONLY_SAME_USER_AGENT=true
-      - REMEMBER_ME_DURATION_SECONDS=2592000
-      - DEFAULT_SESSION_DURATION_SECONDS=21600
-      - MAIN_DOMAIN=api.autobar.ovh
-      - SET_SECURE_COOKIES=false
     build:
       context: ./auth
       args:
