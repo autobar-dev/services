@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/autobar-dev/services/auth/types"
 	"github.com/autobar-dev/services/auth/utils"
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 )
 
 func Refresh(ac *types.AppContext, refresh_token string) (*types.Tokens, error) {
@@ -14,7 +15,7 @@ func Refresh(ac *types.AppContext, refresh_token string) (*types.Tokens, error) 
 		return nil, err
 	}
 
-	if owner.Type == types.UserTokenOwnerType {
+	if owner.Type == authrepository.UserTokenOwnerType {
 		auth_user, err := aur.GetById(owner.Identifier)
 		if err != nil {
 			return nil, err

@@ -8,6 +8,8 @@ github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5/go.mod h1:lmUJ/7eu/Q8
 github.com/ajg/form v1.5.1/go.mod h1:uL1WgH+h2mgNtvBq0339dVnzXdBETtL2LeUXaIv25UY=
 github.com/andybalholm/brotli v1.0.0/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
 github.com/andybalholm/brotli v1.0.4/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
+github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827113809-f070e9fb82e5 h1:5XTh1e81c+mSlgUvBWtHd90QUqncQSpIaWTyrHnXzW8=
+github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827113809-f070e9fb82e5/go.mod h1:RAha96e5OxV5VzVMrcW2nwWlZ7p2UihuwnTmeNxxnK4=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230824225526-187f0c07148d h1:HGyxxVvBRmX4nCvm1FJJ0x5XczDRIeesHivTfFF42KI=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230824225526-187f0c07148d/go.mod h1:2POZrIrCIuqKo9lS3v1zwc4/WLnXyaLkGTlXppXMvrY=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230824232802-ec249f04f1fb h1:zESvV30mwgirmAMgETdIb2UFSFCtVLSaR3coJsE5NcE=

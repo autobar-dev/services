@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"github.com/autobar-dev/services/auth/types"
-	"github.com/autobar-dev/services/auth/utils"
+	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,7 +23,7 @@ func AccessTokenMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		submatches := re.FindStringSubmatch(authorization_header)
 		if len(submatches) == 2 {
 			at_string := submatches[1]
-			at_payload, err := utils.ParseAccessToken(app_context.Config.JwtSecret, at_string)
+			at_payload, err := authrepository.ParseAccessToken(app_context.Config.JwtSecret, at_string)
 			if err == nil {
 				rest_context.ClientContext = &types.ClientContext{
 					Type:       at_payload.ClientType,

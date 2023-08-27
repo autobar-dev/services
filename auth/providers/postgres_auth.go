@@ -8,6 +8,7 @@ import (
 	"github.com/autobar-dev/services/auth/repositories"
 	"github.com/autobar-dev/services/auth/types"
 	"github.com/autobar-dev/services/auth/utils"
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -129,14 +130,14 @@ func (p *PostgresAuthProvider) GetRefreshTokenOwner(
 		return nil, errors.New("invalid refresh token")
 	}
 
-	var owner_type types.TokenOwnerType
+	var owner_type authrepository.TokenOwnerType
 	var identifier string
 
 	if rt.UserId != nil {
-		owner_type = types.UserTokenOwnerType
+		owner_type = authrepository.UserTokenOwnerType
 		identifier = *rt.UserId
 	} else {
-		owner_type = types.ModuleTokenOwnerType
+		owner_type = authrepository.ModuleTokenOwnerType
 		identifier = *rt.ModuleSerialNumber
 	}
 
