@@ -3,11 +3,12 @@ package utils
 import (
 	"os"
 	"strings"
+	"time"
 
-	"go.a5r.dev/services/module/types"
+	"github.com/autobar-dev/services/module/types"
 )
 
-func LoadMeta() *types.Meta {
+func GetMetaFactors() *types.MetaFactors {
 	commit_sha := ""
 	version := ""
 
@@ -19,8 +20,20 @@ func LoadMeta() *types.Meta {
 		version = strings.TrimSpace(string(version_bytes))
 	}
 
+	return &types.MetaFactors{
+		StartTime: time.Now(),
+		Hash:      commit_sha,
+		Version:   version,
+	}
+}
+
+func GetMetaFromFactors(mf *types.MetaFactors) *types.Meta {
+	now := time.Now()
+	uptime := int64(now.Sub(mf.StartTime).Seconds())
+
 	return &types.Meta{
-		Hash:    commit_sha,
-		Version: version,
+		Uptime:  uptime,
+		Hash:    mf.Hash,
+		Version: mf.Version,
 	}
 }

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/autobar-dev/services/module/repositories"
+	"github.com/autobar-dev/services/module/types"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"go.a5r.dev/services/module/repositories"
-	"go.a5r.dev/services/module/types"
 )
 
 func RequestReportController(app_context *types.AppContext, serial_number string) (*types.ModuleReport, error) {

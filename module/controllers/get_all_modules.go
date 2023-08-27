@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"go.a5r.dev/services/module/types"
-	"go.a5r.dev/services/module/utils"
+	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
 )
 
 func GetAllModulesController(app_context *types.AppContext) (*[]types.Module, error) {

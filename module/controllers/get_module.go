@@ -3,8 +3,8 @@ package controllers
 import (
 	"fmt"
 
-	"go.a5r.dev/services/module/types"
-	"go.a5r.dev/services/module/utils"
+	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
 )
 
 func GetModuleController(app_context *types.AppContext, serial_number string) (*types.Module, error) {

@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
+
 	"github.com/labstack/echo/v4"
-	"go.a5r.dev/services/module/types"
 )
 
 type MetaRouteResponse struct {
@@ -14,8 +16,10 @@ func MetaRoute(c echo.Context) error {
 	rest_context := c.(*types.RestContext)
 	app_context := *(*rest_context).AppContext
 
+	meta := utils.GetMetaFromFactors(app_context.MetaFactors)
+
 	return rest_context.JSON(200, &MetaRouteResponse{
 		Status: "ok",
-		Data:   app_context.Meta,
+		Data:   meta,
 	})
 }

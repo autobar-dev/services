@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"github.com/autobar-dev/services/module/controllers"
+	"github.com/autobar-dev/services/module/types"
 	"github.com/labstack/echo/v4"
-	"go.a5r.dev/services/module/controllers"
-	"go.a5r.dev/services/module/types"
 )
 
 type GetAllModulesForStationRouteResponse struct {

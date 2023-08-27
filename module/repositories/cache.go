@@ -61,7 +61,16 @@ func (cr CacheRepository) GetModule(serial_number string) (*RedisModule, error) 
 	return &rm, nil
 }
 
-func (cr CacheRepository) SetModule(id int32, serial_number string, station_id *string, product_id *string, enabled bool, prices map[string]int, created_at time.Time, updated_at time.Time) error {
+func (cr CacheRepository) SetModule(
+	id int32,
+	serial_number string,
+	station_id *string,
+	product_id *string,
+	enabled bool,
+	prices map[string]int,
+	created_at time.Time,
+	updated_at time.Time,
+) error {
 	rm := RedisModule{
 		Id:           id,
 		SerialNumber: serial_number,
@@ -81,7 +90,7 @@ func (cr CacheRepository) SetModule(id int32, serial_number string, station_id *
 	}
 
 	ctx := context.Background()
-	return cr.redis.Set(ctx, generateAllModulesForStationCacheKey(serial_number), rm_compressed, 0).Err()
+	return cr.redis.Set(ctx, generateModuleCacheKey(serial_number), rm_compressed, 0).Err()
 }
 
 func (cr CacheRepository) ClearModule(serial_number string) error {

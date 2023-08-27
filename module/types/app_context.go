@@ -1,19 +1,20 @@
 package types
 
 import (
+	"github.com/autobar-dev/services/module/repositories"
+	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"go.a5r.dev/services/module/repositories"
 )
 
 type Repositories struct {
 	Module   *repositories.ModuleRepository
 	Cache    *repositories.CacheRepository
-	Auth     *repositories.AuthRepository
 	Realtime *repositories.RealtimeRepository
+	Auth     *authrepository.AuthRepository
 }
 
 type AppContext struct {
-	Meta         *Meta
+	MetaFactors  *MetaFactors
 	Config       *Config
 	Repositories *Repositories
 	AmqpChannel  *amqp.Channel

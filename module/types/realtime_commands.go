@@ -1,6 +1,6 @@
 package types
 
-import "go.a5r.dev/services/module/repositories"
+import "github.com/autobar-dev/services/module/repositories"
 
 const (
 	RequestReportCommandName repositories.CommandName = "request-report"

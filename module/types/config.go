@@ -14,6 +14,7 @@ type Config struct {
 	RealtimeServiceURL         string
 	AmqpURL                    string
 	ModuleReportTimeoutSeconds int
+	JwtSecret                  string
 }
 
 func LoadEnvVars() (*Config, error) {
@@ -53,6 +54,11 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("MODULE_REPORT_TIMEOUT_SECONDS env var not set")
 	}
 
+	jwt_secret := os.Getenv("JWT_SECRET")
+	if jwt_secret == "" {
+		return nil, errors.New("JWT_SECRET env var not set")
+	}
+
 	return &Config{
 		Port:                       port,
 		DatabaseURL:                database_url,
@@ -61,5 +67,6 @@ func LoadEnvVars() (*Config, error) {
 		RealtimeServiceURL:         realtime_service_url,
 		AmqpURL:                    amqp_url,
 		ModuleReportTimeoutSeconds: module_report_timeout_seconds_int,
+		JwtSecret:                  jwt_secret,
 	}, nil
 }

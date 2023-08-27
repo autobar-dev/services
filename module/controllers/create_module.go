@@ -3,8 +3,8 @@ package controllers
 import (
 	"fmt"
 
-	"go.a5r.dev/services/module/types"
-	"go.a5r.dev/services/module/utils"
+	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
 )
 
 func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleResponse, error) {
@@ -14,7 +14,7 @@ func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleR
 	valid_serial_number := false
 	serial_number := ""
 
-	for !valid_serial_number {
+	for !valid_serial_number { // make this a forever loop?
 		serial_number = utils.GenerateSerialNumber(types.SerialNumberLength)
 
 		_, err := mr.Get(serial_number)
@@ -28,9 +28,9 @@ func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleR
 		return nil, err
 	}
 
-	service_module, err := ar.Create(*serial_number_returned)
+	private_key, err := ar.RegisterModule(*serial_number_returned)
 	if err != nil {
-		fmt.Printf("IMPORTANT: failed to create module in auth service: %+v\n", err)
+		fmt.Printf("IMPORTANT: failed to register module in auth service: %+v\n", err)
 		return nil, err
 	}
 
@@ -39,6 +39,6 @@ func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleR
 		return nil, err
 	}
 
-	cmr := utils.ConstructCreateModuleResponse(service_module, module)
+	cmr := utils.ConstructCreateModuleResponse(module, *private_key)
 	return cmr, nil
 }

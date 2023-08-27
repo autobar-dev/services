@@ -2,21 +2,20 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
-	"time"
 
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
-	echo "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 
-	"go.a5r.dev/services/module/repositories"
-	"go.a5r.dev/services/module/routes"
-	"go.a5r.dev/services/module/types"
-	"go.a5r.dev/services/module/utils"
+	"github.com/autobar-dev/services/module/repositories"
+	"github.com/autobar-dev/services/module/routes"
+	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
 )
 
 func main() {
@@ -56,20 +55,18 @@ func main() {
 	}
 	defer amqp_channel.Close()
 
-	rand.Seed(time.Now().UnixNano())
-
 	e := echo.New()
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		Meta:        utils.LoadMeta(),
+		MetaFactors: utils.GetMetaFactors(),
 		AmqpChannel: amqp_channel,
 		Config:      config,
 		Repositories: &types.Repositories{
 			Module:   repositories.NewModuleRepository(database),
 			Cache:    repositories.NewCacheRepository(redis_client),
-			Auth:     repositories.NewAuthRepository(config.AuthServiceURL),
 			Realtime: repositories.NewRealtimeRepository(config.RealtimeServiceURL),
+			Auth:     authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
 		},
 	}
 
@@ -78,6 +75,7 @@ func main() {
 			rest_context := &types.RestContext{
 				c,
 				app_context,
+				nil,
 			}
 			return next(rest_context)
 		}

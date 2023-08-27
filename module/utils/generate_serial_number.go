@@ -3,7 +3,7 @@ package utils
 import (
 	"math/rand"
 
-	"go.a5r.dev/services/module/types"
+	"github.com/autobar-dev/services/module/types"
 )
 
 func GenerateSerialNumber(length int32) string {

@@ -6,5 +6,6 @@ import (
 
 type RestContext struct {
 	echo.Context
-	AppContext *AppContext
+	AppContext    *AppContext
+	ClientContext *ClientContext
 }

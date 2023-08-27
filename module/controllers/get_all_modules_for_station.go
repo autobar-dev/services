@@ -3,9 +3,9 @@ package controllers
 import (
 	"fmt"
 
-	"go.a5r.dev/services/module/repositories"
-	"go.a5r.dev/services/module/types"
-	"go.a5r.dev/services/module/utils"
+	"github.com/autobar-dev/services/module/repositories"
+	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
 )
 
 func GetAllModulesForStationController(app_context *types.AppContext, station_id string) (*[]types.Module, error) {

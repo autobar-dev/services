@@ -3,8 +3,8 @@ package utils
 import (
 	"encoding/json"
 
-	"go.a5r.dev/services/module/repositories"
-	"go.a5r.dev/services/module/types"
+	"github.com/autobar-dev/services/module/repositories"
+	"github.com/autobar-dev/services/module/types"
 )
 
 func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
@@ -49,9 +49,9 @@ func ModuleToRedisModule(m types.Module) *repositories.RedisModule {
 	}
 }
 
-func ConstructCreateModuleResponse(sm *repositories.ServiceModule, module *types.Module) *types.CreateModuleResponse {
+func ConstructCreateModuleResponse(module *types.Module, private_key string) *types.CreateModuleResponse {
 	return &types.CreateModuleResponse{
 		Module:     module,
-		PrivateKey: sm.PrivateKey,
+		PrivateKey: private_key,
 	}
 }
