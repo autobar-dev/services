@@ -8,4 +8,5 @@ type AuthProvider interface {
 	InvalidateRefreshTokenById(token_id string) error
 	InvalidateRefreshTokenByToken(refresh_token string) error
 	GetRefreshTokenOwner(refresh_token string) (owner *RefreshTokenOwner, err error)
+	UpdateRefreshToken(refresh_token string) (*string, error)
 }

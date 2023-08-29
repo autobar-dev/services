@@ -89,6 +89,21 @@ func (rtr *RefreshTokenRepository) GetById(token_id string) (*PostgresRefreshTok
 	return &prt, nil
 }
 
+func (rtr *RefreshTokenRepository) EditByToken(
+	token string,
+	new_token_value string,
+	new_expires_at time.Time,
+) error {
+	edit_token_query := `
+		UPDATE refresh_tokens
+		SET token = $1, expires_at = $2
+		WHERE token = $3;
+	`
+
+	_, err := rtr.db.Exec(edit_token_query, new_token_value, new_expires_at, token)
+	return err
+}
+
 func (rtr *RefreshTokenRepository) DeleteById(token_id string) error {
 	delete_token_query := `
 		DELETE FROM refresh_tokens

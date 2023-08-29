@@ -106,6 +106,31 @@ func (p *PostgresAuthProvider) RegisterModule(
 	return p.module_repository.Create(serial_number, string(private_key_hash))
 }
 
+func (p *PostgresAuthProvider) UpdateRefreshToken(
+	refresh_token string,
+) (*string, error) {
+	owner, err := p.GetRefreshTokenOwner(refresh_token)
+	if err != nil {
+		return nil, err
+	}
+
+	new_refresh_token := utils.RandomString(RefreshTokenLength, utils.RefreshTokenCharacters)
+
+	var valid_until time.Time
+	if owner.Type == authrepository.UserTokenOwnerType {
+		valid_until = time.Now().UTC().Add(UserRefreshTokenValidDuration)
+	} else {
+		valid_until = time.Now().UTC().Add(ModuleRefreshTokenValidDuration)
+	}
+
+	err = p.refresh_token_repository.EditByToken(refresh_token, new_refresh_token, valid_until)
+	if err != nil {
+		return nil, err
+	}
+
+	return &new_refresh_token, nil
+}
+
 func (p *PostgresAuthProvider) InvalidateRefreshTokenById(
 	token_id string,
 ) error {
