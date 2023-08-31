@@ -193,7 +193,7 @@ func (p *PostgresAuthProvider) createUserRefreshToken(
 	valid_until := time.Now().UTC().Add(time_valid)
 	token := utils.RandomString(RefreshTokenLength, utils.RefreshTokenCharacters)
 
-	err = p.refresh_token_repository.CreateForUser(user_id, token, valid_until)
+	err = p.refresh_token_repository.CreateForUser(user_id, token, remember_me, valid_until)
 	if err != nil {
 		return nil, err
 	}
