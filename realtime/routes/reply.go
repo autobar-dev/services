@@ -35,9 +35,10 @@ func ReplyRoute(c echo.Context) error {
 	var rrb ReplyRouteBody
 	err := rest_context.Bind(&rrb)
 	if err != nil {
+		err := err.Error()
 		return rest_context.JSON(400, &ReplyRouteResponse{
 			Status: "error",
-			Error:  nil,
+			Error:  &err,
 		})
 	}
 

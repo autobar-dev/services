@@ -25,6 +25,8 @@ func ReportRoute(c echo.Context) error {
 	app_context := rest_context.AppContext
 	client_context := rest_context.ClientContext
 
+	fmt.Printf("request on /report\n")
+
 	var rrrb ReportRouteRequestBody
 	err := rest_context.Bind(&rrrb)
 	if err != nil {
@@ -57,6 +59,8 @@ func ReportRoute(c echo.Context) error {
 			Error:  &err,
 		})
 	}
+
+	fmt.Printf("got report request from client type: %s, queue: %s\n", client_type, rrrb.Queue)
 
 	msr := &types.ModuleSentReport{
 		Status: rrrb.Status,

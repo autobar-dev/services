@@ -12,6 +12,7 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 
+	"github.com/autobar-dev/services/module/middleware"
 	"github.com/autobar-dev/services/module/repositories"
 	"github.com/autobar-dev/services/module/routes"
 	"github.com/autobar-dev/services/module/types"
@@ -80,6 +81,8 @@ func main() {
 			return next(rest_context)
 		}
 	})
+
+	e.Use(middleware.AccessTokenMiddleware)
 
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/", routes.GetModuleRoute)
