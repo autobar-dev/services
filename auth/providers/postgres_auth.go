@@ -118,7 +118,14 @@ func (p *PostgresAuthProvider) UpdateRefreshToken(
 
 	var valid_until time.Time
 	if owner.Type == authrepository.UserTokenOwnerType {
-		valid_until = time.Now().UTC().Add(UserRefreshTokenValidDuration)
+		old_refresh_token, err := p.refresh_token_repository.GetByToken(refresh_token)
+		if err != nil {
+			return nil, err
+		}
+
+		if old_refresh_token.RememberMe {
+			valid_until = time.Now().UTC().Add(UserRefreshTokenValidDuration)
+		}
 	} else {
 		valid_until = time.Now().UTC().Add(ModuleRefreshTokenValidDuration)
 	}

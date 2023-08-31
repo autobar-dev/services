@@ -10,6 +10,7 @@ type PostgresRefreshToken struct {
 	Id                 string    `db:"id"`
 	UserId             *string   `db:"user_id"`
 	ModuleSerialNumber *string   `db:"module_serial_number"`
+	RememberMe         bool      `db:"remember_me"`
 	Token              string    `db:"token"`
 	ExpiresAt          time.Time `db:"expires_at"`
 	CreatedAt          time.Time `db:"created_at"`
@@ -23,14 +24,19 @@ func NewRefreshTokenRepository(db *sqlx.DB) *RefreshTokenRepository {
 	return &RefreshTokenRepository{db}
 }
 
-func (rtr *RefreshTokenRepository) CreateForUser(user_id string, token_value string, valid_until time.Time) error {
+func (rtr *RefreshTokenRepository) CreateForUser(
+	user_id string,
+	token_value string,
+	remember_me bool,
+	valid_until time.Time,
+) error {
 	create_token_query := `
 		INSERT INTO refresh_tokens
-		(user_id, token, expires_at)
-		VALUES ($1, $2, $3);
+		(user_id, token, remember_me, expires_at)
+		VALUES ($1, $2, $3, $4);
 	`
 
-	_, err := rtr.db.Exec(create_token_query, user_id, token_value, valid_until)
+	_, err := rtr.db.Exec(create_token_query, user_id, token_value, remember_me, valid_until)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,2 @@
+ALTER TABLE refresh_tokens
+ADD remember_me BOOLEAN NOT NULL DEFAULT FALSE;
