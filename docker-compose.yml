@@ -114,9 +114,9 @@ services:
       - EMAIL_SERVICE_URL=http://emailservice
       - EMAILTEMPLATE_SERVICE_URL=http://emailtemplateservice
     build:
-      context: ./product
+      context: ./user
       args:
-        COMMIT_SHA: "product-no-commit"
+        COMMIT_SHA: "user-no-commit"
         VERSION: "0.0.0-test"
 
   emailtemplateservice:
