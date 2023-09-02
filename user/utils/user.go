@@ -37,12 +37,14 @@ func RedisUserToUser(ru repositories.RedisUser) *types.User {
 }
 
 func UserToUserExtended(u types.User, w walletrepository.Wallet) *types.UserExtended {
+	dob := TimeToDateString(u.DateOfBirth)
+
 	return &types.UserExtended{
 		Id:                         u.Id,
 		Email:                      u.Email,
 		FirstName:                  u.FirstName,
 		LastName:                   u.LastName,
-		DateOfBirth:                u.DateOfBirth,
+		DateOfBirth:                dob,
 		Locale:                     u.Locale,
 		Wallet:                     w,
 		IdentityVerificationId:     u.IdentityVerificationId,

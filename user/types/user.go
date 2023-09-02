@@ -11,7 +11,7 @@ type UserExtended struct {
 	Email                      string                  `json:"email"`
 	FirstName                  string                  `json:"first_name"`
 	LastName                   string                  `json:"last_name"`
-	DateOfBirth                time.Time               `json:"date_of_birth"`
+	DateOfBirth                string                  `json:"date_of_birth"`
 	Locale                     string                  `json:"locale"`
 	Wallet                     walletrepository.Wallet `json:"wallet"`
 	IdentityVerificationId     *string                 `json:"identity_verification_id"`
