@@ -9,8 +9,8 @@ type User struct {
 	LastName                   string    `json:"last_name"`
 	DateOfBirth                time.Time `json:"date_of_birth"`
 	Locale                     string    `json:"locale"`
-	IdentityVerificationId     string    `json:"identity_verification_id"`
-	IdentityVerificationSource string    `json:"identity_verification_source"`
+	IdentityVerificationId     *string   `json:"identity_verification_id"`
+	IdentityVerificationSource *string   `json:"identity_verification_source"`
 	CreatedAt                  time.Time `json:"created_at"`
 	UpdatedAt                  time.Time `json:"updated_at"`
 }

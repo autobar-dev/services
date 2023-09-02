@@ -1,8 +1,11 @@
 package types
 
 type Config struct {
-	Port        int
-	DatabaseURL string
-	RedisURL    string
-	AuthServiceURL string
+	Port                    int
+	JwtSecret               string
+	DatabaseURL             string
+	RedisURL                string
+	AuthServiceURL          string
+	EmailTemplateServiceURL string
+	EmailServiceURL         string
 }

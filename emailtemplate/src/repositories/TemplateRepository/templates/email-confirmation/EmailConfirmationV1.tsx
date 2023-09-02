@@ -8,12 +8,13 @@ import {
   Link,
   Container,
   Preview,
+  Img,
 } from "@react-email/components";
 
 export type EmailConfirmationTemplateV1Params = {
   first_name: string,
   last_name: string,
-  email_confirmation_code: string,
+  email_confirmation_url: string,
 };
 
 export function EmailConfirmationTemplateV1(props: {
@@ -26,14 +27,19 @@ export function EmailConfirmationTemplateV1(props: {
       <Preview>Autobar - Email confirmation</Preview>
       <Body style={bodyStyle}>
         <Container style={containerStyle}>
-          <Text>Hi {props.params.first_name} {props.params.last_name},</Text>
-          <Text>Thank you for registering at Autobar. (not you? Let us know by replying to this email)</Text>
-          <Text>Please confirm your email address by clicking on the link below.</Text>
-          <Link href={`https://autobar.co/email-confirmation?code=${props.params.email_confirmation_code}`}>Confirm email address</Link>
+          <Img 
+            alt="Autobar logo"
+            src=""
+            width="100"
+            style={logoStyle}
+          />
+          <Text style={largeTextStyle}>Hello {props.params.first_name}!</Text>
+          <Text style={smallTextStyle}>Thank you for registering at Autobar. (not you? Let us know by replying to this email)</Text>
+          <Text style={smallTextStyle}>Please confirm your email address by clicking the button below.</Text>
+          <Link style={smallTextStyle} href={props.params.email_confirmation_url}>Confirm email address</Link>
           <Hr />
-          <Text>Thanks,</Text>
-          <Text>Autobar</Text>
-          <Text>Email V1</Text>
+          <Text style={smallTextStyle}>Sincerely,</Text>
+          <Text style={smallTextStyle}>Your folks at Autobar</Text>
         </Container>
       </Body>
     </Html>
@@ -42,9 +48,29 @@ export function EmailConfirmationTemplateV1(props: {
 
 const bodyStyle = {
   fontFamily: "Roboto,sans-serif",
+  backgroundColor: "#181818",
+  padding: "0 20px",
+} as React.CSSProperties;
+
+const logoStyle = {
+  margin: "0 auto",
 } as React.CSSProperties;
 
 const containerStyle = {
   margin: "0 auto",
-  padding: "20px 0 48px",
+  padding: "20px",
+  backgroundColor: "#181818",
+  border: "1px solid #303030",
+  borderRadius: "10px",
+} as React.CSSProperties;
+
+const largeTextStyle = {
+  fontSize: "24px",
+  fontWeight: "bold",
+  color: "#f8f8f8",
+} as React.CSSProperties;
+
+const smallTextStyle = {
+  fontSize: "16px",
+  color: "#f8f8f8",
 } as React.CSSProperties;

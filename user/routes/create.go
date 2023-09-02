@@ -7,48 +7,51 @@ import (
 )
 
 type CreateUserRequestBody struct {
-	Email string `json:"email"`
-
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	DateOfBirth string `json:"date_of_birth"`
+	Locale      string `json:"locale"`
 }
 
-type CreateProductRouteResponse struct {
+type CreateUserRouteResponse struct {
 	Status string  `json:"status"`
 	Error  *string `json:"error"`
 }
 
-func CreateProductRoute(c echo.Context) error {
+func CreateUserRoute(c echo.Context) error {
 	rest_context := c.(*types.RestContext)
 	app_context := *(*rest_context).AppContext
 
-	var cprb CreateUserRequestBody
-
-	err := c.Bind(&cprb)
+	var curb CreateUserRequestBody
+	err := c.Bind(&curb)
 	if err != nil {
 		err := err.Error()
-		return c.JSON(400, &CreateProductRouteResponse{
+		return c.JSON(400, &CreateUserRouteResponse{
 			Status: "error",
 			Error:  &err,
 		})
 	}
 
-	if len(cprb.Names) == 0 || cprb.Slug == "" {
-		err := "either slug or names empty"
-		return c.JSON(400, &CreateProductRouteResponse{
-			Status: "error",
-			Error:  &err,
-		})
-	}
-
-	err = controllers.CreateProduct(&app_context, cprb.Slug, cprb.Names, cprb.Descriptions, cprb.Cover, true)
+	err = controllers.Register(
+		&app_context,
+		curb.Email,
+		curb.Password,
+		curb.FirstName,
+		curb.LastName,
+		curb.DateOfBirth,
+		curb.Locale,
+	)
 	if err != nil {
 		err := err.Error()
-		return c.JSON(400, &CreateProductRouteResponse{
+		return c.JSON(400, &CreateUserRouteResponse{
 			Status: "error",
 			Error:  &err,
 		})
 	}
 
-	return c.JSON(200, &CreateProductRouteResponse{
+	return c.JSON(200, &CreateUserRouteResponse{
 		Status: "ok",
 		Error:  nil,
 	})

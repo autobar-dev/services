@@ -14,6 +14,11 @@ func LoadEnvVars() (*types.Config, error) {
 		return nil, err
 	}
 
+	jwt_secret := os.Getenv("JWT_SECRET")
+	if jwt_secret == "" {
+		return nil, errors.New("JWT_SECRET env var not set")
+	}
+
 	database_url := os.Getenv("DATABASE_URL")
 	if database_url == "" {
 		return nil, errors.New("DATABASE_URL env var not set")
@@ -25,14 +30,27 @@ func LoadEnvVars() (*types.Config, error) {
 	}
 
 	auth_service_url := os.Getenv("AUTH_SERVICE_URL")
-	if auth_service_url == ""{
+	if auth_service_url == "" {
 		return nil, errors.New("AUTH_SERVICE_URL env var not set")
 	}
 
+	emailtemplate_service_url := os.Getenv("EMAILTEMPLATE_SERVICE_URL")
+	if emailtemplate_service_url == "" {
+		return nil, errors.New("EMAILTEMPLATE_SERVICE_URL env var not set")
+	}
+
+	email_service_url := os.Getenv("EMAIL_SERVICE_URL")
+	if email_service_url == "" {
+		return nil, errors.New("EMAIL_SERVICE_URL env var not set")
+	}
+
 	return &types.Config{
-		Port:        port,
-		DatabaseURL: database_url,
-		RedisURL:    redis_url,
-		AuthServiceURL: auth_service_url,
+		Port:                    port,
+		JwtSecret:               jwt_secret,
+		DatabaseURL:             database_url,
+		RedisURL:                redis_url,
+		AuthServiceURL:          auth_service_url,
+		EmailTemplateServiceURL: emailtemplate_service_url,
+		EmailServiceURL:         email_service_url,
 	}, nil
 }

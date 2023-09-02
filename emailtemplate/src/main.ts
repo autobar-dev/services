@@ -36,6 +36,6 @@ new Promise(async (_res, _rej) => {
   app.post("/render", (req, res) => renderTemplateRoute(req as AppRequest, res));
 
   app.listen(config.port, () => {
-    console.log(`Listening at http://localhost:${config.port}`);
+    console.log(`Listening on http://localhost:${config.port}`);
   });
 });

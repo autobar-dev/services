@@ -1,3 +1,3 @@
 package types
 
-const MICROSERVICE_NAME = "userservice"
+const MicroserviceName = "user"

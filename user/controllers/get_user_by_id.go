@@ -16,17 +16,28 @@ func GetUserById(ac *types.AppContext, id string) (*types.User, error) {
 		return utils.RedisUserToUser(*ru), nil
 	}
 
-	pp, err := ur.Get(id)
+	pu, err := ur.Get(id)
 	if err != nil {
 		return nil, err
 	}
 
-	product := utils.PostgresUserToUser(*pp)
+	user := utils.PostgresUserToUser(*pu)
 
-	err = cr.SetProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
+	err = cr.SetUser(
+		user.Id,
+		user.Email,
+		user.FirstName,
+		user.LastName,
+		user.DateOfBirth,
+		user.Locale,
+		user.IdentityVerificationId,
+		user.IdentityVerificationSource,
+		user.CreatedAt,
+		user.UpdatedAt,
+	)
 	if err != nil {
-		fmt.Printf("failed to set cache for product_id->product: %v\n", err)
+		fmt.Printf("failed to set cache for user_id->user: %v\n", err)
 	}
 
-	return product, nil
+	return user, nil
 }

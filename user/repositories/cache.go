@@ -10,17 +10,16 @@ import (
 )
 
 type RedisUser struct {
-	Id                     string     `json:"id"`
-	Email                  string     `json:"email"`
-	PhoneNumberCountryCode string     `json:"phone_number_country_code"`
-	PhoneNumber            string     `json:"phone_number"`
-	FirstName              string     `json:"first_name"`
-	LastName               string     `json:"last_name"`
-	Locale                 string     `json:"locale"`
-	Verified               bool       `json:"verified"`
-	VerifiedAt             *time.Time `json:"verified_at"`
-	CreatedAt              time.Time  `json:"created_at"`
-	UpdatedAt              time.Time  `json:"updated_at"`
+	Id                         string    `json:"id"`
+	Email                      string    `json:"email"`
+	FirstName                  string    `json:"first_name"`
+	LastName                   string    `json:"last_name"`
+	DateOfBirth                time.Time `json:"date_of_birth"`
+	Locale                     string    `json:"locale"`
+	IdentityVerificationId     *string   `json:"identity_verification_id"`
+	IdentityVerificationSource *string   `json:"identity_verification_source"`
+	CreatedAt                  time.Time `json:"created_at"`
+	UpdatedAt                  time.Time `json:"updated_at"`
 }
 
 type CacheRepository struct {
@@ -61,28 +60,26 @@ func (cr CacheRepository) GetUser(id string) (*RedisUser, error) {
 func (cr CacheRepository) SetUser(
 	id string,
 	email string,
-	phone_number_country_code string,
-	phone_number string,
 	first_name string,
 	last_name string,
+	date_of_birth time.Time,
 	locale string,
-	verified bool,
-	verified_at *time.Time,
+	identity_verification_id *string,
+	identity_verification_source *string,
 	created_at time.Time,
 	updated_at time.Time,
 ) error {
 	ru := RedisUser{
-		Id:           id,
-		Email: email,
-		PhoneNumberCountryCode: phone_number_country_code,
-		PhoneNumber: phone_number,
-		FirstName: first_name,
-		LastName: last_name,
-		Locale: locale,
-		Verified: verified,
-		VerifiedAt: verified_at,
-		CreatedAt: created_at,
-		UpdatedAt: updated_at,
+		Id:                         id,
+		Email:                      email,
+		FirstName:                  first_name,
+		LastName:                   last_name,
+		DateOfBirth:                date_of_birth,
+		Locale:                     locale,
+		IdentityVerificationId:     identity_verification_id,
+		IdentityVerificationSource: identity_verification_source,
+		CreatedAt:                  created_at,
+		UpdatedAt:                  updated_at,
 	}
 	ru_json_bytes, _ := json.Marshal(ru)
 
@@ -100,4 +97,3 @@ func (cr CacheRepository) ClearUser(id string) error {
 	ctx := context.Background()
 	return cr.redis.Del(ctx, generateUserByIdCacheKey(id)).Err()
 }
-

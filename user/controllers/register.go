@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/autobar-dev/services/user/types"
 	"github.com/autobar-dev/services/user/utils"
-	"github.com/autobar-dev/shared-libraries/go/auth-repository"
-	"github.com/autobar-dev/shared-libraries/go/emailtemplate-repository"
+	"github.com/google/uuid"
 )
 
 func Register(
@@ -17,14 +17,12 @@ func Register(
 	first_name string,
 	last_name string,
 	date_of_birth string,
-	nationality string,
 	locale string,
 ) error {
 	urr := ac.Repositories.UnfinishedRegistration
-	ar := authrepository.NewAuthRepository(ac.Config.AuthServiceURL, types.MICROSERVICE_NAME)
-	etr := emailtemplaterepository.NewEmailTemplateRepository(ac.Config.EmailTemplateServiceURL, types.MICROSERVICE_NAME)
-	er := emailrepository.NewEmailRepository(ac.Config.EmailServiceURL, types.MICROSERVICE_NAME)
-	tr := translationrepository.NewTranslationRepository(ac.Config.TranslationServiceURL, types.MICROSERVICE_NAME)
+	ar := ac.Repositories.Auth
+	etr := ac.Repositories.EmailTemplate
+	er := ac.Repositories.Email
 
 	is_first_name_valid := utils.ValidateFirstName(first_name)
 	if is_first_name_valid == false {
@@ -49,7 +47,7 @@ func Register(
 		return err
 	}
 
-	if !is_used {
+	if is_used {
 		return errors.New("email is already in use")
 	}
 
@@ -57,30 +55,43 @@ func Register(
 	dob, _ := utils.DateStringToTime(date_of_birth)
 
 	// create auth-able user
-	ar_autologin := false
-	ar_remember_me := false
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		return err
+	}
+	user_id := uuid.String()
 
-	_, err = ar.RegisterUser(email, password, &ar_autologin, &ar_remember_me)
+	err = ar.RegisterUser(user_id, email, password)
 	if err != nil {
 		return err
 	}
 
 	// send confirmation e-mail
 	confirmation_code := utils.RandomString(64, utils.LowercaseUppercaseNumbersSet)
-	rendered_confirmation_email, err := etr.RenderEmailConfirmationTemplate(
-		locale,
-		first_name,
-		last_name,
-		confirmation_code,
-		time.Now(),
+	email_template_params := map[string]interface{}{
+		"first_name":             first_name,
+		"last_name":              last_name,
+		"email_confirmation_url": fmt.Sprintf("https://autobar.co/confirm-email?code=%s", confirmation_code),
+	}
+
+	rendered_confirmation_email, err := etr.RenderTemplate(
+		"email-confirmation",  // Template name
+		nil,                   // Template version (nil means latest)
+		locale,                // Locale
+		email_template_params, // Template params
 	)
+	if err != nil {
+		return err
+	}
 
 	// try to send email in background
 	go func() {
-		err := er.SendEmail(
+		err := er.Send(
+			"noreply@autobar.co",
 			email,
-			tr.GetTranslation("email_confirmation_subject", locale),
-			rendered_confirmation_email,
+			"Autobar - Confirm your e-mail",
+			rendered_confirmation_email.Plain,
+			rendered_confirmation_email.Html,
 		)
 		if err != nil {
 			ac.Logger.Error("failed to send email", err)

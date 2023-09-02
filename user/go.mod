@@ -1,15 +1,18 @@
 module github.com/autobar-dev/services/user
 
-go 1.20
+go 1.21.0
 
 require (
 	github.com/alitto/pond v1.8.3 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230713223115-7b0478390c4b // indirect
-	github.com/autobar-dev/shared-libraries/go/emailtemplate-repository v0.0.0-20230822215555-9b8b4082f5a4 // indirect
+	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827192551-4404d5b40deb // indirect
+	github.com/autobar-dev/shared-libraries/go/email-repository v0.0.0-20230901220227-eee44d355331 // indirect
+	github.com/autobar-dev/shared-libraries/go/emailtemplate-repository v0.0.0-20230901220227-eee44d355331 // indirect
+	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230827192551-4404d5b40deb // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/google/uuid v1.3.1 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
