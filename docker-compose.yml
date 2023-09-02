@@ -101,6 +101,23 @@ services:
         COMMIT_SHA: "product-no-commit"
         VERSION: "0.0.0-test"
 
+  userservice:
+    env_file:
+      # specify DATABASE_URL
+      - .env/user.env
+      - .env/common.env
+    environment:
+      - PORT=80
+      - REDIS_URL=redis://redis:6379
+      - AUTH_SERVICE_URL=http://authservice
+      - EMAIL_SERVICE_URL=http://emailservice
+      - EMAILTEMPLATE_SERVICE_URL=http://emailtemplateservice
+    build:
+      context: ./product
+      args:
+        COMMIT_SHA: "product-no-commit"
+        VERSION: "0.0.0-test"
+
   emailtemplateservice:
     env_file:
       - .env/common.env
