@@ -14,32 +14,12 @@ func Register(
 	ac *types.AppContext,
 	email string,
 	password string,
-	first_name string,
-	last_name string,
-	date_of_birth string,
 	locale string,
 ) error {
 	urr := ac.Repositories.UnfinishedRegistration
 	ar := ac.Repositories.Auth
 	etr := ac.Repositories.EmailTemplate
 	er := ac.Repositories.Email
-
-	is_first_name_valid := utils.ValidateFirstName(first_name)
-	if is_first_name_valid == false {
-		return errors.New("invalid first name provided")
-	}
-	is_last_name_valid := utils.ValidateLastName(last_name)
-	if is_last_name_valid == false {
-		return errors.New("invalid last name provided")
-	}
-	is_date_of_birth_valid := utils.ValidateDateOfBirth(date_of_birth)
-	if is_date_of_birth_valid == false {
-		return errors.New("invalid date of birth provided. make sure the format follows yyyy-mm-dd")
-	}
-	is_locale_valid := utils.ValidateLocale(locale)
-	if is_locale_valid == false {
-		return errors.New("invalid locale provided")
-	}
 
 	// check both in user and unfinished registration repositories if e-mail has already been used
 	is_used, err := IsEmailInUse(ac, email)
@@ -50,9 +30,6 @@ func Register(
 	if is_used {
 		return errors.New("email is already in use")
 	}
-
-	// convert date of birth to time.Time and ignore error because it has already been validated
-	dob, _ := utils.DateStringToTime(date_of_birth)
 
 	// create auth-able user
 	uuid, err := uuid.NewRandom()
@@ -69,8 +46,6 @@ func Register(
 	// send confirmation e-mail
 	confirmation_code := utils.RandomString(64, utils.LowercaseUppercaseNumbersSet)
 	email_template_params := map[string]interface{}{
-		"first_name":             first_name,
-		"last_name":              last_name,
 		"email_confirmation_url": fmt.Sprintf("https://autobar.co/confirm-email?code=%s", confirmation_code),
 	}
 
@@ -99,14 +74,13 @@ func Register(
 	}()
 
 	// create unfinished registration
+	email_confirmation_expires_at := time.Now().Add(types.EmailConfirmationExpiryTime)
 	err = urr.Create(
+		user_id,
 		email,
-		first_name,
-		last_name,
-		dob,
 		locale,
 		confirmation_code,
-		time.Now(),
+		email_confirmation_expires_at,
 	)
 
 	return err

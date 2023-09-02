@@ -12,8 +12,6 @@ import {
 } from "@react-email/components";
 
 export type EmailConfirmationTemplateV1Params = {
-  first_name: string,
-  last_name: string,
   email_confirmation_url: string,
 };
 
@@ -33,10 +31,10 @@ export function EmailConfirmationTemplateV1(props: {
             width="100"
             style={logoStyle}
           />
-          <Text style={largeTextStyle}>Hello {props.params.first_name}!</Text>
+          <Text style={largeTextStyle}>Hello!</Text>
           <Text style={smallTextStyle}>Thank you for registering at Autobar. (not you? Let us know by replying to this email)</Text>
           <Text style={smallTextStyle}>Please confirm your email address by clicking the button below.</Text>
-          <Link style={smallTextStyle} href={props.params.email_confirmation_url}>Confirm email address</Link>
+          <Link style={linkStyle} href={props.params.email_confirmation_url}>Confirm email address</Link>
           <Hr />
           <Text style={smallTextStyle}>Sincerely,</Text>
           <Text style={smallTextStyle}>Your folks at Autobar</Text>
@@ -73,4 +71,9 @@ const largeTextStyle = {
 const smallTextStyle = {
   fontSize: "16px",
   color: "#f8f8f8",
+} as React.CSSProperties;
+
+const linkStyle = {
+  fontSize: "16px",
+  color: "#0000EE",
 } as React.CSSProperties;

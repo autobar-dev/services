@@ -18,6 +18,7 @@ import (
 	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	emailrepository "github.com/autobar-dev/shared-libraries/go/email-repository"
 	emailtemplaterepository "github.com/autobar-dev/shared-libraries/go/emailtemplate-repository"
+	walletrepository "github.com/autobar-dev/shared-libraries/go/wallet-repository"
 )
 
 func main() {
@@ -54,6 +55,7 @@ func main() {
 			User:                   repositories.NewUserRepository(database),
 			UnfinishedRegistration: repositories.NewUnfinishedRegistrationRepository(database),
 			Auth:                   authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
+			Wallet:                 walletrepository.NewWalletRepository(config.WalletServiceURL, types.MicroserviceName),
 			Email:                  emailrepository.NewEmailRepository(config.EmailServiceURL, types.MicroserviceName),
 			EmailTemplate: emailtemplaterepository.NewEmailTemplateRepository(
 				config.EmailTemplateServiceURL,
@@ -78,7 +80,9 @@ func main() {
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/", routes.GetUserRoute)
 	e.GET("/who-am-i", routes.WhoAmIRoute)
+	e.GET("/is-confirmation-code-valid", routes.IsConfirmationCodeValidRoute)
 	e.POST("/create", routes.CreateUserRoute)
+	e.POST("/confirm-email", routes.ConfirmEmailRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }

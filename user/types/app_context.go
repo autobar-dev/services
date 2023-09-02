@@ -5,6 +5,7 @@ import (
 	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	emailrepository "github.com/autobar-dev/shared-libraries/go/email-repository"
 	emailtemplaterepository "github.com/autobar-dev/shared-libraries/go/emailtemplate-repository"
+	walletrepository "github.com/autobar-dev/shared-libraries/go/wallet-repository"
 	"go.uber.org/zap"
 )
 
@@ -15,6 +16,7 @@ type Repositories struct {
 	Auth                   *authrepository.AuthRepository
 	Email                  *emailrepository.EmailRepository
 	EmailTemplate          *emailtemplaterepository.EmailTemplateRepository
+	Wallet                 *walletrepository.WalletRepository
 }
 
 type AppContext struct {

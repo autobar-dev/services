@@ -6,23 +6,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type CreateUserRequestBody struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Locale   string `json:"locale"`
+type IsConfirmationCodeValidRequestQuery struct {
+	ConfirmationCode string `query:"code"`
 }
 
-type CreateUserRouteResponse struct {
-	Status string  `json:"status"`
-	Error  *string `json:"error"`
-}
-
-func CreateUserRoute(c echo.Context) error {
+func IsConfirmationCodeValidRoute(c echo.Context) error {
 	rest_context := c.(*types.RestContext)
 	app_context := *(*rest_context).AppContext
 
-	var curb CreateUserRequestBody
-	err := c.Bind(&curb)
+	var iccvrq IsConfirmationCodeValidRequestQuery
+	err := c.Bind(&iccvrq)
 	if err != nil {
 		err := err.Error()
 		return c.JSON(400, &CreateUserRouteResponse{
@@ -31,11 +24,9 @@ func CreateUserRoute(c echo.Context) error {
 		})
 	}
 
-	err = controllers.Register(
+	err = controllers.IsConfirmationCodeValid(
 		&app_context,
-		curb.Email,
-		curb.Password,
-		curb.Locale,
+		iccvrq.ConfirmationCode,
 	)
 	if err != nil {
 		err := err.Error()

@@ -34,6 +34,11 @@ func LoadEnvVars() (*types.Config, error) {
 		return nil, errors.New("AUTH_SERVICE_URL env var not set")
 	}
 
+	wallet_service_url := os.Getenv("WALLET_SERVICE_URL")
+	if wallet_service_url == "" {
+		return nil, errors.New("WALLET_SERVICE_URL env var not set")
+	}
+
 	emailtemplate_service_url := os.Getenv("EMAILTEMPLATE_SERVICE_URL")
 	if emailtemplate_service_url == "" {
 		return nil, errors.New("EMAILTEMPLATE_SERVICE_URL env var not set")
@@ -50,6 +55,7 @@ func LoadEnvVars() (*types.Config, error) {
 		DatabaseURL:             database_url,
 		RedisURL:                redis_url,
 		AuthServiceURL:          auth_service_url,
+		WalletServiceURL:        wallet_service_url,
 		EmailTemplateServiceURL: emailtemplate_service_url,
 		EmailServiceURL:         email_service_url,
 	}, nil

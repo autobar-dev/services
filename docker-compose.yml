@@ -110,6 +110,7 @@ services:
       - PORT=80
       - REDIS_URL=redis://redis:6379
       - AUTH_SERVICE_URL=http://authservice
+      - WALLET_SERVICE_URL=http://walletservice
       - EMAIL_SERVICE_URL=http://emailservice
       - EMAILTEMPLATE_SERVICE_URL=http://emailtemplateservice
     build:

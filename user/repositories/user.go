@@ -65,28 +65,27 @@ func (ur UserRepository) GetByEmail(email string) (*PostgresUser, error) {
 }
 
 func (ur UserRepository) Create(
+	id string,
 	email string,
-	phone_number_country_code string,
-	phone_number string,
 	first_name string,
 	last_name string,
+	date_of_birth time.Time,
 	locale string,
-) (*string, error) {
+) error {
 	create_user_query := `
 		INSERT INTO users (
-			email, phone_number_country_code, phone_number, first_name, last_name, locale
+			id, email, first_name, last_name, date_of_birth, locale
 		) VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id;
 	`
 
-	result := ur.db.QueryRowx(create_user_query, email, phone_number_country_code, phone_number, first_name, last_name, locale)
+	result := ur.db.QueryRowx(create_user_query, id, email, first_name, last_name, date_of_birth, locale)
 
-	var user_id string
-
-	err := result.Scan(&user_id)
+	var _user_id string
+	err := result.Scan(&_user_id)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &user_id, nil
+	return nil
 }
