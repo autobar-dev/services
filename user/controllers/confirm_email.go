@@ -42,7 +42,7 @@ func ConfirmEmail(
 	}
 
 	// create wallet
-	_, err = wr.Create(
+	_, err = wr.CreateWallet(
 		unfinished_registration.Id,
 		currency_code,
 	)

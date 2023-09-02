@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/autobar-dev/services/user/repositories"
 	"github.com/autobar-dev/services/user/types"
+	walletrepository "github.com/autobar-dev/shared-libraries/go/wallet-repository"
 )
 
 func PostgresUserToUser(pu repositories.PostgresUser) *types.User {
@@ -32,5 +33,21 @@ func RedisUserToUser(ru repositories.RedisUser) *types.User {
 		IdentityVerificationSource: ru.IdentityVerificationSource,
 		CreatedAt:                  ru.CreatedAt,
 		UpdatedAt:                  ru.UpdatedAt,
+	}
+}
+
+func UserToUserExtended(u types.User, w walletrepository.Wallet) *types.UserExtended {
+	return &types.UserExtended{
+		Id:                         u.Id,
+		Email:                      u.Email,
+		FirstName:                  u.FirstName,
+		LastName:                   u.LastName,
+		DateOfBirth:                u.DateOfBirth,
+		Locale:                     u.Locale,
+		Wallet:                     w,
+		IdentityVerificationId:     u.IdentityVerificationId,
+		IdentityVerificationSource: u.IdentityVerificationSource,
+		CreatedAt:                  u.CreatedAt,
+		UpdatedAt:                  u.UpdatedAt,
 	}
 }

@@ -7,13 +7,20 @@ import (
 	"github.com/autobar-dev/services/user/utils"
 )
 
-func GetUserById(ac *types.AppContext, id string) (*types.User, error) {
+func GetUserById(ac *types.AppContext, id string) (*types.UserExtended, error) {
 	cr := *ac.Repositories.Cache
-	ur := *ac.Repositories.User
+	ur := ac.Repositories.User
+	wr := ac.Repositories.Wallet
 
 	ru, _ := cr.GetUser(id)
 	if ru != nil {
-		return utils.RedisUserToUser(*ru), nil
+		u := utils.RedisUserToUser(*ru)
+		w, err := wr.GetWallet(u.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		return utils.UserToUserExtended(*u, *w), nil
 	}
 
 	pu, err := ur.Get(id)
@@ -22,6 +29,10 @@ func GetUserById(ac *types.AppContext, id string) (*types.User, error) {
 	}
 
 	user := utils.PostgresUserToUser(*pu)
+	w, err := wr.GetWallet(user.Id)
+	if err != nil {
+		return nil, err
+	}
 
 	err = cr.SetUser(
 		user.Id,
@@ -39,5 +50,5 @@ func GetUserById(ac *types.AppContext, id string) (*types.User, error) {
 		fmt.Printf("failed to set cache for user_id->user: %v\n", err)
 	}
 
-	return user, nil
+	return utils.UserToUserExtended(*user, *w), nil
 }

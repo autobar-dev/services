@@ -8,8 +8,8 @@ require (
 	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827192551-4404d5b40deb // indirect
 	github.com/autobar-dev/shared-libraries/go/email-repository v0.0.0-20230901220227-eee44d355331 // indirect
 	github.com/autobar-dev/shared-libraries/go/emailtemplate-repository v0.0.0-20230901220227-eee44d355331 // indirect
-	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230901220227-eee44d355331 // indirect
-	github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230902132017-79c4fa79fa38 // indirect
+	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230902161614-4cf00e361d0e // indirect
+	github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230902162634-ab46a6d7a88a // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
