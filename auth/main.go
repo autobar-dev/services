@@ -93,6 +93,7 @@ func main() {
 	e.POST("/user/register", routes.RegisterUserRoute)
 	e.POST("/module/login", routes.LoginModuleRoute)
 	e.POST("/module/register", routes.RegisterModuleRoute)
+	e.POST("/logout", routes.LogoutRoute)
 
 	logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }
