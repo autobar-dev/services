@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/autobar-dev/services/module/controllers"
 	"github.com/autobar-dev/services/module/types"
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,6 +24,14 @@ func ActivateRoute(c echo.Context) error {
 
 	if client_context == nil {
 		err := "not authorized"
+		return rest_context.JSON(401, &ActivateRouteResponse{
+			Status: "error",
+			Error:  &err,
+		})
+	}
+
+	if client_context.Type != authrepository.UserTokenOwnerType {
+		err := "you are not a user"
 		return rest_context.JSON(401, &ActivateRouteResponse{
 			Status: "error",
 			Error:  &err,

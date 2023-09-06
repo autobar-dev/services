@@ -67,5 +67,10 @@ func DeactivateController(
 		fmt.Printf("IMPORTANT: Error clearing activation session: %s\n", err.Error())
 	}
 
+	err = sr.ClearOtkForModule(as.SerialNumber)
+	if err != nil {
+		fmt.Printf("IMPORTANT: Error clearing otk for module: %s\n", err.Error())
+	}
+
 	return nil
 }

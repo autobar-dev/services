@@ -13,6 +13,9 @@ type Config struct {
 	RedisStateURL              string
 	AuthServiceURL             string
 	RealtimeServiceURL         string
+	UserServiceURL             string
+	WalletServiceURL           string
+	CurrencyServiceURL         string
 	AmqpURL                    string
 	ModuleReportTimeoutSeconds int
 	JwtSecret                  string
@@ -54,6 +57,21 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("REALTIME_SERVICE_URL env var not set")
 	}
 
+	user_service_url := os.Getenv("USER_SERVICE_URL")
+	if user_service_url == "" {
+		return nil, errors.New("USER_SERVICE_URL env var not set")
+	}
+
+	wallet_service_url := os.Getenv("WALLET_SERVICE_URL")
+	if wallet_service_url == "" {
+		return nil, errors.New("WALLET_SERVICE_URL env var not set")
+	}
+
+	currency_service_url := os.Getenv("CURRENCY_SERVICE_URL")
+	if currency_service_url == "" {
+		return nil, errors.New("CURRENCY_SERVICE_URL env var not set")
+	}
+
 	module_report_timeout_seconds := os.Getenv("MODULE_REPORT_TIMEOUT_SECONDS")
 	module_report_timeout_seconds_int, err := strconv.Atoi(module_report_timeout_seconds)
 	if module_report_timeout_seconds == "" || err != nil {
@@ -72,6 +90,9 @@ func LoadEnvVars() (*Config, error) {
 		RedisStateURL:              redis_state_url,
 		AuthServiceURL:             auth_service_url,
 		RealtimeServiceURL:         realtime_service_url,
+		UserServiceURL:             user_service_url,
+		WalletServiceURL:           wallet_service_url,
+		CurrencyServiceURL:         currency_service_url,
 		AmqpURL:                    amqp_url,
 		ModuleReportTimeoutSeconds: module_report_timeout_seconds_int,
 		JwtSecret:                  jwt_secret,

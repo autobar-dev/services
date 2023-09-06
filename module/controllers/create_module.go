@@ -5,6 +5,7 @@ import (
 
 	"github.com/autobar-dev/services/module/types"
 	"github.com/autobar-dev/services/module/utils"
+	sharedutils "github.com/autobar-dev/shared-libraries/go/shared-utils"
 )
 
 func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleResponse, error) {
@@ -14,8 +15,8 @@ func CreateModuleController(app_context *types.AppContext) (*types.CreateModuleR
 	valid_serial_number := false
 	serial_number := ""
 
-	for !valid_serial_number { // make this a forever loop?
-		serial_number = utils.GenerateSerialNumber(types.SerialNumberLength)
+	for !valid_serial_number {
+		serial_number = sharedutils.GenerateRandomString(types.SerialNumberLength, sharedutils.UppercaseNumberCharacterSet)
 
 		_, err := mr.Get(serial_number)
 		if err != nil { // module with that serial number not found

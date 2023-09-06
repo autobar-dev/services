@@ -6,6 +6,8 @@ github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717
 github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717-1191d524c2bf/go.mod h1:jm7B/fws9xPGXcObowbXOz8HIcm5rWhLNV0kp5UMn9E=
 github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20230906160447-079c1f8b2ba2 h1:GI+VTFvIQ8jEXUCSrXErl3t9mfctF5w3yWoaTuz7OkE=
 github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20230906160447-079c1f8b2ba2/go.mod h1:+asvxArO5OB2KCwN6bfwtBTd3lJsPaTd6rzwO1bbrfk=
+github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20230906220457-9b9db8991f98 h1:yJGOEDnqiEvusbEowaYYi6Y9Gqqf4s4xDAk5v0xddIo=
+github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20230906220457-9b9db8991f98/go.mod h1:+asvxArO5OB2KCwN6bfwtBTd3lJsPaTd6rzwO1bbrfk=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230827185620-154f10f11b78 h1:1io344p+SFZdQASy6DV0OXHkS4VibIFRq+lCZCEqjMg=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230827185620-154f10f11b78/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230827185717-1191d524c2bf/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
@@ -13,8 +15,18 @@ github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230902161614-4c
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230902161614-4cf00e361d0e/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230902162634-ab46a6d7a88a h1:BhBctmREgmK5kOlbPnP1QM6Y+KBBcJnn4NFdHmr66jU=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230902162634-ab46a6d7a88a/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
+github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906205118-40c644c84b39 h1:GWU4NCFKc9CZmxptZIAAXSJ9NJFkduJRy9X2rLzSRTQ=
+github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906205118-40c644c84b39/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
+github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906210525-e279899a1cfd h1:hnlLF53BXEW7lFYmh81npkmIGqKsjKXkNA88POmbSuY=
+github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906210525-e279899a1cfd/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230902162634-ab46a6d7a88a h1:6etL7NTJHGRR+9gJatcfq5D+lMMz1vboLKN8SSinwxU=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230902162634-ab46a6d7a88a/go.mod h1:bxRkzmbbEuKVUcaSBud6saWbXBOjzjRNSCSvoGb0BPo=
+github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906210525-e279899a1cfd h1:zueqmg/uoHBkYe8/0IxU4j3AEpiDGGdtAB+FFrbaNRM=
+github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906210525-e279899a1cfd/go.mod h1:bxRkzmbbEuKVUcaSBud6saWbXBOjzjRNSCSvoGb0BPo=
+github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220012-fd5ee7617ea9 h1:pxvsIt+LrerFqRupbQXY/mga1cBi2M6p4qVGDRtPkr8=
+github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220012-fd5ee7617ea9/go.mod h1:TmRBWXhWHt3WqJQb0WZ42ukN/2WyIESVoVsHk01dWn4=
+github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220457-9b9db8991f98 h1:adLuLjsnL3P1Zr3P8T/A3mVzvD6XIwFvxdrau/dWZws=
+github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220457-9b9db8991f98/go.mod h1:TmRBWXhWHt3WqJQb0WZ42ukN/2WyIESVoVsHk01dWn4=
 github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230902162634-ab46a6d7a88a h1:OeLWot61Q2wQVEQHRLn1aIfQ5Jy//UTlEUNVArCg4WA=
 github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230902162634-ab46a6d7a88a/go.mod h1:JSTrelX9lkiYwrfloJIcOvL5NE99dHlTDYCAvLO1nA8=
 github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230906194208-78ba74bf778e h1:59BZGGPTceN8AiSI2b9wQcX41pRegxKEMe9eyf+4oQk=

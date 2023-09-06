@@ -1,7 +1,8 @@
 package types
 
-var SerialNumberRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
-const SerialNumberLength = 6
+const (
+	SerialNumberLength = 6
+	OtkLength          = 12
+)
 
 const MicroserviceName = "module"

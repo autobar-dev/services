@@ -71,14 +71,18 @@ services:
     env_file:
       # specify DATABASE_URL
       # specify AMQP_URL
+      # specify REDIS_STATE_URL
       - .env/module.env
       - .env/common.env
     environment:
       - PORT=80
       - AUTH_SERVICE_URL=http://authservice
       - REALTIME_SERVICE_URL=http://realtimeservice
+      - USER_SERVICE_URL=http://userservice
+      - WALLET_SERVICE_URL=http://walletservice
+      - CURRENCY_SERVICE_URL=http://currencyservice
       - MODULE_REPORT_TIMEOUT_SECONDS=10
-      - REDIS_URL=redis://redis:6379
+      - REDIS_CACHE_URL=redis://redis:6379
     build:
       context: ./module
       args:

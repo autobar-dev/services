@@ -5,6 +5,9 @@ import (
 	"os"
 
 	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
+	currencyrepository "github.com/autobar-dev/shared-libraries/go/currency-repository"
+	userrepository "github.com/autobar-dev/shared-libraries/go/user-repository"
+	walletrepository "github.com/autobar-dev/shared-libraries/go/wallet-repository"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -73,6 +76,9 @@ func main() {
 			State:    repositories.NewStateRepository(redis_state_client),
 			Realtime: repositories.NewRealtimeRepository(config.RealtimeServiceURL),
 			Auth:     authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
+			User:     userrepository.NewUserRepository(config.UserServiceURL, types.MicroserviceName),
+			Wallet:   walletrepository.NewWalletRepository(config.WalletServiceURL, types.MicroserviceName),
+			Currency: currencyrepository.NewCurrencyRepository(config.CurrencyServiceURL, types.MicroserviceName),
 		},
 	}
 
@@ -94,6 +100,7 @@ func main() {
 	e.GET("/all", routes.GetAllModulesRoute)
 	e.GET("/all-for-station", routes.GetAllModulesForStationRoute)
 	e.GET("/request-report", routes.RequestReportRoute)
+	e.GET("/prepare-module", routes.PrepareModuleRoute)
 	e.POST("/create", routes.CreateModuleRoute)
 	e.POST("/report", routes.ReportRoute)
 	e.POST("/activate", routes.ActivateRoute)

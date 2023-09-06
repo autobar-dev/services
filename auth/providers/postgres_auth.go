@@ -123,8 +123,13 @@ func (p *PostgresAuthProvider) UpdateRefreshToken(
 			return nil, err
 		}
 
+		valid_until = old_refresh_token.ExpiresAt // use the same expiration time as the old token
+
 		if old_refresh_token.RememberMe {
-			valid_until = time.Now().UTC().Add(UserRefreshTokenValidDuration)
+			// if the old token was a remember me token, extend by remember me duration
+			valid_until = time.Now().
+				UTC().
+				Add(UserRefreshTokenValidRememberMeDuration)
 		}
 	} else {
 		valid_until = time.Now().UTC().Add(ModuleRefreshTokenValidDuration)
