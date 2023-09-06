@@ -7,9 +7,9 @@ import (
 )
 
 type GetUserRouteResponse struct {
-	Status string              `json:"status"`
-	Error  *string             `json:"error"`
-	Data   *types.UserExtended `json:"data"`
+	Status string      `json:"status"`
+	Error  *string     `json:"error"`
+	Data   *types.User `json:"data"`
 }
 
 func GetUserRoute(c echo.Context) error {
