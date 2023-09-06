@@ -38,9 +38,13 @@ func main() {
 	}
 	defer database.Close()
 
-	redis_options, err := redis.ParseURL(config.RedisURL)
-	redis_client := redis.NewClient(redis_options)
-	defer redis_client.Close()
+	redis_cache_options, err := redis.ParseURL(config.RedisCacheURL)
+	redis_cache_client := redis.NewClient(redis_cache_options)
+	defer redis_cache_client.Close()
+
+	redis_state_options, err := redis.ParseURL(config.RedisStateURL)
+	redis_state_client := redis.NewClient(redis_state_options)
+	defer redis_state_client.Close()
 
 	amqp_connection, err := amqp091.Dial(config.AmqpURL)
 	if err != nil {
@@ -65,7 +69,8 @@ func main() {
 		Config:      config,
 		Repositories: &types.Repositories{
 			Module:   repositories.NewModuleRepository(database),
-			Cache:    repositories.NewCacheRepository(redis_client),
+			Cache:    repositories.NewCacheRepository(redis_cache_client),
+			State:    repositories.NewStateRepository(redis_state_client),
 			Realtime: repositories.NewRealtimeRepository(config.RealtimeServiceURL),
 			Auth:     authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
 		},
@@ -91,6 +96,9 @@ func main() {
 	e.GET("/request-report", routes.RequestReportRoute)
 	e.POST("/create", routes.CreateModuleRoute)
 	e.POST("/report", routes.ReportRoute)
+	e.POST("/activate", routes.ActivateRoute)
+	e.POST("/deactivate", routes.DeactivateRoute)
+	e.PATCH("/update-activation-session", routes.UpdateActivationSessionRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
 }
