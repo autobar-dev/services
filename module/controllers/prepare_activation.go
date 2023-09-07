@@ -9,6 +9,7 @@ import (
 
 func PrepareModuleController(app_context *types.AppContext, serial_number string) (*types.PrepareModuleData, error) {
 	sr := app_context.Repositories.State
+	pr := app_context.Repositories.Product
 
 	m, err := GetModuleController(app_context, serial_number)
 	if err != nil {
@@ -19,6 +20,11 @@ func PrepareModuleController(app_context *types.AppContext, serial_number string
 		return nil, errors.New("module is not enabled or does not have a product id")
 	}
 
+	product, err := pr.GetProductById(*m.ProductId)
+	if err != nil {
+		return nil, err
+	}
+
 	new_otk := sharedutils.GenerateRandomString(types.OtkLength, sharedutils.LowercaseUppercaseNumberCharacterSet)
 
 	err = sr.SetOtkForModule(m.SerialNumber, new_otk)
@@ -27,8 +33,9 @@ func PrepareModuleController(app_context *types.AppContext, serial_number string
 	}
 
 	pmd := &types.PrepareModuleData{
-		Otk:    new_otk,
-		Module: *m,
+		Otk:     new_otk,
+		Module:  *m,
+		Product: *product,
 	}
 
 	return pmd, nil

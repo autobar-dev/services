@@ -4,6 +4,7 @@ import (
 	"github.com/autobar-dev/services/module/repositories"
 	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/autobar-dev/shared-libraries/go/currency-repository"
+	productrepository "github.com/autobar-dev/shared-libraries/go/product-repository"
 	"github.com/autobar-dev/shared-libraries/go/user-repository"
 	"github.com/autobar-dev/shared-libraries/go/wallet-repository"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -18,6 +19,7 @@ type Repositories struct {
 	User     *userrepository.UserRepository
 	Wallet   *walletrepository.WalletRepository
 	Currency *currencyrepository.CurrencyRepository
+	Product  *productrepository.ProductRepository
 }
 
 type AppContext struct {

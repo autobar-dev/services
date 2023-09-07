@@ -6,6 +6,7 @@ import (
 
 	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	currencyrepository "github.com/autobar-dev/shared-libraries/go/currency-repository"
+	productrepository "github.com/autobar-dev/shared-libraries/go/product-repository"
 	userrepository "github.com/autobar-dev/shared-libraries/go/user-repository"
 	walletrepository "github.com/autobar-dev/shared-libraries/go/wallet-repository"
 	"github.com/jmoiron/sqlx"
@@ -79,6 +80,7 @@ func main() {
 			User:     userrepository.NewUserRepository(config.UserServiceURL, types.MicroserviceName),
 			Wallet:   walletrepository.NewWalletRepository(config.WalletServiceURL, types.MicroserviceName),
 			Currency: currencyrepository.NewCurrencyRepository(config.CurrencyServiceURL, types.MicroserviceName),
+			Product:  productrepository.NewProductRepository(config.ProductServiceURL, types.MicroserviceName),
 		},
 	}
 

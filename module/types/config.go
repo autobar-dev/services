@@ -16,6 +16,7 @@ type Config struct {
 	UserServiceURL             string
 	WalletServiceURL           string
 	CurrencyServiceURL         string
+	ProductServiceURL          string
 	AmqpURL                    string
 	ModuleReportTimeoutSeconds int
 	JwtSecret                  string
@@ -72,6 +73,11 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("CURRENCY_SERVICE_URL env var not set")
 	}
 
+	product_service_url := os.Getenv("PRODUCT_SERVICE_URL")
+	if product_service_url == "" {
+		return nil, errors.New("PRODUCT_SERVICE_URL env var not set")
+	}
+
 	module_report_timeout_seconds := os.Getenv("MODULE_REPORT_TIMEOUT_SECONDS")
 	module_report_timeout_seconds_int, err := strconv.Atoi(module_report_timeout_seconds)
 	if module_report_timeout_seconds == "" || err != nil {
@@ -93,6 +99,7 @@ func LoadEnvVars() (*Config, error) {
 		UserServiceURL:             user_service_url,
 		WalletServiceURL:           wallet_service_url,
 		CurrencyServiceURL:         currency_service_url,
+		ProductServiceURL:          product_service_url,
 		AmqpURL:                    amqp_url,
 		ModuleReportTimeoutSeconds: module_report_timeout_seconds_int,
 		JwtSecret:                  jwt_secret,

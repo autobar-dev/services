@@ -81,6 +81,7 @@ services:
       - USER_SERVICE_URL=http://userservice
       - WALLET_SERVICE_URL=http://walletservice
       - CURRENCY_SERVICE_URL=http://currencyservice
+      - PRODUCT_SERVICE_URL=http://productservice
       - MODULE_REPORT_TIMEOUT_SECONDS=10
       - REDIS_CACHE_URL=redis://redis:6379
     build:

@@ -1,6 +1,10 @@
 package controllers
 
-import "github.com/autobar-dev/services/module/types"
+import (
+	"time"
+
+	"github.com/autobar-dev/services/module/types"
+)
 
 func UpdateActivationSessionController(
 	app_context *types.AppContext,
@@ -22,6 +26,7 @@ func UpdateActivationSessionController(
 
 	as.Price = price
 	as.AmountMillilitres = amount_millilitres
+	as.UpdatedAt = time.Now().UTC()
 
 	err = sr.SetActivationSession(*as_id, as)
 	if err != nil {
