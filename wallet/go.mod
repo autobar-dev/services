@@ -1,10 +1,13 @@
-module go.a5r.dev/services/wallet
+module github.com/autobar-dev/services/wallet
 
-go 1.20
+go 1.21.0
 
 require (
+	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230907001756-9164dbab8930 // indirect
+	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230827185620-154f10f11b78 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect

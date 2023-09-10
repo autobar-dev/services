@@ -5,11 +5,17 @@ import (
 	"fmt"
 	"strings"
 
-	"go.a5r.dev/services/wallet/types"
-	"go.a5r.dev/services/wallet/utils"
+	"github.com/autobar-dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/utils"
 )
 
-func CreateTransactionController(app_context *types.AppContext, user_id string, transaction_type types.TransactionType, value int, currency_code string) (*types.Transaction, error) {
+func CreateTransactionController(
+	app_context *types.AppContext,
+	user_id string,
+	transaction_type types.TransactionType,
+	value int,
+	currency_code string,
+) (*types.Transaction, error) {
 	tr := app_context.Repositories.Transaction
 	cr := app_context.Repositories.Currency
 	car := app_context.Repositories.Cache

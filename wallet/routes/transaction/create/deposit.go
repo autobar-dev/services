@@ -3,8 +3,8 @@ package transaction
 import (
 	echo "github.com/labstack/echo/v4"
 
-	"go.a5r.dev/services/wallet/controllers"
-	"go.a5r.dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/controllers"
+	"github.com/autobar-dev/services/wallet/types"
 )
 
 type TransactionDepositRequestBody struct {
@@ -46,7 +46,13 @@ func DepositRoute(c echo.Context) error {
 	}
 
 	transaction_type := types.TransactionTypeDeposit
-	transaction, err := controllers.CreateTransactionController(&app_context, tdrb.UserId, transaction_type, tdrb.Value, wallet.CurrencyCode)
+	transaction, err := controllers.CreateTransactionController(
+		&app_context,
+		tdrb.UserId,
+		transaction_type,
+		tdrb.Value,
+		wallet.CurrencyCode,
+	)
 	if err != nil {
 		err := err.Error()
 

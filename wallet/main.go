@@ -10,13 +10,15 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 
-	"go.a5r.dev/services/wallet/repositories"
-	routes "go.a5r.dev/services/wallet/routes"
-	transaction_routes "go.a5r.dev/services/wallet/routes/transaction"
-	create_transaction_routes "go.a5r.dev/services/wallet/routes/transaction/create"
-	wallet_routes "go.a5r.dev/services/wallet/routes/wallet"
-	"go.a5r.dev/services/wallet/types"
-	"go.a5r.dev/services/wallet/utils"
+	"github.com/autobar-dev/services/wallet/middleware"
+	"github.com/autobar-dev/services/wallet/repositories"
+	routes "github.com/autobar-dev/services/wallet/routes"
+	transaction_routes "github.com/autobar-dev/services/wallet/routes/transaction"
+	create_transaction_routes "github.com/autobar-dev/services/wallet/routes/transaction/create"
+	wallet_routes "github.com/autobar-dev/services/wallet/routes/wallet"
+	"github.com/autobar-dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/utils"
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 )
 
 func main() {
@@ -44,8 +46,10 @@ func main() {
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		Meta: utils.LoadMeta(),
+		MetaFactors: utils.GetMetaFactors(),
+		Config:      config,
 		Repositories: &types.Repositories{
+			Auth:        authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
 			Currency:    repositories.NewCurrencyRepository(config.CurrencyServiceURL),
 			Wallet:      repositories.NewWalletRepository(database),
 			Transaction: repositories.NewTransactionRepository(database),
@@ -58,10 +62,13 @@ func main() {
 			rest_context := &types.RestContext{
 				c,
 				app_context,
+				nil,
 			}
 			return next(rest_context)
 		}
 	})
+
+	e.Use(middleware.AccessTokenMiddleware)
 
 	e.GET("/meta", routes.MetaRoute)
 	e.GET("/wallet/", wallet_routes.GetRoute)

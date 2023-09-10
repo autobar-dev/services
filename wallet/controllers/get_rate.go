@@ -3,7 +3,7 @@ package controllers
 import (
 	"errors"
 
-	"go.a5r.dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/types"
 )
 
 func GetRateController(app_context *types.AppContext, from string, to string) (*types.Rate, error) {

@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"go.a5r.dev/services/wallet/repositories"
-	"go.a5r.dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/repositories"
+	"github.com/autobar-dev/services/wallet/types"
 )
 
 func ServiceRateToRate(sr repositories.ServiceRate) *types.Rate {

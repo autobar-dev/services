@@ -5,8 +5,8 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 
-	"go.a5r.dev/services/wallet/controllers"
-	"go.a5r.dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/controllers"
+	"github.com/autobar-dev/services/wallet/types"
 )
 
 type TransactionCurrencyChangeRequestBody struct {
@@ -61,7 +61,13 @@ func CurrencyChangeRoute(c echo.Context) error {
 	new_balance := math.Floor(float64(wallet.Balance) * rate.Rate)
 
 	transaction_type := types.TransactionTypeCurrencyChange
-	transaction, err := controllers.CreateTransactionController(&app_context, tccrb.UserId, transaction_type, int(new_balance), tccrb.CurrencyCode)
+	transaction, err := controllers.CreateTransactionController(
+		&app_context,
+		tccrb.UserId,
+		transaction_type,
+		int(new_balance),
+		tccrb.CurrencyCode,
+	)
 	if err != nil {
 		err := err.Error()
 

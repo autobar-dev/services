@@ -1,7 +1,10 @@
 package utils
 
-import "go.a5r.dev/services/wallet/types"
-import "errors"
+import (
+	"errors"
+
+	"github.com/autobar-dev/services/wallet/types"
+)
 
 type WalletBuilder struct {
 	id            int

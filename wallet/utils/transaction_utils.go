@@ -1,7 +1,9 @@
 package utils
 
-import "go.a5r.dev/services/wallet/types"
-import "go.a5r.dev/services/wallet/repositories"
+import (
+	"github.com/autobar-dev/services/wallet/repositories"
+	"github.com/autobar-dev/services/wallet/types"
+)
 
 func PostgresTransactionTypeToTransactionType(ptt repositories.PostgresTransactionType) types.TransactionType {
 	var tt types.TransactionType
@@ -21,6 +23,7 @@ func PostgresTransactionTypeToTransactionType(ptt repositories.PostgresTransacti
 
 	return tt
 }
+
 func TransactionTypeToPostgresTransactionType(tt types.TransactionType) repositories.PostgresTransactionType {
 	var ptt repositories.PostgresTransactionType
 

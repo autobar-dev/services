@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"go.a5r.dev/services/wallet/types"
-	"go.a5r.dev/services/wallet/utils"
+	"github.com/autobar-dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/utils"
 )
 
 func GetAllTransactionsController(app_context *types.AppContext, user_id string) (*[]types.Transaction, error) {

@@ -1,10 +1,12 @@
 package types
 
 import (
-	"go.a5r.dev/services/wallet/repositories"
+	"github.com/autobar-dev/services/wallet/repositories"
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 )
 
 type Repositories struct {
+	Auth        *authrepository.AuthRepository
 	Wallet      *repositories.WalletRepository
 	Transaction *repositories.TransactionRepository
 	Currency    *repositories.CurrencyRepository
@@ -12,6 +14,7 @@ type Repositories struct {
 }
 
 type AppContext struct {
-	Meta         *Meta
+	MetaFactors  *MetaFactors
+	Config       *Config
 	Repositories *Repositories
 }

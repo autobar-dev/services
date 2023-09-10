@@ -51,7 +51,6 @@ func (cr CurrencyRepository) GetCurrency(currency_code string) (*ServiceCurrency
 
 	response, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 

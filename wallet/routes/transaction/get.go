@@ -1,9 +1,9 @@
 package transaction
 
 import (
+	"github.com/autobar-dev/services/wallet/controllers"
+	"github.com/autobar-dev/services/wallet/types"
 	"github.com/labstack/echo/v4"
-	"go.a5r.dev/services/wallet/controllers"
-	"go.a5r.dev/services/wallet/types"
 )
 
 type GetTransactionRouteResponse struct {

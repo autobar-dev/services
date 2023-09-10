@@ -1,8 +1,9 @@
 package routes
 
 import (
+	"github.com/autobar-dev/services/wallet/types"
+	"github.com/autobar-dev/services/wallet/utils"
 	"github.com/labstack/echo/v4"
-	"go.a5r.dev/services/wallet/types"
 )
 
 type MetaRouteResponse struct {
@@ -16,6 +17,6 @@ func MetaRoute(c echo.Context) error {
 
 	return rest_context.JSON(200, &MetaRouteResponse{
 		Status: "ok",
-		Data:   app_context.Meta,
+		Data:   utils.MetaFactorsToMeta(*app_context.MetaFactors),
 	})
 }
