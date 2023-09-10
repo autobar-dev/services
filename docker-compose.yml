@@ -57,6 +57,7 @@ services:
       - .env/common.env
     environment:
       - PORT=80
+      - AUTH_SERVICE_URL=http://authservice
       - CURRENCY_SERVICE_URL=http://currencyservice
       - REDIS_URL=redis://redis:6379
     build:
