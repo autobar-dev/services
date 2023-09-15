@@ -102,7 +102,7 @@ func main() {
 	e.GET("/all", routes.GetAllModulesRoute)
 	e.GET("/all-for-station", routes.GetAllModulesForStationRoute)
 	e.GET("/request-report", routes.RequestReportRoute)
-	e.GET("/prepare-module", routes.PrepareModuleRoute)
+	e.GET("/prepare", routes.PrepareModuleRoute)
 	e.POST("/create", routes.CreateModuleRoute)
 	e.POST("/report", routes.ReportRoute)
 	e.POST("/activate", routes.ActivateRoute)
