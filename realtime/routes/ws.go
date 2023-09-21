@@ -75,6 +75,7 @@ func WsRoute(c echo.Context) error {
 	defer ws.Close()
 
 	heartbeat_ticker := time.NewTicker(10 * time.Second)
+	defer heartbeat_ticker.Stop()
 
 	received := make(chan string)
 	to_send := make(chan *types.Command)
