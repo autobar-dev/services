@@ -9,10 +9,10 @@ import (
 )
 
 type SendCommandRouteBody struct {
-	ClientType string `json:"client_type"`
-	Identifier string `json:"identifier"`
-	Command    string `json:"command"`
-	Args       string `json:"args"`
+	ClientType string                 `json:"client_type"`
+	Identifier string                 `json:"identifier"`
+	Command    string                 `json:"command"`
+	Args       map[string]interface{} `json:"args"`
 }
 
 type SendCommandRouteResponse struct {
@@ -27,9 +27,10 @@ func SendCommandRoute(c echo.Context) error {
 	var scrb SendCommandRouteBody
 	err := rest_context.Bind(&scrb)
 	if err != nil {
+		err := "invalid request body"
 		return rest_context.JSON(400, &SendCommandRouteResponse{
 			Status: "error",
-			Error:  nil,
+			Error:  &err,
 		})
 	}
 

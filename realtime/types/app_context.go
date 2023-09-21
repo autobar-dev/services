@@ -1,7 +1,6 @@
 package types
 
 import (
-	sse "github.com/r3labs/sse/v2"
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"github.com/autobar-dev/services/realtime/repositories"
@@ -10,7 +9,7 @@ import (
 
 type Repositories struct {
 	Auth  *authrepository.AuthRepository
-	Redis *repositories.RedisRepository
+	State *repositories.StateRepository
 	Mq    *repositories.MqRepository
 }
 
@@ -19,5 +18,4 @@ type AppContext struct {
 	Config       *Config
 	Repositories *Repositories
 	AmqpChannel  *amqp.Channel
-	SseServer    *sse.Server
 }

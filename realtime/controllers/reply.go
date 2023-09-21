@@ -1,22 +1,27 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 
+	"github.com/autobar-dev/services/realtime/repositories"
 	"github.com/autobar-dev/services/realtime/types"
 	"github.com/autobar-dev/services/realtime/utils"
 )
 
-func Reply(app_context types.AppContext, client_type types.ClientType, identifier string, message_id string) error {
+func Reply(
+	app_context types.AppContext,
+	client_type types.ClientType,
+	identifier string,
+	message_id string,
+) error {
 	mr := app_context.Repositories.Mq
-	rr := app_context.Repositories.Redis
+	sr := app_context.Repositories.State
 
 	// Client message exchange
 	exchange_name := utils.ExchangeNameFromClientInfo(client_type, identifier)
 
-	listeners, err := rr.GetListenersCountForExchange(exchange_name)
+	listeners, err := sr.GetListenersCountForExchange(exchange_name)
 	if err != nil {
 		return err
 	}
@@ -27,12 +32,10 @@ func Reply(app_context types.AppContext, client_type types.ClientType, identifie
 
 	// Reply exchange
 	reply_exchange_name := utils.ReplyExchangeNameFromClientInfo(client_type, identifier)
-	reply := &types.Reply{
+
+	fmt.Printf("received reply for #%s\n", message_id)
+
+	return mr.PublishReply(reply_exchange_name, &repositories.MqReply{
 		Id: message_id,
-	}
-	reply_json, _ := json.Marshal(reply)
-
-	fmt.Printf("received reply for #%s\n", reply.Id)
-
-	return mr.Publish(reply_exchange_name, string(reply_json))
+	})
 }

@@ -11,7 +11,7 @@ type Config struct {
 	SseHeartbeatIntervalSeconds int
 	AuthServiceURL              string
 	AmqpURL                     string
-	RedisURL                    string
+	RedisStateURL               string
 	ServiceBasepath             string
 	JwtSecret                   string
 }
@@ -37,9 +37,9 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("AUTH_SERVICE_URL env var not set")
 	}
 
-	redis_url := os.Getenv("REDIS_URL")
-	if redis_url == "" {
-		return nil, errors.New("REDIS_URL env var not set")
+	redis_state_url := os.Getenv("REDIS_STATE_URL")
+	if redis_state_url == "" {
+		return nil, errors.New("REDIS_STATE_URL env var not set")
 	}
 
 	service_basepath := os.Getenv("SERVICE_BASEPATH")
@@ -54,7 +54,7 @@ func LoadEnvVars() (*Config, error) {
 		SseHeartbeatIntervalSeconds: sse_heartbeat_interval,
 		AuthServiceURL:              auth_service_url,
 		AmqpURL:                     amqp_url,
-		RedisURL:                    redis_url,
+		RedisStateURL:               redis_state_url,
 		ServiceBasepath:             service_basepath,
 		JwtSecret:                   jwt_secret,
 	}, nil

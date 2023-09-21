@@ -1,9 +1,9 @@
 package types
 
-type Message struct {
-	Id      string `json:"id"`
-	Command string `json:"command"`
-	Args    string `json:"args"`
+type Command struct {
+	Id      string                 `json:"id"`
+	Command string                 `json:"command"`
+	Args    map[string]interface{} `json:"args"`
 }
 
 type Reply struct {

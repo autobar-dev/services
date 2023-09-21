@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/joho/godotenv"
@@ -19,38 +18,31 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("failed to load .env file", err)
-	}
+	_ = godotenv.Load()
 
 	config, err := types.LoadEnvVars()
 	if err != nil {
-		fmt.Println("failed to load .env vars", err)
-		os.Exit(1)
+		panic(err)
 	}
 
 	amqp_connection, err := amqp.Dial(config.AmqpURL)
 	if err != nil {
-		fmt.Println("failed to connect to amqp", err)
-		os.Exit(1)
+		panic(fmt.Sprintf("failed to connect to amqp: %s", err))
 	}
 	defer amqp_connection.Close()
 
 	amqp_channel, err := amqp_connection.Channel()
 	if err != nil {
-		fmt.Println("failed to open a channel in queue", err)
-		os.Exit(1)
+		panic(fmt.Sprintf("failed to open a channel in queue: %s", err))
 	}
 	defer amqp_channel.Close()
 
-	redis_options, err := redis.ParseURL(config.RedisURL)
+	redis_state_options, err := redis.ParseURL(config.RedisStateURL)
 	if err != nil {
-		fmt.Println("failed to open a channel in queue", err)
-		os.Exit(1)
+		panic(fmt.Sprintf("failed to open redis: %s", err))
 	}
 
-	redis_client := redis.NewClient(redis_options)
+	redis_state_client := redis.NewClient(redis_state_options)
 
 	sse_server := sse.New()
 	defer sse_server.Close()
@@ -64,10 +56,9 @@ func main() {
 		Config:      config,
 		Repositories: &types.Repositories{
 			Auth:  authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
-			Redis: repositories.NewRedisRepository(redis_client),
+			State: repositories.NewStateRepository(redis_state_client),
 			Mq:    repositories.NewMqRepository(amqp_channel),
 		},
-		SseServer: sse_server,
 	}
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -84,8 +75,7 @@ func main() {
 	e.Use(middleware.AccessTokenMiddleware)
 
 	e.GET("/meta", routes.MetaRoute)
-	e.GET("/events", routes.EventsRoute)
-	e.GET("/eavesdrop", routes.EavesdropRoute)
+	e.GET("/ws", routes.WsRoute)
 	e.POST("/send-command", routes.SendCommandRoute)
 	e.POST("/reply", routes.ReplyRoute)
 

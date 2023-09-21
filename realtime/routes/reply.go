@@ -42,8 +42,6 @@ func ReplyRoute(c echo.Context) error {
 		})
 	}
 
-	fmt.Println("pre scttct")
-
 	ct := utils.ServiceClientTypeToClientType(client_context.Type)
 
 	fmt.Printf("will try to reply to #%s as %s (%s)\n", rrb.Id, client_context.Identifier, ct)

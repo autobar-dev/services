@@ -34,13 +34,13 @@ services:
   realtimeservice:
     env_file:
       # specify AMQP_URL
+      # specify REDIS_STATE_URL
       - .env/realtime.env
       - .env/common.env
     environment:
       - PORT=80
       - SSE_HEARTBEAT_INTERVAL_SECONDS=5
       - AUTH_SERVICE_URL=http://authservice
-      - REDIS_URL=redis://redis:6379
       - SERVICE_BASEPATH=/realtime
     build:
       context: ./realtime

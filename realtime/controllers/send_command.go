@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
 
+	"github.com/autobar-dev/services/realtime/repositories"
 	"github.com/autobar-dev/services/realtime/types"
 	"github.com/autobar-dev/services/realtime/utils"
 	"github.com/google/uuid"
@@ -16,10 +16,10 @@ func SendCommandMessage(
 	client_type types.ClientType,
 	identifier string,
 	command_name string,
-	args string,
+	args map[string]interface{},
 ) error {
 	mr := app_context.Repositories.Mq
-	rr := app_context.Repositories.Redis
+	rr := app_context.Repositories.State
 
 	exchange_name := utils.ExchangeNameFromClientInfo(client_type, identifier)
 
@@ -34,19 +34,6 @@ func SendCommandMessage(
 
 	message_id := uuid.New().String()
 
-	message_bytes, err := json.Marshal(struct {
-		Id      string `json:"id"`
-		Command string `json:"command"`
-		Args    string `json:"args"`
-	}{
-		Id:      message_id,
-		Command: command_name,
-		Args:    args,
-	})
-	if err != nil {
-		return err
-	}
-
 	// Declare replies exchange
 	reply_queue, err := mr.CreatePubSub(utils.ReplyExchangeNameFromClientInfo(client_type, identifier))
 	if err != nil {
@@ -54,33 +41,30 @@ func SendCommandMessage(
 	}
 
 	message_consumer_name := utils.MessageConsumerName(message_id)
-	replies, err := mr.Consume(*reply_queue, message_consumer_name)
+	replies, err := mr.ConsumeReplies(*reply_queue, message_consumer_name)
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf("listening for reply for #%s on queue %s\n", message_id, *reply_queue)
 
-	err = mr.Publish(exchange_name, string(message_bytes))
+	err = mr.PublishCommand(exchange_name, &repositories.MqCommand{
+		Id:      message_id,
+		Command: command_name,
+		Args:    args,
+	})
 	if err != nil {
 		_ = mr.CancelConsumer(message_consumer_name)
 		return err
 	}
 
 	// Wait for reply
-	for true {
+	for {
 		select {
-		case reply_delivery, ok := <-replies:
-			if ok == false {
+		case reply, ok := <-replies:
+			if !ok {
 				_ = mr.CancelConsumer(message_consumer_name)
 				return errors.New("replies channel closed")
-			}
-
-			var reply types.Reply
-			err = json.Unmarshal(reply_delivery.Body, &reply)
-			if err != nil {
-				_ = mr.CancelConsumer(message_consumer_name)
-				return err
 			}
 
 			fmt.Printf("received reply for %s\n", reply.Id)
@@ -94,7 +78,4 @@ func SendCommandMessage(
 			return errors.New("timeout")
 		}
 	}
-
-	// should never reach this
-	return nil
 }
