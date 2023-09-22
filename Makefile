@@ -20,7 +20,7 @@ email-dev:
 	(cd email/ && go run main.go)
 
 emailtemplate-dev:
-	(cd emailtemplate/ && npm run dev)
+	(cd emailtemplate/ && npm run start-dev)
 
 module-dev:
 	(cd module/ && go run main.go)

@@ -45,10 +45,8 @@ func WsRoute(c echo.Context) error {
 		})
 	}
 
-	fmt.Printf("will try to consume %s\n", *queue_name)
-
 	queue_consumer_name := utils.QueueConsumerName(*queue_name)
-	commands, err := mr.ConsumeCommands(*queue_name, "") // consumer name auto-generated
+	commands, err := mr.ConsumeCommands(*queue_name, queue_consumer_name) // consumer name auto-generated
 	if err != nil {
 		_ = mr.CancelConsumer(queue_consumer_name)
 		return rest_context.JSON(500, &WsRouteResponse{
@@ -56,6 +54,8 @@ func WsRoute(c echo.Context) error {
 			Error:  "failed to consume queue",
 		})
 	}
+
+	fmt.Printf("consuming queue %s for %s\n", *queue_name, id)
 
 	err = sr.IncrementListenersCountForExchange(exchange_name)
 	if err != nil {
@@ -75,7 +75,6 @@ func WsRoute(c echo.Context) error {
 	defer ws.Close()
 
 	heartbeat_ticker := time.NewTicker(10 * time.Second)
-	defer heartbeat_ticker.Stop()
 
 	received := make(chan string)
 	to_send := make(chan *types.Command)
@@ -110,7 +109,7 @@ func WsRoute(c echo.Context) error {
 			fmt.Printf("received message: %s\n", received_message)
 		}
 
-		close(received)
+		// close(received)
 	}()
 
 	// sender goroutine
@@ -123,7 +122,7 @@ func WsRoute(c echo.Context) error {
 			}
 		}
 
-		close(to_send)
+		// close(to_send)
 	}()
 
 	for {
@@ -136,7 +135,14 @@ func WsRoute(c echo.Context) error {
 		received <- string(message)
 	}
 
-	_ = mr.CancelConsumer(queue_consumer_name)
+	heartbeat_ticker.Stop()
+	close(received)
+	close(to_send)
+
+	err = mr.CancelConsumer(queue_consumer_name)
+	if err != nil {
+		fmt.Printf("WARNING: MQ err: %s\n", err)
+	}
 	_ = sr.DecrementListenersCountForExchange(exchange_name)
 
 	return nil

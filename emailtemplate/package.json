@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon src/main.ts",
+    "start-dev": "ts-node src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js"
   },
