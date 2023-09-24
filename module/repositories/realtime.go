@@ -20,7 +20,7 @@ type ServiceCommandRequestBody struct {
 	ClientType ServiceRealtimeClientType `json:"client_type"`
 	Identifier string                    `json:"identifier"`
 	Command    CommandName               `json:"command"`
-	Args       string                    `json:"args"`
+	Args       map[string]interface{}    `json:"args"`
 }
 
 type RealtimeRepository struct {
@@ -33,7 +33,7 @@ func NewRealtimeRepository(url string) *RealtimeRepository {
 	}
 }
 
-func (rr RealtimeRepository) SendCommand(identifier string, srct ServiceRealtimeClientType, command CommandName, args string) error {
+func (rr RealtimeRepository) SendCommand(identifier string, srct ServiceRealtimeClientType, command CommandName, args map[string]interface{}) error {
 	url := fmt.Sprintf("%s/send-command", rr.service_url)
 
 	body := &ServiceCommandRequestBody{

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/autobar-dev/services/module/repositories"
@@ -32,14 +31,16 @@ func DeactivateController(
 
 	args := &types.DeactivateCommandArgs{}
 
-	args_json_bytes, _ := json.Marshal(&args)
-	args_json := string(args_json_bytes)
+	args_map, err := utils.StructToJsonMap(args)
+	if err != nil {
+		return err
+	}
 
 	err = rr.SendCommand(
 		as.SerialNumber,
 		repositories.ModuleServiceRealtimeClientType,
 		types.DeactivateCommandName,
-		args_json,
+		args_map,
 	)
 	if err != nil {
 		return err

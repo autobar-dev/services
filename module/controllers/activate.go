@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -76,14 +75,16 @@ func ActivateController(
 		},
 	}
 
-	args_json_bytes, _ := json.Marshal(&args)
-	args_json := string(args_json_bytes)
+	args_map, err := utils.StructToJsonMap(args)
+	if err != nil {
+		return err
+	}
 
 	err = rr.SendCommand(
 		serial_number,
 		repositories.ModuleServiceRealtimeClientType,
 		types.ActivateCommandName,
-		args_json,
+		args_map,
 	)
 	if err != nil {
 		return err

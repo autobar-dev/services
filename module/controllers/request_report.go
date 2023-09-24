@@ -6,6 +6,7 @@ import (
 
 	"github.com/autobar-dev/services/module/repositories"
 	"github.com/autobar-dev/services/module/types"
+	"github.com/autobar-dev/services/module/utils"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -46,12 +47,19 @@ func RequestReportController(app_context *types.AppContext, serial_number string
 		Queue: queue.Name,
 	}
 
-	args_json_bytes, _ := json.Marshal(args)
-	args_json := string(args_json_bytes)
+	args_map, err := utils.StructToJsonMap(args)
+	if err != nil {
+		return nil, err
+	}
 
 	start_time := time.Now()
 
-	err = rr.SendCommand(serial_number, repositories.ModuleServiceRealtimeClientType, types.RequestReportCommandName, args_json)
+	err = rr.SendCommand(
+		serial_number,
+		repositories.ModuleServiceRealtimeClientType,
+		types.RequestReportCommandName,
+		args_map,
+	)
 	if err != nil {
 		_, _ = amqp_channel.QueueDelete(queue_name, false, false, true)
 		return nil, err
