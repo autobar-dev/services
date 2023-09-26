@@ -7,22 +7,15 @@ import (
 )
 
 type Config struct {
-	Port                        int
-	SseHeartbeatIntervalSeconds int
-	AuthServiceURL              string
-	AmqpURL                     string
-	RedisStateURL               string
-	ServiceBasepath             string
-	JwtSecret                   string
+	Port           int
+	AuthServiceURL string
+	AmqpURL        string
+	RedisStateURL  string
+	JwtSecret      string
 }
 
 func LoadEnvVars() (*Config, error) {
 	port, err := strconv.Atoi(os.Getenv("PORT"))
-	if err != nil {
-		return nil, err
-	}
-
-	sse_heartbeat_interval, err := strconv.Atoi(os.Getenv("SSE_HEARTBEAT_INTERVAL_SECONDS"))
 	if err != nil {
 		return nil, err
 	}
@@ -42,20 +35,16 @@ func LoadEnvVars() (*Config, error) {
 		return nil, errors.New("REDIS_STATE_URL env var not set")
 	}
 
-	service_basepath := os.Getenv("SERVICE_BASEPATH")
-
 	jwt_secret := os.Getenv("JWT_SECRET")
 	if jwt_secret == "" {
 		return nil, errors.New("JWT_SECRET env var not set")
 	}
 
 	return &Config{
-		Port:                        port,
-		SseHeartbeatIntervalSeconds: sse_heartbeat_interval,
-		AuthServiceURL:              auth_service_url,
-		AmqpURL:                     amqp_url,
-		RedisStateURL:               redis_state_url,
-		ServiceBasepath:             service_basepath,
-		JwtSecret:                   jwt_secret,
+		Port:           port,
+		AuthServiceURL: auth_service_url,
+		AmqpURL:        amqp_url,
+		RedisStateURL:  redis_state_url,
+		JwtSecret:      jwt_secret,
 	}, nil
 }
