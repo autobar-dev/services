@@ -1,3 +1,6 @@
+volumes:
+  redisinsight:
+
 services:
   redis:
     image: "redis:alpine"
