@@ -36,21 +36,16 @@ func DeactivateController(
 		return err
 	}
 
-	err = rr.SendCommand(
-		as.SerialNumber,
-		repositories.ModuleServiceRealtimeClientType,
-		types.DeactivateCommandName,
-		args_map,
-	)
-	if err != nil {
-		return err
-	}
-
 	transaction, err := wr.CreateTransactionPurchase(as.UserId, int64(as.Price))
 	if err != nil {
 		fmt.Printf("IMPORTANT: Error creating transaction: %s\n", err.Error())
 	} else {
 		fmt.Printf("Created transaction: %s\n", transaction.Id)
+	}
+
+	err = sr.ClearOtkForModule(as.SerialNumber)
+	if err != nil {
+		fmt.Printf("IMPORTANT: Error clearing otk for module: %s\n", err.Error())
 	}
 
 	err = sr.ClearActivationSessionIdForModule(as.SerialNumber)
@@ -68,9 +63,14 @@ func DeactivateController(
 		fmt.Printf("IMPORTANT: Error clearing activation session: %s\n", err.Error())
 	}
 
-	err = sr.ClearOtkForModule(as.SerialNumber)
+	err = rr.SendCommand(
+		as.SerialNumber,
+		repositories.ModuleServiceRealtimeClientType,
+		types.DeactivateCommandName,
+		args_map,
+	)
 	if err != nil {
-		fmt.Printf("IMPORTANT: Error clearing otk for module: %s\n", err.Error())
+		return err
 	}
 
 	return nil
