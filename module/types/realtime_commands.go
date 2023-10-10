@@ -14,25 +14,30 @@ type RequestReportCommandArgs struct {
 }
 
 // Activate
-type ActivateCommandArgsuserInfoWalletCurrency struct {
+type ActivateCommandArgsUserInfoWalletCurrency struct {
 	Code             string  `json:"code"`
 	Symbol           *string `json:"symbol"`
 	MinorUnitDivisor int     `json:"minor_unit_divisor"`
 }
 
-type ActivateCommandArgsuserInfoWallet struct {
+type ActivateCommandArgsUserInfoWallet struct {
 	Balance  int                                       `json:"balance"`
-	Currency ActivateCommandArgsuserInfoWalletCurrency `json:"currency"`
+	Currency ActivateCommandArgsUserInfoWalletCurrency `json:"currency"`
 }
 
 type ActivateCommandArgsUserInfo struct {
 	FirstName string                            `json:"first_name"`
 	Locale    string                            `json:"locale"`
-	Wallet    ActivateCommandArgsuserInfoWallet `json:"wallet"`
+	Wallet    ActivateCommandArgsUserInfoWallet `json:"wallet"`
+}
+
+type ActivateCommandArgsPriceInfo struct {
+	PricePerLitre int `json:"price_per_litre"`
 }
 
 type ActivateCommandArgs struct {
-	UserInfo ActivateCommandArgsUserInfo `json:"user_info"`
+	UserInfo  ActivateCommandArgsUserInfo  `json:"user_info"`
+	PriceInfo ActivateCommandArgsPriceInfo `json:"price_info"`
 }
 
 // Deactivate

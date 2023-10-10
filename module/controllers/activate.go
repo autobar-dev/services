@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/autobar-dev/services/module/repositories"
@@ -60,18 +61,47 @@ func ActivateController(
 		return errors.New("currency not enabled")
 	}
 
+	var price_per_litre int
+	if ppl, ok := module.Prices[currency.Code]; ok {
+		price_per_litre = ppl
+	} else { // if module has no specified price for this currency, get exchange rate
+		var default_currency_code string
+		var ppl_in_default_currency int
+
+		for cc, ppl_c := range module.Prices {
+			default_currency_code = cc
+			ppl_in_default_currency = ppl_c
+			break
+		}
+
+		if default_currency_code == "" || ppl_in_default_currency == 0 {
+			return errors.New("prices for module set up incorrectly")
+		}
+
+		rate, err := cur.GetRate(default_currency_code, currency.Code)
+		if err != nil {
+			fmt.Printf("IMPORTANT: error getting exchange rate: %s\n", err)
+			return errors.New("could not get exchange rate")
+		}
+
+		price_per_litre = int(math.Ceil(float64(ppl_in_default_currency) * rate.Rate))
+	}
+
 	args := &types.ActivateCommandArgs{
 		UserInfo: types.ActivateCommandArgsUserInfo{
 			FirstName: user.FirstName,
 			Locale:    user.Locale,
-			Wallet: types.ActivateCommandArgsuserInfoWallet{
+			Wallet: types.ActivateCommandArgsUserInfoWallet{
 				Balance: user_wallet.Balance,
-				Currency: types.ActivateCommandArgsuserInfoWalletCurrency{
+				Currency: types.ActivateCommandArgsUserInfoWalletCurrency{
 					Code:             currency.Code,
 					Symbol:           currency.Symbol,
 					MinorUnitDivisor: currency.MinorUnitDivisor,
 				},
 			},
+		},
+		PriceInfo: types.ActivateCommandArgsPriceInfo{
+			PricePerLitre: price_per_litre,
 		},
 	}
 
