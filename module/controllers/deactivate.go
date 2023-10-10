@@ -36,11 +36,15 @@ func DeactivateController(
 		return err
 	}
 
-	transaction, err := wr.CreateTransactionPurchase(as.UserId, int64(as.Price))
-	if err != nil {
-		fmt.Printf("IMPORTANT: Error creating transaction: %s\n", err.Error())
+	if as.AmountMillilitres > 0 {
+		transaction, err := wr.CreateTransactionPurchase(as.UserId, int64(as.Price))
+		if err != nil {
+			fmt.Printf("IMPORTANT: Error creating transaction: %s\n", err.Error())
+		} else {
+			fmt.Printf("Created transaction: %s\n", transaction.Id)
+		}
 	} else {
-		fmt.Printf("Created transaction: %s\n", transaction.Id)
+		fmt.Println("Skipping creating transaction since amount millilitres is 0")
 	}
 
 	err = sr.ClearOtkForModule(as.SerialNumber)
