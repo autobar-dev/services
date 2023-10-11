@@ -7,7 +7,7 @@ import (
 	"github.com/autobar-dev/services/module/types"
 )
 
-func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
+func PostgresModuleToModule(pm repositories.PostgresModule, pdu repositories.PostgresDisplayUnit) *types.Module {
 	var prices map[string]int
 	_ = json.Unmarshal([]byte(pm.Prices), &prices)
 
@@ -18,8 +18,16 @@ func PostgresModuleToModule(pm repositories.PostgresModule) *types.Module {
 		ProductId:    pm.ProductId,
 		Enabled:      pm.Enabled,
 		Prices:       prices,
-		CreatedAt:    pm.CreatedAt,
-		UpdatedAt:    pm.UpdatedAt,
+		DisplayUnit: types.DisplayUnit{
+			Id:                     pdu.Id,
+			Symbol:                 pdu.Symbol,
+			DivisorFromMillilitres: pdu.DivisorFromMillilitres,
+			DecimalsDisplayed:      pdu.DecimalsDisplayed,
+			CreatedAt:              pdu.CreatedAt,
+			UpdatedAt:              pdu.UpdatedAt,
+		},
+		CreatedAt: pm.CreatedAt,
+		UpdatedAt: pm.UpdatedAt,
 	}
 }
 
@@ -31,8 +39,16 @@ func RedisModuleToModule(rm repositories.RedisModule) *types.Module {
 		ProductId:    rm.ProductId,
 		Enabled:      rm.Enabled,
 		Prices:       rm.Prices,
-		CreatedAt:    rm.CreatedAt,
-		UpdatedAt:    rm.UpdatedAt,
+		DisplayUnit: types.DisplayUnit{
+			Id:                     rm.DisplayUnit.Id,
+			Symbol:                 rm.DisplayUnit.Symbol,
+			DivisorFromMillilitres: rm.DisplayUnit.DivisorFromMillilitres,
+			DecimalsDisplayed:      rm.DisplayUnit.DecimalsDisplayed,
+			CreatedAt:              rm.DisplayUnit.CreatedAt,
+			UpdatedAt:              rm.DisplayUnit.UpdatedAt,
+		},
+		CreatedAt: rm.CreatedAt,
+		UpdatedAt: rm.UpdatedAt,
 	}
 }
 
@@ -44,8 +60,16 @@ func ModuleToRedisModule(m types.Module) *repositories.RedisModule {
 		ProductId:    m.ProductId,
 		Enabled:      m.Enabled,
 		Prices:       m.Prices,
-		CreatedAt:    m.CreatedAt,
-		UpdatedAt:    m.UpdatedAt,
+		DisplayUnit: repositories.RedisDisplayUnit{
+			Id:                     m.DisplayUnit.Id,
+			Symbol:                 m.DisplayUnit.Symbol,
+			DivisorFromMillilitres: m.DisplayUnit.DivisorFromMillilitres,
+			DecimalsDisplayed:      m.DisplayUnit.DecimalsDisplayed,
+			CreatedAt:              m.DisplayUnit.CreatedAt,
+			UpdatedAt:              m.DisplayUnit.UpdatedAt,
+		},
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
 	}
 }
 
