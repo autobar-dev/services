@@ -1,0 +1,2 @@
+ALTER TABLE display_units
+ADD COLUMN amount REAL NOT NULL DEFAULT 1;
