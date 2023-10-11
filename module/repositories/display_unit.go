@@ -9,6 +9,7 @@ import (
 
 type PostgresDisplayUnit struct {
 	Id                     int32     `db:"id"`
+	Amount                 float64   `db:"amount"`
 	Symbol                 string    `db:"symbol"`
 	DivisorFromMillilitres float64   `db:"divisor_from_millilitres"`
 	DecimalsDisplayed      int32     `db:"decimals_displayed"`
@@ -26,7 +27,7 @@ func NewDisplayUnitRepository(db *sqlx.DB) *DisplayUnitRepository {
 
 func (dur *DisplayUnitRepository) GetDisplayUnit(id int32) (*PostgresDisplayUnit, error) {
 	get_display_unit_query := `
-		SELECT id, symbol, divisor_from_millilitres, decimals_displayed, created_at, updated_at
+		SELECT id, amount, symbol, divisor_from_millilitres, decimals_displayed, created_at, updated_at
 		FROM display_units
 		WHERE id=$1;
 	`

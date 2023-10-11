@@ -11,6 +11,7 @@ import (
 
 type RedisDisplayUnit struct {
 	Id                     int32     `json:"id"`
+	Amount                 float64   `json:"amount"`
 	Symbol                 string    `json:"symbol"`
 	DivisorFromMillilitres float64   `json:"divisor_from_millilitres"`
 	DecimalsDisplayed      int32     `json:"decimals_displayed"`
@@ -19,15 +20,16 @@ type RedisDisplayUnit struct {
 }
 
 type RedisModule struct {
-	Id           int32            `json:"id"`
-	SerialNumber string           `json:"serial_number"`
-	StationId    *string          `json:"station_id"`
-	ProductId    *string          `json:"product_id"`
-	Enabled      bool             `json:"enabled"`
-	Prices       map[string]int   `json:"prices"`
-	DisplayUnit  RedisDisplayUnit `json:"display_unit"`
-	CreatedAt    time.Time        `json:"created_at"`
-	UpdatedAt    time.Time        `json:"updated_at"`
+	Id              int32            `json:"id"`
+	SerialNumber    string           `json:"serial_number"`
+	StationId       *string          `json:"station_id"`
+	ProductId       *string          `json:"product_id"`
+	Enabled         bool             `json:"enabled"`
+	Prices          map[string]int   `json:"prices"`
+	DisplayCurrency string           `json:"display_currency"`
+	DisplayUnit     RedisDisplayUnit `json:"display_unit"`
+	CreatedAt       time.Time        `json:"created_at"`
+	UpdatedAt       time.Time        `json:"updated_at"`
 }
 
 type CacheRepository struct {
@@ -78,9 +80,11 @@ func (cr *CacheRepository) SetModule(
 	product_id *string,
 	enabled bool,
 	prices map[string]int,
+	display_currency string,
 	created_at time.Time,
 	updated_at time.Time,
 	display_unit_id int32,
+	display_unit_amount float64,
 	display_unit_symbol string,
 	display_unit_divisor_from_millilitres float64,
 	display_unit_decimals_displayed int32,
@@ -88,14 +92,16 @@ func (cr *CacheRepository) SetModule(
 	display_unit_updated_at time.Time,
 ) error {
 	rm := RedisModule{
-		Id:           id,
-		SerialNumber: serial_number,
-		StationId:    station_id,
-		ProductId:    product_id,
-		Enabled:      enabled,
-		Prices:       prices,
+		Id:              id,
+		SerialNumber:    serial_number,
+		StationId:       station_id,
+		ProductId:       product_id,
+		Enabled:         enabled,
+		Prices:          prices,
+		DisplayCurrency: display_currency,
 		DisplayUnit: RedisDisplayUnit{
 			Id:                     display_unit_id,
+			Amount:                 display_unit_amount,
 			Symbol:                 display_unit_symbol,
 			DivisorFromMillilitres: display_unit_divisor_from_millilitres,
 			DecimalsDisplayed:      display_unit_decimals_displayed,

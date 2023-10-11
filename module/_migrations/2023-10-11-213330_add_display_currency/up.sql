@@ -1,0 +1,2 @@
+ALTER TABLE modules
+ADD COLUMN display_currency VARCHAR(3) NOT NULL DEFAULT 'EUR';

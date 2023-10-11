@@ -12,14 +12,16 @@ func PostgresModuleToModule(pm repositories.PostgresModule, pdu repositories.Pos
 	_ = json.Unmarshal([]byte(pm.Prices), &prices)
 
 	return &types.Module{
-		Id:           pm.Id,
-		SerialNumber: pm.SerialNumber,
-		StationId:    pm.StationId,
-		ProductId:    pm.ProductId,
-		Enabled:      pm.Enabled,
-		Prices:       prices,
+		Id:              pm.Id,
+		SerialNumber:    pm.SerialNumber,
+		StationId:       pm.StationId,
+		ProductId:       pm.ProductId,
+		Enabled:         pm.Enabled,
+		Prices:          prices,
+		DisplayCurrency: pm.DisplayCurrency,
 		DisplayUnit: types.DisplayUnit{
 			Id:                     pdu.Id,
+			Amount:                 pdu.Amount,
 			Symbol:                 pdu.Symbol,
 			DivisorFromMillilitres: pdu.DivisorFromMillilitres,
 			DecimalsDisplayed:      pdu.DecimalsDisplayed,
@@ -33,12 +35,13 @@ func PostgresModuleToModule(pm repositories.PostgresModule, pdu repositories.Pos
 
 func RedisModuleToModule(rm repositories.RedisModule) *types.Module {
 	return &types.Module{
-		Id:           rm.Id,
-		SerialNumber: rm.SerialNumber,
-		StationId:    rm.StationId,
-		ProductId:    rm.ProductId,
-		Enabled:      rm.Enabled,
-		Prices:       rm.Prices,
+		Id:              rm.Id,
+		SerialNumber:    rm.SerialNumber,
+		StationId:       rm.StationId,
+		ProductId:       rm.ProductId,
+		Enabled:         rm.Enabled,
+		Prices:          rm.Prices,
+		DisplayCurrency: rm.DisplayCurrency,
 		DisplayUnit: types.DisplayUnit{
 			Id:                     rm.DisplayUnit.Id,
 			Symbol:                 rm.DisplayUnit.Symbol,
@@ -54,12 +57,13 @@ func RedisModuleToModule(rm repositories.RedisModule) *types.Module {
 
 func ModuleToRedisModule(m types.Module) *repositories.RedisModule {
 	return &repositories.RedisModule{
-		Id:           m.Id,
-		SerialNumber: m.SerialNumber,
-		StationId:    m.StationId,
-		ProductId:    m.ProductId,
-		Enabled:      m.Enabled,
-		Prices:       m.Prices,
+		Id:              m.Id,
+		SerialNumber:    m.SerialNumber,
+		StationId:       m.StationId,
+		ProductId:       m.ProductId,
+		Enabled:         m.Enabled,
+		Prices:          m.Prices,
+		DisplayCurrency: m.DisplayCurrency,
 		DisplayUnit: repositories.RedisDisplayUnit{
 			Id:                     m.DisplayUnit.Id,
 			Symbol:                 m.DisplayUnit.Symbol,

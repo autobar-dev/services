@@ -10,15 +10,16 @@ import (
 )
 
 type PostgresModule struct {
-	Id            int32     `db:"id"`
-	SerialNumber  string    `db:"serial_number"`
-	StationId     *string   `db:"station_id"`
-	ProductId     *string   `db:"product_id"`
-	Enabled       bool      `db:"enabled"`
-	Prices        string    `db:"prices"`
-	DisplayUnitId int32     `db:"display_unit_id"`
-	CreatedAt     time.Time `db:"created_at"`
-	UpdatedAt     time.Time `db:"updated_at"`
+	Id              int32     `db:"id"`
+	SerialNumber    string    `db:"serial_number"`
+	StationId       *string   `db:"station_id"`
+	ProductId       *string   `db:"product_id"`
+	Enabled         bool      `db:"enabled"`
+	Prices          string    `db:"prices"`
+	DisplayCurrency string    `db:"display_currency"`
+	DisplayUnitId   int32     `db:"display_unit_id"`
+	CreatedAt       time.Time `db:"created_at"`
+	UpdatedAt       time.Time `db:"updated_at"`
 }
 
 type ModuleRepository struct {
@@ -31,7 +32,7 @@ func NewModuleRepository(db *sqlx.DB) *ModuleRepository {
 
 func (mr ModuleRepository) Get(serial_number string) (*PostgresModule, error) {
 	get_module_query := `
-		SELECT id, serial_number, station_id, product_id, enabled, prices, display_unit_id, created_at, updated_at
+		SELECT id, serial_number, station_id, product_id, enabled, prices, display_currency, display_unit_id, created_at, updated_at
 		FROM modules
 		WHERE serial_number=$1;
 	`
@@ -49,7 +50,7 @@ func (mr ModuleRepository) Get(serial_number string) (*PostgresModule, error) {
 
 func (mr ModuleRepository) GetAll() (*[]PostgresModule, error) {
 	get_modules_query := `
-		SELECT id, serial_number, station_id, product_id, enabled, prices, display_unit_id, created_at, updated_at
+		SELECT id, serial_number, station_id, product_id, enabled, prices, display_currency, display_unit_id, created_at, updated_at
 		FROM modules;
 	`
 
@@ -77,7 +78,7 @@ func (mr ModuleRepository) GetAll() (*[]PostgresModule, error) {
 
 func (mr ModuleRepository) GetAllForStation(station_id string) (*[]PostgresModule, error) {
 	get_modules_for_station_query := `
-		SELECT id, serial_number, station_id, product_id, enabled, prices, display_unit_id, created_at, updated_at
+		SELECT id, serial_number, station_id, product_id, enabled, prices, display_currency, display_unit_id, created_at, updated_at
 		FROM modules
 		WHERE station_id = $1;
 	`
