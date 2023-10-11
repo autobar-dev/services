@@ -44,6 +44,7 @@ func RedisModuleToModule(rm repositories.RedisModule) *types.Module {
 		DisplayCurrency: rm.DisplayCurrency,
 		DisplayUnit: types.DisplayUnit{
 			Id:                     rm.DisplayUnit.Id,
+			Amount:                 rm.DisplayUnit.Amount,
 			Symbol:                 rm.DisplayUnit.Symbol,
 			DivisorFromMillilitres: rm.DisplayUnit.DivisorFromMillilitres,
 			DecimalsDisplayed:      rm.DisplayUnit.DecimalsDisplayed,
@@ -66,6 +67,7 @@ func ModuleToRedisModule(m types.Module) *repositories.RedisModule {
 		DisplayCurrency: m.DisplayCurrency,
 		DisplayUnit: repositories.RedisDisplayUnit{
 			Id:                     m.DisplayUnit.Id,
+			Amount:                 m.DisplayUnit.Amount,
 			Symbol:                 m.DisplayUnit.Symbol,
 			DivisorFromMillilitres: m.DisplayUnit.DivisorFromMillilitres,
 			DecimalsDisplayed:      m.DisplayUnit.DecimalsDisplayed,
