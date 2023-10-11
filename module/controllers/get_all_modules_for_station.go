@@ -10,6 +10,7 @@ import (
 
 func GetAllModulesForStationController(app_context *types.AppContext, station_id string) (*[]types.Module, error) {
 	mr := app_context.Repositories.Module
+	dur := app_context.Repositories.DisplayUnit
 	cr := app_context.Repositories.Cache
 
 	rms, err := cr.GetAllModulesForStation(station_id)
@@ -31,7 +32,12 @@ func GetAllModulesForStationController(app_context *types.AppContext, station_id
 	rms_to_cache := []repositories.RedisModule{}
 
 	for _, pm := range *pms {
-		m := utils.PostgresModuleToModule(pm)
+		pdu, err := dur.GetDisplayUnit(pm.DisplayUnitId)
+		if err != nil {
+			return nil, err
+		}
+
+		m := utils.PostgresModuleToModule(pm, *pdu)
 
 		modules = append(modules, *m)
 		rms_to_cache = append(rms_to_cache, *utils.ModuleToRedisModule(*m))

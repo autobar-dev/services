@@ -11,15 +11,16 @@ import (
 )
 
 type Repositories struct {
-	Module   *repositories.ModuleRepository
-	Cache    *repositories.CacheRepository
-	State    *repositories.StateRepository
-	Realtime *repositories.RealtimeRepository
-	Auth     *authrepository.AuthRepository
-	User     *userrepository.UserRepository
-	Wallet   *walletrepository.WalletRepository
-	Currency *currencyrepository.CurrencyRepository
-	Product  *productrepository.ProductRepository
+	Module      *repositories.ModuleRepository
+	DisplayUnit *repositories.DisplayUnitRepository
+	Cache       *repositories.CacheRepository
+	State       *repositories.StateRepository
+	Realtime    *repositories.RealtimeRepository
+	Auth        *authrepository.AuthRepository
+	User        *userrepository.UserRepository
+	Wallet      *walletrepository.WalletRepository
+	Currency    *currencyrepository.CurrencyRepository
+	Product     *productrepository.ProductRepository
 }
 
 type AppContext struct {

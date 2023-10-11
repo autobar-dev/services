@@ -7,6 +7,7 @@ import (
 
 func GetAllModulesController(app_context *types.AppContext) (*[]types.Module, error) {
 	mr := app_context.Repositories.Module
+	dur := app_context.Repositories.DisplayUnit
 
 	pms, err := mr.GetAll()
 	if err != nil {
@@ -16,7 +17,12 @@ func GetAllModulesController(app_context *types.AppContext) (*[]types.Module, er
 	modules := []types.Module{}
 
 	for _, pm := range *pms {
-		modules = append(modules, *utils.PostgresModuleToModule(pm))
+		pdu, err := dur.GetDisplayUnit(pm.DisplayUnitId)
+		if err != nil {
+			return nil, err
+		}
+
+		modules = append(modules, *utils.PostgresModuleToModule(pm, *pdu))
 	}
 
 	return &modules, nil
