@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	currencyrepository "github.com/autobar-dev/shared-libraries/go/currency-repository"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,16 +21,16 @@ type RedisDisplayUnit struct {
 }
 
 type RedisModule struct {
-	Id              int32            `json:"id"`
-	SerialNumber    string           `json:"serial_number"`
-	StationId       *string          `json:"station_id"`
-	ProductId       *string          `json:"product_id"`
-	Enabled         bool             `json:"enabled"`
-	Prices          map[string]int   `json:"prices"`
-	DisplayCurrency string           `json:"display_currency"`
-	DisplayUnit     RedisDisplayUnit `json:"display_unit"`
-	CreatedAt       time.Time        `json:"created_at"`
-	UpdatedAt       time.Time        `json:"updated_at"`
+	Id              int32                       `json:"id"`
+	SerialNumber    string                      `json:"serial_number"`
+	StationId       *string                     `json:"station_id"`
+	ProductId       *string                     `json:"product_id"`
+	Enabled         bool                        `json:"enabled"`
+	Prices          map[string]int              `json:"prices"`
+	DisplayCurrency currencyrepository.Currency `json:"display_currency"`
+	DisplayUnit     RedisDisplayUnit            `json:"display_unit"`
+	CreatedAt       time.Time                   `json:"created_at"`
+	UpdatedAt       time.Time                   `json:"updated_at"`
 }
 
 type CacheRepository struct {
@@ -74,43 +75,8 @@ func (cr *CacheRepository) GetModule(serial_number string) (*RedisModule, error)
 }
 
 func (cr *CacheRepository) SetModule(
-	id int32,
-	serial_number string,
-	station_id *string,
-	product_id *string,
-	enabled bool,
-	prices map[string]int,
-	display_currency string,
-	created_at time.Time,
-	updated_at time.Time,
-	display_unit_id int32,
-	display_unit_amount float64,
-	display_unit_symbol string,
-	display_unit_divisor_from_millilitres float64,
-	display_unit_decimals_displayed int32,
-	display_unit_created_at time.Time,
-	display_unit_updated_at time.Time,
+	rm RedisModule,
 ) error {
-	rm := RedisModule{
-		Id:              id,
-		SerialNumber:    serial_number,
-		StationId:       station_id,
-		ProductId:       product_id,
-		Enabled:         enabled,
-		Prices:          prices,
-		DisplayCurrency: display_currency,
-		DisplayUnit: RedisDisplayUnit{
-			Id:                     display_unit_id,
-			Amount:                 display_unit_amount,
-			Symbol:                 display_unit_symbol,
-			DivisorFromMillilitres: display_unit_divisor_from_millilitres,
-			DecimalsDisplayed:      display_unit_decimals_displayed,
-			CreatedAt:              display_unit_created_at,
-			UpdatedAt:              display_unit_updated_at,
-		},
-		CreatedAt: created_at,
-		UpdatedAt: updated_at,
-	}
 	rm_json_bytes, _ := json.Marshal(rm)
 
 	// Compress
@@ -120,7 +86,7 @@ func (cr *CacheRepository) SetModule(
 	}
 
 	ctx := context.Background()
-	return cr.redis.Set(ctx, generateModuleCacheKey(serial_number), rm_compressed, 0).Err()
+	return cr.redis.Set(ctx, generateModuleCacheKey(rm.SerialNumber), rm_compressed, 0).Err()
 }
 
 func (cr *CacheRepository) ClearModule(serial_number string) error {

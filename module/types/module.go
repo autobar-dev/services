@@ -1,18 +1,22 @@
 package types
 
-import "time"
+import (
+	"time"
+
+	currencyrepository "github.com/autobar-dev/shared-libraries/go/currency-repository"
+)
 
 type Module struct {
-	Id              int32          `json:"id"`
-	SerialNumber    string         `json:"serial_number"`
-	StationId       *string        `json:"station_id"`
-	ProductId       *string        `json:"product_id"`
-	Enabled         bool           `json:"enabled"`
-	Prices          map[string]int `json:"prices"`
-	DisplayCurrency string         `json:"display_currency"`
-	DisplayUnit     DisplayUnit    `json:"display_unit"`
-	CreatedAt       time.Time      `json:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at"`
+	Id              int32                       `json:"id"`
+	SerialNumber    string                      `json:"serial_number"`
+	StationId       *string                     `json:"station_id"`
+	ProductId       *string                     `json:"product_id"`
+	Enabled         bool                        `json:"enabled"`
+	Prices          map[string]int              `json:"prices"`
+	DisplayCurrency currencyrepository.Currency `json:"display_currency"`
+	DisplayUnit     DisplayUnit                 `json:"display_unit"`
+	CreatedAt       time.Time                   `json:"created_at"`
+	UpdatedAt       time.Time                   `json:"updated_at"`
 }
 
 type CreateModuleResponse struct {

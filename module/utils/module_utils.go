@@ -5,9 +5,14 @@ import (
 
 	"github.com/autobar-dev/services/module/repositories"
 	"github.com/autobar-dev/services/module/types"
+	currencyrepository "github.com/autobar-dev/shared-libraries/go/currency-repository"
 )
 
-func PostgresModuleToModule(pm repositories.PostgresModule, pdu repositories.PostgresDisplayUnit) *types.Module {
+func PostgresModuleToModule(
+	pm repositories.PostgresModule,
+	c currencyrepository.Currency,
+	pdu repositories.PostgresDisplayUnit,
+) *types.Module {
 	var prices map[string]int
 	_ = json.Unmarshal([]byte(pm.Prices), &prices)
 
@@ -18,7 +23,7 @@ func PostgresModuleToModule(pm repositories.PostgresModule, pdu repositories.Pos
 		ProductId:       pm.ProductId,
 		Enabled:         pm.Enabled,
 		Prices:          prices,
-		DisplayCurrency: pm.DisplayCurrency,
+		DisplayCurrency: c,
 		DisplayUnit: types.DisplayUnit{
 			Id:                     pdu.Id,
 			Amount:                 pdu.Amount,

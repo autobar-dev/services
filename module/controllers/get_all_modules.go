@@ -8,6 +8,7 @@ import (
 func GetAllModulesController(app_context *types.AppContext) (*[]types.Module, error) {
 	mr := app_context.Repositories.Module
 	dur := app_context.Repositories.DisplayUnit
+	cur := app_context.Repositories.Currency
 
 	pms, err := mr.GetAll()
 	if err != nil {
@@ -22,7 +23,12 @@ func GetAllModulesController(app_context *types.AppContext) (*[]types.Module, er
 			return nil, err
 		}
 
-		modules = append(modules, *utils.PostgresModuleToModule(pm, *pdu))
+		c, err := cur.GetCurrencyByCode(pm.DisplayCurrency)
+		if err != nil {
+			return nil, err
+		}
+
+		modules = append(modules, *utils.PostgresModuleToModule(pm, *c, *pdu))
 	}
 
 	return &modules, nil

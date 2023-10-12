@@ -11,6 +11,7 @@ func GetModuleController(app_context *types.AppContext, serial_number string) (*
 	mr := app_context.Repositories.Module
 	dur := app_context.Repositories.DisplayUnit
 	cr := app_context.Repositories.Cache
+	cur := app_context.Repositories.Currency
 
 	rm, err := cr.GetModule(serial_number)
 	if err == nil {
@@ -27,26 +28,15 @@ func GetModuleController(app_context *types.AppContext, serial_number string) (*
 		return nil, err
 	}
 
-	m := utils.PostgresModuleToModule(*pm, *pdu)
+	c, err := cur.GetCurrencyByCode(pm.DisplayCurrency)
+	if err != nil {
+		return nil, err
+	}
 
-	err = cr.SetModule(
-		m.Id,
-		m.SerialNumber,
-		m.StationId,
-		m.ProductId,
-		m.Enabled,
-		m.Prices,
-		m.DisplayCurrency,
-		m.CreatedAt,
-		m.UpdatedAt,
-		m.DisplayUnit.Id,
-		m.DisplayUnit.Amount,
-		m.DisplayUnit.Symbol,
-		m.DisplayUnit.DivisorFromMillilitres,
-		m.DisplayUnit.DecimalsDisplayed,
-		m.DisplayUnit.CreatedAt,
-		m.DisplayUnit.UpdatedAt,
-	)
+	m := utils.PostgresModuleToModule(*pm, *c, *pdu)
+	rm = utils.ModuleToRedisModule(*m)
+
+	err = cr.SetModule(*rm)
 	if err != nil {
 		fmt.Printf("failed to set cache for module: %v\n", err)
 	}
