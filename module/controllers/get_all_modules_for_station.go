@@ -12,6 +12,7 @@ func GetAllModulesForStationController(app_context *types.AppContext, station_id
 	mr := app_context.Repositories.Module
 	dur := app_context.Repositories.DisplayUnit
 	cr := app_context.Repositories.Cache
+	cur := app_context.Repositories.Currency
 
 	rms, err := cr.GetAllModulesForStation(station_id)
 	if err == nil {
@@ -37,7 +38,12 @@ func GetAllModulesForStationController(app_context *types.AppContext, station_id
 			return nil, err
 		}
 
-		m := utils.PostgresModuleToModule(pm, *pdu)
+		c, err := cur.GetCurrencyByCode(pm.DisplayCurrency)
+		if err != nil {
+			return nil, err
+		}
+
+		m := utils.PostgresModuleToModule(pm, *c, *pdu)
 
 		modules = append(modules, *m)
 		rms_to_cache = append(rms_to_cache, *utils.ModuleToRedisModule(*m))
