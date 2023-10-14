@@ -108,6 +108,7 @@ func main() {
 	e.POST("/report", routes.ReportRoute)
 	e.POST("/activate", routes.ActivateRoute)
 	e.POST("/deactivate", routes.DeactivateRoute)
+	e.GET("/activation-session", routes.GetActivationSessionRoute)
 	e.PATCH("/update-activation-session", routes.UpdateActivationSessionRoute)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", (*config).Port)))
