@@ -8,7 +8,7 @@ import (
 	"github.com/autobar-dev/services/module/utils"
 )
 
-func DeactivateController(
+func DeactivateAsUserController(
 	app_context *types.AppContext,
 	user_id string,
 ) error {

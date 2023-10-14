@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/autobar-dev/services/module/controllers"
 	"github.com/autobar-dev/services/module/types"
+	authrepository "github.com/autobar-dev/shared-libraries/go/auth-repository"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,13 +25,24 @@ func DeactivateRoute(c echo.Context) error {
 		})
 	}
 
-	err := controllers.DeactivateController(app_context, client_context.Identifier)
-	if err != nil {
-		err := err.Error()
-		return rest_context.JSON(400, &DeactivateRouteResponse{
-			Status: "error",
-			Error:  &err,
-		})
+	if client_context.Type == authrepository.UserTokenOwnerType {
+		err := controllers.DeactivateAsUserController(app_context, client_context.Identifier)
+		if err != nil {
+			err := err.Error()
+			return rest_context.JSON(400, &DeactivateRouteResponse{
+				Status: "error",
+				Error:  &err,
+			})
+		}
+	} else if client_context.Type == authrepository.ModuleTokenOwnerType {
+		err := controllers.DeactivateAsModuleController(app_context, client_context.Identifier)
+		if err != nil {
+			err := err.Error()
+			return rest_context.JSON(400, &DeactivateRouteResponse{
+				Status: "error",
+				Error:  &err,
+			})
+		}
 	}
 
 	return rest_context.JSON(200, &DeactivateRouteResponse{
