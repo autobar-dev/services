@@ -14,8 +14,8 @@ type Repositories struct {
 }
 
 type AppContext struct {
-	MetaFactors  *MetaFactors
-	Config       *Config
-	Repositories *Repositories
-	AmqpChannel  *amqp.Channel
+	MetaFactors    *MetaFactors
+	Config         *Config
+	Repositories   *Repositories
+	AmqpConnection *amqp.Connection
 }
