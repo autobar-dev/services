@@ -31,12 +31,6 @@ func main() {
 	}
 	defer amqp_connection.Close()
 
-	amqp_channel, err := amqp_connection.Channel()
-	if err != nil {
-		panic(fmt.Sprintf("failed to open a channel in queue: %s", err))
-	}
-	defer amqp_channel.Close()
-
 	redis_state_options, err := redis.ParseURL(config.RedisStateURL)
 	if err != nil {
 		panic(fmt.Sprintf("failed to open redis: %s", err))
@@ -51,13 +45,13 @@ func main() {
 	e.HideBanner = true
 
 	app_context := &types.AppContext{
-		MetaFactors: utils.GetMetaFactors(),
-		AmqpChannel: amqp_channel,
-		Config:      config,
+		MetaFactors:    utils.GetMetaFactors(),
+		AmqpConnection: amqp_connection,
+		Config:         config,
 		Repositories: &types.Repositories{
 			Auth:  authrepository.NewAuthRepository(config.AuthServiceURL, types.MicroserviceName),
 			State: repositories.NewStateRepository(redis_state_client),
-			Mq:    repositories.NewMqRepository(amqp_channel),
+			Mq:    repositories.NewMqRepository(),
 		},
 	}
 

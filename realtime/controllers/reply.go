@@ -31,11 +31,17 @@ func Reply(
 	}
 
 	// Reply exchange
+	channel, err := app_context.AmqpConnection.Channel()
+	if err != nil {
+		fmt.Printf("failed to open a channel: %s", err)
+		return err
+	}
+
 	reply_exchange_name := utils.ReplyExchangeNameFromClientInfo(client_type, identifier)
 
 	fmt.Printf("received reply for #%s\n", message_id)
 
-	return mr.PublishReply(reply_exchange_name, &repositories.MqReply{
+	return mr.PublishReply(channel, reply_exchange_name, &repositories.MqReply{
 		Id: message_id,
 	})
 }

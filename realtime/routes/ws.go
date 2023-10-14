@@ -32,12 +32,18 @@ func WsRoute(c echo.Context) error {
 	mr := app_context.Repositories.Mq
 	sr := app_context.Repositories.State
 
+	amqp_channel, err := app_context.AmqpConnection.Channel()
+	if err != nil {
+		panic(fmt.Sprintf("failed to open a channel: %s", err))
+	}
+	defer amqp_channel.Close()
+
 	ct := utils.ServiceClientTypeToClientType(client_context.Type)
 	id := client_context.Identifier
 
 	exchange_name := utils.ExchangeNameFromClientInfo(ct, id)
 
-	queue_name, err := mr.CreatePubSub(exchange_name)
+	queue_name, err := mr.CreatePubSub(amqp_channel, exchange_name)
 	if err != nil {
 		return rest_context.JSON(500, &WsRouteResponse{
 			Status: "error",
@@ -46,9 +52,9 @@ func WsRoute(c echo.Context) error {
 	}
 
 	queue_consumer_name := utils.QueueConsumerName(*queue_name)
-	commands, err := mr.ConsumeCommands(*queue_name, queue_consumer_name) // consumer name auto-generated
+	commands, err := mr.ConsumeCommands(amqp_channel, *queue_name, queue_consumer_name) // consumer name auto-generated
 	if err != nil {
-		_ = mr.CancelConsumer(queue_consumer_name)
+		_ = mr.CancelConsumer(amqp_channel, queue_consumer_name)
 		return rest_context.JSON(500, &WsRouteResponse{
 			Status: "error",
 			Error:  "failed to consume queue",
@@ -59,7 +65,7 @@ func WsRoute(c echo.Context) error {
 
 	err = sr.IncrementListenersCountForExchange(exchange_name)
 	if err != nil {
-		_ = mr.CancelConsumer(queue_consumer_name)
+		_ = mr.CancelConsumer(amqp_channel, queue_consumer_name)
 		return rest_context.JSON(500, &WsRouteResponse{
 			Status: "error",
 			Error:  "failed to increment listeners count",
@@ -139,7 +145,7 @@ func WsRoute(c echo.Context) error {
 	close(received)
 	close(to_send)
 
-	err = mr.CancelConsumer(queue_consumer_name)
+	err = mr.CancelConsumer(amqp_channel, queue_consumer_name)
 	if err != nil {
 		fmt.Printf("WARNING: MQ err: %s\n", err)
 	}
