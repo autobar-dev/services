@@ -8,7 +8,8 @@ dev:
 		"make product-dev" \
 		"make realtime-dev" \
 		"make user-dev" \
-		"make wallet-dev"
+		"make wallet-dev" \
+		"make file-dev"
 
 auth-dev:
 	(cd auth/ && go run main.go)
@@ -36,3 +37,6 @@ user-dev:
 
 wallet-dev:
 	(cd wallet/ && go run main.go)
+
+file-dev:
+	(cd file/ && go run main.go)
