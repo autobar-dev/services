@@ -17,6 +17,8 @@ services:
   imaginary:
     image: "h2non/imaginary"
     command: -enable-url-source
+    environment:
+      - PORT=8002
     ports:
       - "8002:8002"
 
