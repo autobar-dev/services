@@ -2,10 +2,16 @@ github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717
 github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717-1191d524c2bf/go.mod h1:jm7B/fws9xPGXcObowbXOz8HIcm5rWhLNV0kp5UMn9E=
 github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20231010204123-8daa43116970 h1:Q8/Fu0a8OOw+qVwQo0V/YnlGBW4hmoio0EFiOihcsps=
 github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20231010204123-8daa43116970/go.mod h1:+asvxArO5OB2KCwN6bfwtBTd3lJsPaTd6rzwO1bbrfk=
+github.com/autobar-dev/shared-libraries/go/file-repository v0.0.0-20231019105717-58ea9ed5f03d h1:T5y1hfC6omaIQAVwZlLsgoyyQDzDfQt2T2A3HBkoutk=
+github.com/autobar-dev/shared-libraries/go/file-repository v0.0.0-20231019105717-58ea9ed5f03d/go.mod h1:cFr7GSBmGO8TDzQo75xH0LVjzdwjC5U7wijlMsIgzfY=
 github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20230907001756-9164dbab8930 h1:aASWehdUGitxPLW6ZmcsEyRYLLw0VZFw3PQLIChsjJA=
 github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20230907001756-9164dbab8930/go.mod h1:nw9R9xZk0apIfSa9cE1qxW3Lnf/5HYbnW7SYzvCLz90=
+github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231019110518-565cfbd871e8 h1:I2J84OnIEBZyZOxDigJbFuCS1TaN37AgWzb6YKOlv18=
+github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231019110518-565cfbd871e8/go.mod h1:ZwQoaeRh9vgWdWa+VsKFxj5vdS5o8c5ybYugRkfeAEU=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906220457-9b9db8991f98 h1:Qn10nDU75dnoxvtlLaF5QEkjATH6kz6a74lw29Vx+W8=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906220457-9b9db8991f98/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
+github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20231019105420-bb6feaaeef8e h1:TW+TtjhbUx+0Wf0VWXCtKG54K86pE3VCJS8JfFKqJYY=
+github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20231019105420-bb6feaaeef8e/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220457-9b9db8991f98 h1:adLuLjsnL3P1Zr3P8T/A3mVzvD6XIwFvxdrau/dWZws=
 github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220457-9b9db8991f98/go.mod h1:TmRBWXhWHt3WqJQb0WZ42ukN/2WyIESVoVsHk01dWn4=
 github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230906194208-78ba74bf778e h1:59BZGGPTceN8AiSI2b9wQcX41pRegxKEMe9eyf+4oQk=

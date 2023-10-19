@@ -6,7 +6,13 @@ import (
 	"github.com/autobar-dev/services/product/utils"
 )
 
-func SearchProducts(ac *types.AppContext, query string, hits_per_page int, page int, include_disabled bool) (*[]types.Product, error) {
+func SearchProducts(
+	ac *types.AppContext,
+	query string,
+	hits_per_page int,
+	page int,
+	include_disabled bool,
+) (*[]types.Product, error) {
 	mr := ac.Repositories.Meili
 
 	mps, err := mr.SearchProducts(&repositories.MeiliProductsSearchOptions{
@@ -21,7 +27,12 @@ func SearchProducts(ac *types.AppContext, query string, hits_per_page int, page 
 
 	products := []types.Product{}
 	for _, mp := range *mps {
-		p := utils.MeiliProductToProduct(mp)
+		cover_file, err := ac.Repositories.File.GetFile(mp.CoverId)
+		if err != nil {
+			return nil, err
+		}
+
+		p := utils.MeiliProductToProduct(mp, *cover_file)
 		products = append(products, *p)
 	}
 

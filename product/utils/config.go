@@ -31,11 +31,17 @@ func LoadEnvVars() (*types.Config, error) {
 
 	meili_api_key := os.Getenv("MEILI_API_KEY")
 
+	file_service_url := os.Getenv("FILE_SERVICE_URL")
+	if file_service_url == "" {
+		return nil, errors.New("FILE_SERVICE_URL env var not set")
+	}
+
 	return &types.Config{
-		Port:        port,
-		DatabaseURL: database_url,
-		RedisURL:    redis_url,
-		MeiliURL:    meili_url,
-		MeiliApiKey: meili_api_key,
+		Port:           port,
+		DatabaseURL:    database_url,
+		RedisURL:       redis_url,
+		MeiliURL:       meili_url,
+		MeiliApiKey:    meili_api_key,
+		FileServiceURL: file_service_url,
 	}, nil
 }

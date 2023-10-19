@@ -5,8 +5,8 @@ go 1.21.0
 require (
 	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717-1191d524c2bf
 	github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20231010204123-8daa43116970
-	github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20230907001756-9164dbab8930
-	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906220457-9b9db8991f98
+	github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231019110518-565cfbd871e8
+	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20231019105420-bb6feaaeef8e
 	github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220457-9b9db8991f98
 	github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230906194208-78ba74bf778e
 	github.com/google/uuid v1.3.1
@@ -20,6 +20,7 @@ require (
 )
 
 require (
+	github.com/autobar-dev/shared-libraries/go/file-repository v0.0.0-20231019105717-58ea9ed5f03d // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect

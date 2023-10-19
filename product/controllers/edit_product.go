@@ -9,7 +9,15 @@ import (
 	"github.com/autobar-dev/services/product/utils"
 )
 
-func EditProduct(ac *types.AppContext, id string, slug *string, names *map[string]string, descriptions *map[string]string, cover *string, enabled *bool) (*[]string, error) {
+func EditProduct(
+	ac *types.AppContext,
+	id string,
+	slug *string,
+	names *map[string]string,
+	descriptions *map[string]string,
+	cover_id *string,
+	enabled *bool,
+) (*[]string, error) {
 	pr := ac.Repositories.Product
 	shr := ac.Repositories.SlugHistory
 	mr := ac.Repositories.Meili
@@ -70,7 +78,7 @@ func EditProduct(ac *types.AppContext, id string, slug *string, names *map[strin
 	if descriptions != nil && !utils.CompareMaps(product.Descriptions, *descriptions) {
 		fields_altered = append(fields_altered, "descriptions")
 	}
-	if cover != nil && product.Cover != *cover {
+	if cover_id != nil && product.Cover.Id != *cover_id {
 		fields_altered = append(fields_altered, "cover")
 	}
 	if enabled != nil && product.Enabled != *enabled {
@@ -80,7 +88,7 @@ func EditProduct(ac *types.AppContext, id string, slug *string, names *map[strin
 	err = pr.Edit(id, &repositories.PostgresEditProductInput{
 		Names:        names,
 		Descriptions: descriptions,
-		Cover:        cover,
+		CoverId:      cover_id,
 		Enabled:      enabled,
 	})
 	if err != nil {
@@ -104,7 +112,15 @@ func EditProduct(ac *types.AppContext, id string, slug *string, names *map[strin
 		return nil, err
 	}
 
-	err = mr.AddProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
+	err = mr.AddProduct(
+		product.Id,
+		product.Names,
+		product.Descriptions,
+		product.Cover.Id,
+		product.Enabled,
+		product.CreatedAt,
+		product.UpdatedAt,
+	)
 	if err != nil {
 		return nil, err
 	}

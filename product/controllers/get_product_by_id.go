@@ -10,10 +10,17 @@ import (
 func GetProductById(ac *types.AppContext, id string) (*types.Product, error) {
 	cr := *ac.Repositories.Cache
 	pr := *ac.Repositories.Product
+	fr := *ac.Repositories.File
 
 	rp, _ := cr.GetProduct(id)
 	if rp != nil {
-		return utils.RedisProductToProduct(*rp), nil
+		cover_file, err := fr.GetFile(rp.CoverId)
+		if err != nil {
+			fmt.Printf("(from cache) failed to get cover file when getting product by id: %v", err)
+			return nil, err
+		}
+
+		return utils.RedisProductToProduct(*rp, *cover_file), nil
 	}
 
 	pp, err := pr.Get(id)
@@ -21,9 +28,23 @@ func GetProductById(ac *types.AppContext, id string) (*types.Product, error) {
 		return nil, err
 	}
 
-	product := utils.PostgresProductToProduct(*pp)
+	cover_file, err := fr.GetFile(pp.CoverId)
+	if err != nil {
+		fmt.Printf("failed to get cover file when getting product by id: %v", err)
+		return nil, err
+	}
 
-	err = cr.SetProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
+	product := utils.PostgresProductToProduct(*pp, *cover_file)
+
+	err = cr.SetProduct(
+		product.Id,
+		product.Names,
+		product.Descriptions,
+		product.Cover.Id,
+		product.Enabled,
+		product.CreatedAt,
+		product.UpdatedAt,
+	)
 	if err != nil {
 		fmt.Printf("failed to set cache for product_id->product: %v\n", err)
 	}

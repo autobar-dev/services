@@ -12,7 +12,7 @@ type MeiliProduct struct {
 	Id           string            `json:"id"`
 	Names        map[string]string `json:"names"`
 	Descriptions map[string]string `json:"descriptions"`
-	Cover        string            `json:"cover"`
+	CoverId      string            `json:"cover_id"`
 	Enabled      bool              `json:"enabled"`
 	CreatedAt    time.Time         `json:"created_at"`
 	UpdatedAt    time.Time         `json:"updated_at"`
@@ -44,12 +44,20 @@ func NewMeiliRepository(client *meilisearch.Client) *MeiliRepository {
 	}
 }
 
-func (mr MeiliRepository) AddProduct(id string, names map[string]string, descriptions map[string]string, cover string, enabled bool, created_at time.Time, updated_at time.Time) error {
+func (mr MeiliRepository) AddProduct(
+	id string,
+	names map[string]string,
+	descriptions map[string]string,
+	cover_id string,
+	enabled bool,
+	created_at time.Time,
+	updated_at time.Time,
+) error {
 	mp := &MeiliProduct{
 		Id:           id,
 		Names:        names,
 		Descriptions: descriptions,
-		Cover:        cover,
+		CoverId:      cover_id,
 		Enabled:      enabled,
 		CreatedAt:    created_at,
 		UpdatedAt:    updated_at,

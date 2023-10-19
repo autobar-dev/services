@@ -7,7 +7,14 @@ import (
 	"github.com/autobar-dev/services/product/types"
 )
 
-func CreateProduct(ac *types.AppContext, slug string, names map[string]string, descriptions map[string]string, cover *string, enabled bool) error {
+func CreateProduct(
+	ac *types.AppContext,
+	slug string,
+	names map[string]string,
+	descriptions map[string]string,
+	cover_id string,
+	enabled bool,
+) error {
 	pr := ac.Repositories.Product
 	shr := ac.Repositories.SlugHistory
 	mr := ac.Repositories.Meili
@@ -18,7 +25,7 @@ func CreateProduct(ac *types.AppContext, slug string, names map[string]string, d
 		return errors.New("product already exists")
 	}
 
-	product_id, err := pr.Create(names, descriptions, cover, enabled)
+	product_id, err := pr.Create(names, descriptions, cover_id, enabled)
 	if err != nil {
 		return err
 	}
@@ -39,7 +46,15 @@ func CreateProduct(ac *types.AppContext, slug string, names map[string]string, d
 		fmt.Printf("failed to clear cache for all products: %v", err)
 	}
 
-	err = mr.AddProduct(product.Id, product.Names, product.Descriptions, product.Cover, product.Enabled, product.CreatedAt, product.UpdatedAt)
+	err = mr.AddProduct(
+		product.Id,
+		product.Names,
+		product.Descriptions,
+		product.Cover.Id,
+		product.Enabled,
+		product.CreatedAt,
+		product.UpdatedAt,
+	)
 
 	return err
 }

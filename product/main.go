@@ -15,6 +15,7 @@ import (
 	"github.com/autobar-dev/services/product/routes"
 	"github.com/autobar-dev/services/product/types"
 	"github.com/autobar-dev/services/product/utils"
+	filerepository "github.com/autobar-dev/shared-libraries/go/file-repository"
 )
 
 func main() {
@@ -56,6 +57,7 @@ func main() {
 			Product:     repositories.NewProductRepository(database),
 			SlugHistory: repositories.NewSlugHistoryRepository(database),
 			Meili:       repositories.NewMeiliRepository(meili_client),
+			File:        filerepository.NewFileRepository(config.FileServiceURL, types.MicroserviceName),
 		},
 	}
 

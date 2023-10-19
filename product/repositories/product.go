@@ -15,7 +15,7 @@ type PostgresProduct struct {
 	Id           string    `db:"id"`
 	Names        string    `db:"names"`
 	Descriptions string    `db:"descriptions"`
-	Cover        string    `db:"cover"`
+	CoverId      string    `db:"cover"`
 	Enabled      bool      `db:"enabled"`
 	CreatedAt    time.Time `db:"created_at"`
 	UpdatedAt    time.Time `db:"updated_at"`
@@ -24,7 +24,7 @@ type PostgresProduct struct {
 type PostgresEditProductInput struct {
 	Names        *map[string]string `json:"names"`
 	Descriptions *map[string]string `json:"descriptions"`
-	Cover        *string            `json:"cover"`
+	CoverId      *string            `json:"cover_id"`
 	Enabled      *bool              `json:"enabled"`
 }
 
@@ -47,7 +47,6 @@ func (pr ProductRepository) Get(id string) (*PostgresProduct, error) {
 
 	var pp PostgresProduct
 	err := row.StructScan(&pp)
-
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +82,12 @@ func (pr ProductRepository) GetAll() (*[]PostgresProduct, error) {
 	return &products, nil
 }
 
-func (pr ProductRepository) Create(names map[string]string, descriptions map[string]string, cover *string, enabled bool) (*string, error) {
+func (pr ProductRepository) Create(
+	names map[string]string,
+	descriptions map[string]string,
+	cover_id string,
+	enabled bool,
+) (*string, error) {
 	names_bytes, _ := json.Marshal(names)
 	names_str := string(names_bytes)
 
@@ -97,7 +101,7 @@ func (pr ProductRepository) Create(names map[string]string, descriptions map[str
 		RETURNING id;
 	`
 
-	result := pr.db.QueryRowx(create_product_query, names_str, descriptions_str, cover, enabled)
+	result := pr.db.QueryRowx(create_product_query, names_str, descriptions_str, cover_id, enabled)
 
 	var product_id string
 
@@ -132,9 +136,9 @@ func (pr ProductRepository) Edit(id string, input *PostgresEditProductInput) err
 		args_list = append(args_list, descriptions_str)
 		arg_counter += 1
 	}
-	if input.Cover != nil {
+	if input.CoverId != nil {
 		args_names_list = append(args_names_list, fmt.Sprintf("cover=$%d", arg_counter))
-		args_list = append(args_list, input.Cover)
+		args_list = append(args_list, input.CoverId)
 		arg_counter += 1
 	}
 	if input.Enabled != nil {
