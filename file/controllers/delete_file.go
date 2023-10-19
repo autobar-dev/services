@@ -11,7 +11,12 @@ func DeleteFile(
 	fr := ac.Repositories.File
 	sr := ac.Repositories.S3
 
-	err := sr.DeleteFile(id)
+	file, err := fr.Get(id)
+	if err != nil {
+		return err
+	}
+
+	err = sr.DeleteFile(id, file.Extension)
 	if err != nil {
 		return err
 	}

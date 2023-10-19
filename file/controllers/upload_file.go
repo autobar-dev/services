@@ -36,7 +36,7 @@ func UploadFile(
 	uuid := uuid.NewString()
 	file_extension := utils.FileExtensionFromFileName(file_header.Filename)
 
-	err = sr.UploadFile(uuid, file_header)
+	err = sr.UploadFile(uuid, file_extension, file_header)
 	if err != nil {
 		return "", err
 	}

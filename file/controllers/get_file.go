@@ -5,7 +5,7 @@ import (
 	"github.com/autobar-dev/services/file/utils"
 )
 
-func GetFile(ac *types.AppContext, id string) (*types.File, error) {
+func GetFile(ac *types.AppContext, id string, download bool) (*types.File, error) {
 	fr := *ac.Repositories.File
 	sr := *ac.Repositories.S3
 
@@ -14,7 +14,7 @@ func GetFile(ac *types.AppContext, id string) (*types.File, error) {
 		return nil, err
 	}
 
-	url, err := sr.GetFile(pf.Id, pf.Extension)
+	url, err := sr.GetFile(pf.Id, pf.Extension, download)
 	if err != nil {
 		return nil, err
 	}

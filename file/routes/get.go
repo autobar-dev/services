@@ -17,6 +17,7 @@ func GetFileRoute(c echo.Context) error {
 	app_context := *(*rest_context).AppContext
 
 	id := c.QueryParam("id")
+	download := c.QueryParam("download") == "1"
 
 	if id == "" {
 		err := "id must be provided"
@@ -27,7 +28,7 @@ func GetFileRoute(c echo.Context) error {
 		})
 	}
 
-	file, err := controllers.GetFile(&app_context, id)
+	file, err := controllers.GetFile(&app_context, id, download)
 	if err != nil {
 		err := err.Error()
 		return c.JSON(400, &GetFileRouteResponse{
