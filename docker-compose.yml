@@ -17,6 +17,8 @@ services:
   imaginary:
     image: "h2non/imaginary"
     command: -enable-url-source
+    ports:
+      - "8002:8002"
 
   currencyservice:
     env_file:
@@ -208,4 +210,3 @@ services:
       - emailtemplateservice
       - emailservice
       - fileservice
-      - imaginary
