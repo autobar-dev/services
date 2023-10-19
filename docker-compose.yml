@@ -113,6 +113,7 @@ services:
     environment:
       - PORT=80
       - REDIS_URL=redis://redis:6379
+      - FILE_SERVICE_URL=http://fileservice
     build:
       context: ./product
       args:
