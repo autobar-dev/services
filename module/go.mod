@@ -5,7 +5,7 @@ go 1.21.0
 require (
 	github.com/autobar-dev/shared-libraries/go/auth-repository v0.0.0-20230827185717-1191d524c2bf
 	github.com/autobar-dev/shared-libraries/go/currency-repository v0.0.0-20231010204123-8daa43116970
-	github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231019110518-565cfbd871e8
+	github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231024222118-4353140f6c3a
 	github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20231019105420-bb6feaaeef8e
 	github.com/autobar-dev/shared-libraries/go/user-repository v0.0.0-20230906220457-9b9db8991f98
 	github.com/autobar-dev/shared-libraries/go/wallet-repository v0.0.0-20230906194208-78ba74bf778e
