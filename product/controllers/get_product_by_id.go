@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 
+	"github.com/autobar-dev/services/product/repositories"
 	"github.com/autobar-dev/services/product/types"
 	"github.com/autobar-dev/services/product/utils"
 )
@@ -36,12 +37,18 @@ func GetProductById(ac *types.AppContext, id string) (*types.Product, error) {
 
 	product := utils.PostgresProductToProduct(*pp, *cover_file)
 
+	rpbs := []repositories.RedisProductBadge{}
+	for _, product_badge := range product.Badges {
+		rpbs = append(rpbs, *utils.ProductBadgeToRedisProductBadge(product_badge))
+	}
+
 	err = cr.SetProduct(
 		product.Id,
 		product.Names,
 		product.Descriptions,
 		product.Cover.Id,
 		product.Enabled,
+		rpbs,
 		product.CreatedAt,
 		product.UpdatedAt,
 	)

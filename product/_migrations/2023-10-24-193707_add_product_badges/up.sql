@@ -1,0 +1,2 @@
+ALTER TABLE products
+ADD COLUMN badges JSON NOT NULL DEFAULT '[]';

@@ -8,6 +8,8 @@ github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20230907001
 github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20230907001756-9164dbab8930/go.mod h1:nw9R9xZk0apIfSa9cE1qxW3Lnf/5HYbnW7SYzvCLz90=
 github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231019110518-565cfbd871e8 h1:I2J84OnIEBZyZOxDigJbFuCS1TaN37AgWzb6YKOlv18=
 github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231019110518-565cfbd871e8/go.mod h1:ZwQoaeRh9vgWdWa+VsKFxj5vdS5o8c5ybYugRkfeAEU=
+github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231024222118-4353140f6c3a h1:CMdHcjhxNmAmca0X1/veN5awBoHHvArs0Cep3YxbBqQ=
+github.com/autobar-dev/shared-libraries/go/product-repository v0.0.0-20231024222118-4353140f6c3a/go.mod h1:ZwQoaeRh9vgWdWa+VsKFxj5vdS5o8c5ybYugRkfeAEU=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906220457-9b9db8991f98 h1:Qn10nDU75dnoxvtlLaF5QEkjATH6kz6a74lw29Vx+W8=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20230906220457-9b9db8991f98/go.mod h1:a1rDCSufMAVKQNUTf9mJZFSo+Zb0SW/4U585rxrpi7k=
 github.com/autobar-dev/shared-libraries/go/shared-utils v0.0.0-20231019105420-bb6feaaeef8e h1:TW+TtjhbUx+0Wf0VWXCtKG54K86pE3VCJS8JfFKqJYY=
