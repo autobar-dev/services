@@ -168,3 +168,4 @@ blocks:
             - echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USER" --password-stdin
             - echo "Building image and pushing to GHCR..."
             - 'docker buildx build --push --progress=plain -t ghcr.io/autobar-dev/service-file:latest-dev --build-arg GITHUB_USER="$GITHUB_USER" --build-arg GITHUB_PAT="$GITHUB_PAT" --build-arg COMMIT_SHA="$SEMAPHORE_GIT_SHA" --build-arg VERSION="0.0.0-dev" file/'
+    dependencies: []
