@@ -1,0 +1,41 @@
+auth:
+  - sharedutils
+  - auth (shared)
+  - user
+
+currency:
+
+email:
+
+emailtemplate:
+
+file:
+
+module:
+  - sharedutils
+  - auth
+  - currency
+  - product
+  - user
+  - wallet
+  - file
+
+product:
+  - sharedutils
+  - file
+
+realtime:
+  - sharedutils
+  - auth
+
+user:
+  - sharedutils
+  - auth
+  - email
+  - emailtemplate
+  - wallet
+
+wallet:
+  - sharedutils
+  - auth
+
