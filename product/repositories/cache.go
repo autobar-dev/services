@@ -156,6 +156,7 @@ func (cr CacheRepository) SetProduct(
 		Descriptions: descriptions,
 		CoverId:      cover_id,
 		Enabled:      enabled,
+		Badges:       badges,
 		CreatedAt:    created_at,
 		UpdatedAt:    updated_at,
 	}

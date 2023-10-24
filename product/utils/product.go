@@ -23,7 +23,10 @@ func PostgresProductToProduct(pp repositories.PostgresProduct, cover filereposit
 	}
 
 	badges := []types.ProductBadge{}
-	_ = json.Unmarshal([]byte(pp.Badges), &badges)
+	err = json.Unmarshal([]byte(pp.Badges), &badges)
+	if err != nil {
+		fmt.Printf("IMPORTANT: failed to parse badges for product: %v\n", pp)
+	}
 
 	return &types.Product{
 		Id:           pp.Id,
