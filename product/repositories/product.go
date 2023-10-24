@@ -17,6 +17,7 @@ type PostgresProduct struct {
 	Descriptions string    `db:"descriptions"`
 	CoverId      string    `db:"cover"`
 	Enabled      bool      `db:"enabled"`
+	Badges       string    `db:"badges"`
 	CreatedAt    time.Time `db:"created_at"`
 	UpdatedAt    time.Time `db:"updated_at"`
 }
@@ -38,7 +39,7 @@ func NewProductRepository(db *sqlx.DB) *ProductRepository {
 
 func (pr ProductRepository) Get(id string) (*PostgresProduct, error) {
 	get_product_query := `
-		SELECT id, names, descriptions, cover, enabled, created_at, updated_at
+		SELECT id, names, descriptions, cover, enabled, badges, created_at, updated_at
 		FROM products
 		WHERE id = $1;
 	`
@@ -56,7 +57,7 @@ func (pr ProductRepository) Get(id string) (*PostgresProduct, error) {
 
 func (pr ProductRepository) GetAll() (*[]PostgresProduct, error) {
 	get_all_products_query := `
-		SELECT id, names, descriptions, cover, enabled, created_at, updated_at
+		SELECT id, names, descriptions, cover, enabled, badges, created_at, updated_at
 		FROM products;
 	`
 

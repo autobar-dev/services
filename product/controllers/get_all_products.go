@@ -47,6 +47,11 @@ func GetAllProducts(ac *types.AppContext) (*[]types.Product, error) {
 
 		product := utils.PostgresProductToProduct(pp, *cover_file)
 
+		rpbs := []repositories.RedisProductBadge{}
+		for _, product_badge := range product.Badges {
+			rpbs = append(rpbs, *utils.ProductBadgeToRedisProductBadge(product_badge))
+		}
+
 		// Set cache
 		err = cr.SetProduct(
 			product.Id,
@@ -54,6 +59,7 @@ func GetAllProducts(ac *types.AppContext) (*[]types.Product, error) {
 			product.Descriptions,
 			product.Cover.Id,
 			product.Enabled,
+			rpbs,
 			product.CreatedAt,
 			product.UpdatedAt,
 		)

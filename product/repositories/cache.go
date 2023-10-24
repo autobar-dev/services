@@ -9,14 +9,28 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type RedisProductBadgeType string
+
+const (
+	RedisProductBadgeTypePrimary   RedisProductBadgeType = "primary"
+	RedisProductBadgeTypeSecondary RedisProductBadgeType = "secondary"
+)
+
+type RedisProductBadge struct {
+	Type  RedisProductBadgeType `json:"type"`
+	Label string                `json:"label"`
+	Value *string               `json:"value"`
+}
+
 type RedisProduct struct {
-	Id           string            `json:"id"`
-	Names        map[string]string `json:"names"`
-	Descriptions map[string]string `json:"descriptions"`
-	CoverId      string            `json:"cover_id"`
-	Enabled      bool              `json:"enabled"`
-	CreatedAt    time.Time         `json:"created_at"`
-	UpdatedAt    time.Time         `json:"updated_at"`
+	Id           string              `json:"id"`
+	Names        map[string]string   `json:"names"`
+	Descriptions map[string]string   `json:"descriptions"`
+	CoverId      string              `json:"cover_id"`
+	Enabled      bool                `json:"enabled"`
+	Badges       []RedisProductBadge `json:"badges"`
+	CreatedAt    time.Time           `json:"created_at"`
+	UpdatedAt    time.Time           `json:"updated_at"`
 }
 
 type CacheRepository struct {
@@ -132,6 +146,7 @@ func (cr CacheRepository) SetProduct(
 	descriptions map[string]string,
 	cover_id string,
 	enabled bool,
+	badges []RedisProductBadge,
 	created_at time.Time,
 	updated_at time.Time,
 ) error {

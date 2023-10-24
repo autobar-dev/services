@@ -8,14 +8,28 @@ import (
 	"github.com/meilisearch/meilisearch-go"
 )
 
+type MeiliProductBadgeType string
+
+const (
+	MeiliProductBadgeTypePrimary   MeiliProductBadgeType = "primary"
+	MeiliProductBadgeTypeSecondary MeiliProductBadgeType = "secondary"
+)
+
+type MeiliProductBadge struct {
+	Type  MeiliProductBadgeType `json:"type"`
+	Label string                `json:"label"`
+	Value *string               `json:"value"`
+}
+
 type MeiliProduct struct {
-	Id           string            `json:"id"`
-	Names        map[string]string `json:"names"`
-	Descriptions map[string]string `json:"descriptions"`
-	CoverId      string            `json:"cover_id"`
-	Enabled      bool              `json:"enabled"`
-	CreatedAt    time.Time         `json:"created_at"`
-	UpdatedAt    time.Time         `json:"updated_at"`
+	Id           string              `json:"id"`
+	Names        map[string]string   `json:"names"`
+	Descriptions map[string]string   `json:"descriptions"`
+	CoverId      string              `json:"cover_id"`
+	Enabled      bool                `json:"enabled"`
+	Badges       []MeiliProductBadge `json:"badges"`
+	CreatedAt    time.Time           `json:"created_at"`
+	UpdatedAt    time.Time           `json:"updated_at"`
 }
 
 type MeiliProductsSearchOptions struct {
@@ -50,6 +64,7 @@ func (mr MeiliRepository) AddProduct(
 	descriptions map[string]string,
 	cover_id string,
 	enabled bool,
+	badges []MeiliProductBadge,
 	created_at time.Time,
 	updated_at time.Time,
 ) error {
@@ -59,6 +74,7 @@ func (mr MeiliRepository) AddProduct(
 		Descriptions: descriptions,
 		CoverId:      cover_id,
 		Enabled:      enabled,
+		Badges:       badges,
 		CreatedAt:    created_at,
 		UpdatedAt:    updated_at,
 	}

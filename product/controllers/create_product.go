@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/autobar-dev/services/product/repositories"
 	"github.com/autobar-dev/services/product/types"
+	"github.com/autobar-dev/services/product/utils"
 )
 
 func CreateProduct(
@@ -40,6 +42,11 @@ func CreateProduct(
 		fmt.Printf("failed to fetch newly created product: %v\n", err)
 	}
 
+	mpbs := []repositories.MeiliProductBadge{}
+	for _, product_badge := range product.Badges {
+		mpbs = append(mpbs, *utils.ProductBadgeToMeiliProductBadge(product_badge))
+	}
+
 	// Clear all products cache
 	err = cr.ClearAllProducts()
 	if err != nil {
@@ -52,6 +59,7 @@ func CreateProduct(
 		product.Descriptions,
 		product.Cover.Id,
 		product.Enabled,
+		mpbs,
 		product.CreatedAt,
 		product.UpdatedAt,
 	)

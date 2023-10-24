@@ -112,12 +112,18 @@ func EditProduct(
 		return nil, err
 	}
 
+	mpbs := []repositories.MeiliProductBadge{}
+	for _, product_badge := range product.Badges {
+		mpbs = append(mpbs, *utils.ProductBadgeToMeiliProductBadge(product_badge))
+	}
+
 	err = mr.AddProduct(
 		product.Id,
 		product.Names,
 		product.Descriptions,
 		product.Cover.Id,
 		product.Enabled,
+		mpbs,
 		product.CreatedAt,
 		product.UpdatedAt,
 	)
