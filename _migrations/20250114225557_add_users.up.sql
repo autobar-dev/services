@@ -1,5 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
 
@@ -9,13 +7,11 @@ CREATE TABLE users (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   date_of_birth DATE NOT NULL,
+  locale_id INTEGER NOT NULL DEFAULT 1 REFERENCES locales(id),
 
-  role VARCHAR(32) NOT NULL DEFAULT 'user',
+  role_id INTEGER NOT NULL DEFAULT 1 REFERENCES user_roles(id),
 
-  locale VARCHAR(9) NOT NULL,
-
-  identity_verification_id TEXT DEFAULT NULL,
-  identity_verification_source TEXT DEFAULT NULL,
+  identity_verification_id INTEGER DEFAULT NULL REFERENCES user_identity_verifications(id),
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp

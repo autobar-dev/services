@@ -1,9 +1,9 @@
 CREATE TABLE products (
   id SERIAL PRIMARY KEY,
 
-  slug TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
   image_file_id INTEGER DEFAULT NULL REFERENCES files(id),
-  enabled BOOLEAN NOT NULL DEFAULT true,
+  enabled BOOLEAN NOT NULL DEFAULT false,
 
   names JSON NOT NULL DEFAULT '{}', -- replace with table
   descriptions JSON NOT NULL DEFAULT '{}', -- replace with table

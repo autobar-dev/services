@@ -1,8 +1,9 @@
 CREATE TABLE unfinished_registrations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id SERIAL PRIMARY KEY,
 
   email TEXT NOT NULL UNIQUE,
-  locale VARCHAR(9) NOT NULL,
+  locale_id INTEGER NOT NULL REFERENCES locales(id),
+
   email_confirmation_code VARCHAR(64) NOT NULL UNIQUE,
   email_confirmation_code_expires_at TIMESTAMPTZ NOT NULL,
 

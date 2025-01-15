@@ -3,8 +3,9 @@ CREATE TABLE refresh_tokens (
 
     user_id INTEGER DEFAULT NULL REFERENCES users(id) ON DELETE CASCADE,
     module_id INTEGER DEFAULT NULL REFERENCES modules(id) ON DELETE CASCADE,
+
     token TEXT NOT NULL,
-    remember_me BOOLEAN NOT NULL DEFAULT FALSE,
+    remember_me BOOLEAN NOT NULL DEFAULT false,
     expires_at TIMESTAMPTZ NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
