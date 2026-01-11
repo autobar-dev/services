@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS modules (
   station_slug TEXT DEFAULT NULL,
   product_slug TEXT DEFAULT NULL,
 
-  prices JSON NOT NULL DEFAULT '{}',
+  prices JSON NOT NULL DEFAULT '{}', -- replace with a table
   
   created_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
 );
