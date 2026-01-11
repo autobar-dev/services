@@ -1,3 +1,5 @@
+# Relationships between different services in the application
+
 auth:
   - sharedutils
   - auth (shared)
